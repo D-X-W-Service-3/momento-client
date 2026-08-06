@@ -1,0 +1,98 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+@import 'tailwindcss';
+
+/**
+ * 디자인 토큰 SSOT (Single Source of Truth).
+ * Figma 디자인 시스템이 확정되면 이 값들을 1:1로 맞춰주세요.
+ * 아래 값은 임시 placeholder 입니다.
+ *
+ * Tailwind v4 는 여기 정의한 변수를 자동으로 유틸리티 클래스로 만들어줍니다.
+ *   --color-primary   -> bg-primary / text-primary ...
+ *   --text-body-md    -> text-body-md
+ *   --radius-lg       -> rounded-lg
+ */
+@theme {
+  /* === Font === */
+  --font-sans: 'Pretendard Variable', Pretendard, sans-serif;
+
+  /* === Primary (임시) === */
+  --color-primary: #4f46e5;
+  --color-primary-tint: #eef2ff;
+
+  /* === Black === */
+  --color-black: #000000;
+
+  /* === Text === */
+  --color-text-primary: #111111;
+  --color-text-secondary: #6a6a6a;
+  --color-text-placeholder: #9ea6b2;
+  --color-text-on-primary: #ffffff;
+
+  /* === Gray === */
+  --color-gray-100: #f2f5f7;
+  --color-gray-200: #e8edf2;
+  --color-gray-300: #e7e7e7;
+  --color-gray-400: #d9d9d9;
+  --color-gray-500: #8d8d8d;
+
+  /* === Surface === */
+  --color-surface-white: #ffffff;
+  --color-surface-gray: #f2f5f7;
+
+  /* === Status === */
+  --color-status-error: #ff2e54;
+  --color-status-info: #6145ff;
+  --color-status-success: #17d89b;
+
+  /* === Overlay === */
+  --color-overlay-base: #000000;
+
+  /* === Font Size === */
+  --text-tab: 9px;
+  --text-footnote: 10px;
+  --text-caption: 11px;
+  --text-body-sm: 12px;
+  --text-body-md: 14px;
+  --text-body-lg: 16px;
+  --text-h3: 18px;
+  --text-h2: 20px;
+  --text-h1: 26px;
+  --text-display: 50px;
+
+  /* === Radius === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* === Spacing === */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    /* iOS standalone PWA 에서 하단 흰 공간이 생기지 않게 동적 뷰포트 높이로 채운다. */
+    min-height: 100dvh;
+  }
+  html,
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-white);
+    /* 더블탭 확대 방지 (스크롤·탭은 유지) */
+    touch-action: manipulation;
+  }
+}
