@@ -20,6 +20,9 @@ dev-dist
 .env.*
 !.env.example
 
+# Claude Code (개인 설정은 공유하지 않음)
+.claude/settings.local.json
+
 # Editor / OS
 .DS_Store
 .vscode/*
