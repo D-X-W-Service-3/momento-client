@@ -2,7 +2,7 @@
 name: 'Bug'
 about: 버그 수정 이슈
 title: '[Bug] '
-labels: bug
+labels: fix
 assignees: ''
 ---
 
