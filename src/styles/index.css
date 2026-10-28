@@ -1,4 +1,5 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Agbalumo&display=swap');
 @import 'tailwindcss';
 
 /**
@@ -14,10 +15,16 @@
 @theme {
   /* === Font === */
   --font-sans: 'Pretendard Variable', Pretendard, sans-serif;
+  --font-logo: 'Agbalumo', cursive;
 
   /* === Primary (임시) === */
   --color-primary: #6e5db5;
+  --color-primary-dark: #5b4c9c;
   --color-primary-tint: #f2f1f9;
+
+  /* === Brand / Social === */
+  --color-kakao: #fee500;
+  --color-kakao-label: rgba(0, 0, 0, 0.85);
 
   /* === Black === */
   --color-black: #000000;
@@ -26,7 +33,11 @@
   --color-text-primary: #1a1716;
   --color-text-secondary: rgba(26, 23, 22, 0.55);
   --color-text-placeholder: rgba(26, 23, 22, 0.38);
+  --color-text-muted: rgba(26, 23, 22, 0.38);
   --color-text-on-primary: #ffffff;
+
+  /* === Border === */
+  --color-border-default: rgba(26, 23, 22, 0.16);
 
   /* === Gray === */
   --color-gray-100: #f2f5f7;
@@ -38,6 +49,7 @@
   /* === Surface === */
   --color-surface-white: #ffffff;
   --color-surface-gray: #f6f7fa;
+  --color-surface-subtle: rgba(26, 23, 22, 0.04);
 
   /* === Status === */
   --color-status-error: #ff2e54;
@@ -52,17 +64,21 @@
   --text-footnote: 10px;
   --text-caption: 11px;
   --text-body-sm: 12px;
+  --text-body-xs: 13px;
   --text-body-md: 14px;
   --text-body-lg: 16px;
+  --text-header: 17px;
   --text-h3: 18px;
   --text-h2: 20px;
-  --text-h1: 26px;
+  --text-h1: 24px;
+  --text-logo: 36px;
   --text-display: 50px;
 
   /* === Radius === */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  --radius-icon: 15px;
   --radius-xl: 16px;
   --radius-2xl: 20px;
   --radius-full: 9999px;
