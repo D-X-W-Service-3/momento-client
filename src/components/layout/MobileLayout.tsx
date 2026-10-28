@@ -11,7 +11,7 @@ type MobileLayoutProps = {
 const navItems = [
   {
     to: '/home',
-    icon: '/assets/archive/icon-5.svg',
+    icon: '/assets/archive/icon-home-active.svg',
     inactiveIcon: '/assets/archive/icon-home-inactive.svg',
     label: '홈',
   },
@@ -21,7 +21,12 @@ const navItems = [
     inactiveIcon: '/assets/archive/icon-4.svg',
     label: '캘린더',
   },
-  { to: '/capsules', icon: '/assets/archive/icon-7.svg', label: '타임캡슐' },
+  {
+    to: '/capsules',
+    icon: '/assets/archive/icon-capsule-active.svg',
+    inactiveIcon: '/assets/archive/icon-7.svg',
+    label: '타임캡슐',
+  },
   {
     to: '/archives',
     icon: '/assets/archive/icon-3.svg',
@@ -65,13 +70,7 @@ export default function MobileLayout({
                 <>
                   <img
                     className="nav-icon"
-                    src={
-                      isActive
-                        ? item.icon
-                        : 'inactiveIcon' in item
-                          ? item.inactiveIcon
-                          : item.icon
-                    }
+                    src={isActive ? item.icon : item.inactiveIcon}
                     alt=""
                   />
                   <span>{item.label}</span>

@@ -23,6 +23,14 @@ export const colors = {
   black: 'var(--color-black)',
   text: {
     primary: 'var(--color-text-primary)',
+    dark: 'var(--color-text-dark)',
+    heading: 'var(--color-text-heading)',
+    notifTitle: 'var(--color-text-notif-title)',
+    label: 'var(--color-text-label)',
+    buttonSub: 'var(--color-text-button-sub)',
+    meta: 'var(--color-text-meta)',
+    notifSub: 'var(--color-text-notif-sub)',
+    hint: 'var(--color-text-hint)',
     secondary: 'var(--color-text-secondary)',
     placeholder: 'var(--color-text-placeholder)',
     muted: 'var(--color-text-muted)',
@@ -30,6 +38,9 @@ export const colors = {
   },
   border: {
     default: 'var(--color-border-default)',
+    subtle: 'var(--color-border-subtle)',
+    input: 'var(--color-border-input)',
+    nav: 'var(--color-border-nav)',
   },
   gray: {
     100: 'var(--color-gray-100)',
@@ -42,6 +53,8 @@ export const colors = {
   surface: {
     white: 'var(--color-surface-white)',
     gray: 'var(--color-surface-gray)',
+    muted: 'var(--color-surface-muted)',
+    avatar: 'var(--color-surface-avatar)',
     subtle: 'var(--color-surface-subtle)',
   },
   status: {

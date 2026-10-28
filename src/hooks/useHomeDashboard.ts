@@ -16,7 +16,7 @@ export function useHomeDashboard() {
   };
 
   const handleProfile = () => {
-    navigate('/profile-setup');
+    navigate('/mypage');
   };
 
   const handleCreateCapsule = () => {
