@@ -19,7 +19,7 @@ export default function BackHeader({
 }: BackHeaderProps) {
   return (
     <header
-      className={`flex h-14 w-full items-center justify-between pl-[25px] ${
+      className={`sticky top-0 z-30 flex h-14 w-full items-center justify-between pl-[25px] ${
         showMore ? 'pr-[25px]' : 'pr-5'
       } ${className}`}
     >

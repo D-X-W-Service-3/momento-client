@@ -24,7 +24,7 @@ export default function CapsuleHomePage() {
 
   return (
     <MobileLayout withNav>
-      <HomeHeader showProfile={false} onClickBell={handleNotifications} />
+      <HomeHeader onClickBell={handleNotifications} />
 
       <div className="flex flex-col gap-8 px-5 pb-8">
         <section className="relative flex w-full flex-col">
