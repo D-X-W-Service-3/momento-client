@@ -21,6 +21,12 @@
   --color-primary: #6e5db5;
   --color-primary-dark: #5b4c9c;
   --color-primary-tint: #f2f1f9;
+  --color-primary-badge: #e2d8ff;
+  --color-streak-pill: #fbf2ff;
+
+  /* === Chip === */
+  --color-chip-open-bg: #f1f8f2;
+  --color-chip-open-text: #2a5a3c;
 
   /* === Brand / Social === */
   --color-kakao: #fee500;
@@ -44,6 +50,7 @@
   --color-gray-200: #e8edf2;
   --color-gray-300: #e7e7e7;
   --color-gray-400: #d9d9d9;
+  --color-gray-450: #acacac;
   --color-gray-500: #8d8d8d;
 
   /* === Surface === */
@@ -77,6 +84,7 @@
   /* === Radius === */
   --radius-sm: 4px;
   --radius-md: 8px;
+  --radius-badge: 10px;
   --radius-lg: 12px;
   --radius-icon: 15px;
   --radius-xl: 16px;

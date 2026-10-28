@@ -7,6 +7,14 @@ export const colors = {
     DEFAULT: 'var(--color-primary)',
     dark: 'var(--color-primary-dark)',
     tint: 'var(--color-primary-tint)',
+    badge: 'var(--color-primary-badge)',
+  },
+  chip: {
+    openBg: 'var(--color-chip-open-bg)',
+    openText: 'var(--color-chip-open-text)',
+  },
+  streak: {
+    pill: 'var(--color-streak-pill)',
   },
   kakao: {
     DEFAULT: 'var(--color-kakao)',
@@ -28,6 +36,7 @@ export const colors = {
     200: 'var(--color-gray-200)',
     300: 'var(--color-gray-300)',
     400: 'var(--color-gray-400)',
+    450: 'var(--color-gray-450)',
     500: 'var(--color-gray-500)',
   },
   surface: {
