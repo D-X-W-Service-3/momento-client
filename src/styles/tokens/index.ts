@@ -1,5 +1,5 @@
-export { colors } from './colors';
-export { textStyles } from './typography';
+export { colors } from '@/styles/tokens/colors';
+export { textStyles } from '@/styles/tokens/typography';
 
 export const opacity = {
   overlay: {
