@@ -9,9 +9,12 @@ export const colors = {
     tint: 'var(--color-primary-tint)',
     badge: 'var(--color-primary-badge)',
   },
+  fab: 'var(--color-fab)',
   chip: {
     openBg: 'var(--color-chip-open-bg)',
     openText: 'var(--color-chip-open-text)',
+    editBg: 'var(--color-chip-edit-bg)',
+    editText: 'var(--color-chip-edit-text)',
   },
   streak: {
     pill: 'var(--color-streak-pill)',

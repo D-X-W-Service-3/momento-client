@@ -7,11 +7,13 @@ import { textStyles } from '@/styles/tokens';
 interface HomeHeaderProps {
   onClickBell?: () => void;
   onClickProfile?: () => void;
+  showProfile?: boolean;
 }
 
 export default function HomeHeader({
   onClickBell,
   onClickProfile,
+  showProfile = true,
 }: HomeHeaderProps) {
   return (
     <header className="bg-surface-gray flex h-14 w-full items-center justify-between px-5">
@@ -32,14 +34,16 @@ export default function HomeHeader({
         >
           <HomeBellIcon className="h-[18px] w-[17px]" />
         </button>
-        <button
-          type="button"
-          onClick={onClickProfile}
-          aria-label="프로필"
-          className="flex cursor-pointer items-center justify-center"
-        >
-          <HomeUserIcon className="h-[18px] w-4" />
-        </button>
+        {showProfile && (
+          <button
+            type="button"
+            onClick={onClickProfile}
+            aria-label="프로필"
+            className="flex cursor-pointer items-center justify-center"
+          >
+            <HomeUserIcon className="h-[18px] w-4" />
+          </button>
+        )}
       </div>
     </header>
   );

@@ -23,10 +23,13 @@
   --color-primary-tint: #f2f1f9;
   --color-primary-badge: #e2d8ff;
   --color-streak-pill: #fbf2ff;
+  --color-fab: #8273c4;
 
   /* === Chip === */
   --color-chip-open-bg: #f1f8f2;
   --color-chip-open-text: #2a5a3c;
+  --color-chip-edit-bg: #fffbeb;
+  --color-chip-edit-text: #8a5a16;
 
   /* === Brand / Social === */
   --color-kakao: #fee500;
@@ -366,6 +369,23 @@
     border-radius: 16px;
     background: linear-gradient(105deg, rgb(240 228 251 / 0.66), #fee5ff);
     box-shadow: 0 2px 4px rgb(26 23 22 / 0.05);
+  }
+  .capsule-request-banner {
+    background: linear-gradient(
+      135deg,
+      rgb(240 228 251 / 0.66) 0%,
+      #fee5ff 100%
+    );
+    box-shadow: 0 2px 4px rgb(26 23 22 / 0.05);
+  }
+  .capsule-openable-card {
+    background: linear-gradient(
+      135deg,
+      #7468fb 0%,
+      #c298fb 46.15%,
+      #eee3f3 100%
+    );
+    box-shadow: 0 2px 8px rgb(26 23 22 / 0.05);
   }
   .shared-banner span:first-child {
     display: flex;
