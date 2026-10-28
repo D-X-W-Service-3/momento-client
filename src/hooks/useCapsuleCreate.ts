@@ -99,6 +99,7 @@ export function useCapsuleCreate() {
   };
 
   const handleShareInviteLink = () => {
+    setInviteSheetOpen(false);
     if (navigator.share) {
       void navigator.share({
         title: form.name || 'Momento 타임캡슐 초대',
