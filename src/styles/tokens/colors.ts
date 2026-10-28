@@ -5,14 +5,23 @@
 export const colors = {
   primary: {
     DEFAULT: 'var(--color-primary)',
+    dark: 'var(--color-primary-dark)',
     tint: 'var(--color-primary-tint)',
+  },
+  kakao: {
+    DEFAULT: 'var(--color-kakao)',
+    label: 'var(--color-kakao-label)',
   },
   black: 'var(--color-black)',
   text: {
     primary: 'var(--color-text-primary)',
     secondary: 'var(--color-text-secondary)',
     placeholder: 'var(--color-text-placeholder)',
+    muted: 'var(--color-text-muted)',
     onPrimary: 'var(--color-text-on-primary)',
+  },
+  border: {
+    default: 'var(--color-border-default)',
   },
   gray: {
     100: 'var(--color-gray-100)',
@@ -24,6 +33,7 @@ export const colors = {
   surface: {
     white: 'var(--color-surface-white)',
     gray: 'var(--color-surface-gray)',
+    subtle: 'var(--color-surface-subtle)',
   },
   status: {
     error: 'var(--color-status-error)',

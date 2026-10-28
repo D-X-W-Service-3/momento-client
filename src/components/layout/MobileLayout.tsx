@@ -4,6 +4,8 @@ import { NavLink } from 'react-router-dom';
 type MobileLayoutProps = {
   children: ReactNode;
   withNav?: boolean;
+  variant?: 'white' | 'gray';
+  className?: string;
 };
 
 const navItems = [
@@ -31,7 +33,21 @@ const navItems = [
 export default function MobileLayout({
   children,
   withNav = false,
+  variant,
+  className = '',
 }: MobileLayoutProps) {
+  if (variant) {
+    const bgClass = variant === 'gray' ? 'bg-surface-gray' : 'bg-surface-white';
+
+    return (
+      <div
+        className={`mx-auto flex min-h-[100dvh] w-full max-w-[393px] flex-col ${bgClass} ${className}`}
+      >
+        {children}
+      </div>
+    );
+  }
+
   return (
     <main className="app-shell">
       <div className={withNav ? 'app-content with-nav' : 'app-content'}>

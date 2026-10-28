@@ -2,7 +2,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import HomePage from '@/pages/HomePage';
+import LoginPage from '@/pages/LoginPage';
 import NotFoundPage from '@/pages/NotFoundPage';
+import NotificationPage from '@/pages/NotificationPage';
+import OnboardingPage from '@/pages/OnboardingPage';
+import ProfileSetupPage from '@/pages/ProfileSetupPage';
 import AnniversaryFormPage from '@/pages/anniversary/AnniversaryFormPage';
 import ArchiveDetailPage from '@/pages/archive/ArchiveDetailPage';
 import ArchiveFormPage from '@/pages/archive/ArchiveFormPage';
@@ -19,6 +23,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
+        <Route path="/profile-setup" element={<ProfileSetupPage />} />
+        <Route path="/notifications" element={<NotificationPage />} />
         <Route path="/archives" element={<ArchivePage />} />
         <Route path="/archives/shared" element={<SharedArchivePage />} />
         <Route path="/archives/new" element={<ArchiveFormPage />} />
