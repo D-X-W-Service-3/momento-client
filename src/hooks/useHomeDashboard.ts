@@ -20,7 +20,7 @@ export function useHomeDashboard() {
   };
 
   const handleCreateCapsule = () => {
-    navigate('/capsules');
+    navigate('/capsules/new');
   };
 
   const handleViewAllCapsules = () => {

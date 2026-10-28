@@ -131,11 +131,7 @@ export default function CalendarPage() {
       </button>
       <BottomSheet open={makeOpen} onClose={() => setMakeOpen(false)}>
         <div className="create-menu">
-          <button
-            type="button"
-            disabled
-            title="타임캡슐 기능은 담당 범위 밖입니다"
-          >
+          <button type="button" onClick={() => navigate('/capsules/new')}>
             <span>
               <strong>타임캡슐 만들기</strong>
               <small>

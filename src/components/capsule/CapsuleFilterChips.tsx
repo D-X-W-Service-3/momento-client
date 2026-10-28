@@ -31,7 +31,7 @@ export default function CapsuleFilterChips({
             key={option.key}
             type="button"
             onClick={() => onSelect(option.key)}
-            className={`flex h-9 shrink-0 cursor-pointer items-center justify-center rounded-full px-4 transition-colors ${
+            className={`flex h-9 shrink-0 cursor-pointer items-center justify-center rounded-full px-3 transition-colors ${
               isActive
                 ? 'bg-text-label text-surface-white'
                 : 'border-border-input text-text-button-sub border bg-transparent'

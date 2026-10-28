@@ -14,6 +14,7 @@ import ArchivePage from '@/pages/archive/ArchivePage';
 import SharedArchivePage from '@/pages/archive/SharedArchivePage';
 import CalendarPage from '@/pages/calendar/CalendarPage';
 import CalendarSearchPage from '@/pages/calendar/CalendarSearchPage';
+import CapsuleCreatePage from '@/pages/capsule/CapsuleCreatePage';
 import CapsuleHomePage from '@/pages/capsule/CapsuleHomePage';
 import CapsuleListPage from '@/pages/capsule/CapsuleListPage';
 import MyPage from '@/pages/mypage/MyPage';
@@ -40,6 +41,7 @@ export default function App() {
         />
         <Route path="/capsules" element={<CapsuleHomePage />} />
         <Route path="/capsules/list" element={<CapsuleListPage />} />
+        <Route path="/capsules/new" element={<CapsuleCreatePage />} />
         <Route path="/archives" element={<ArchivePage />} />
         <Route path="/archives/shared" element={<SharedArchivePage />} />
         <Route path="/archives/new" element={<ArchiveFormPage />} />

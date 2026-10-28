@@ -56,3 +56,21 @@ export interface CapsuleListData {
   filters: CapsuleFilterChipOption[];
   items: CapsuleListItem[];
 }
+
+export type CapsuleCreateType = 'solo' | 'friend' | 'group';
+
+export type CapsuleVisibilityType = 'all_participants' | 'designated_only';
+
+export type CapsuleCreateStep =
+  'info' | 'type' | 'visibility' | 'dates' | 'complete';
+
+export interface CapsuleCreateForm {
+  iconIndex: number;
+  name: string;
+  description: string;
+  capsuleType: CapsuleCreateType;
+  visibility: CapsuleVisibilityType;
+  inviteLink: string;
+  editDeadline: string;
+  openDate: string;
+}
