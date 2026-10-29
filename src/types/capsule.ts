@@ -19,6 +19,8 @@ export interface CapsuleMember {
   id: string;
   name: string;
   avatarUrl: string;
+  /** 방장이면 이름 뒤에 (관리자) 를 붙인다 */
+  isOwner?: boolean;
 }
 
 export interface CapsuleDetail extends CapsuleCover {

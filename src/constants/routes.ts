@@ -7,6 +7,10 @@ export const ROUTES = {
   CAPSULE_COVER: '/capsule/:capsuleId',
   /** 캡슐 상세 (정보/참여자/관리) */
   CAPSULE_DETAIL: '/capsule/:capsuleId/detail',
+  /** 참여자 관리 */
+  CAPSULE_PARTICIPANTS: '/capsule/:capsuleId/participants',
+  /** 수신자 관리 */
+  CAPSULE_RECEIVERS: '/capsule/:capsuleId/receivers',
   /** 캡슐 수정 폼 (방장 전용) */
   CAPSULE_EDIT: '/capsule/:capsuleId/edit',
   /** 개봉일 인트로 */
@@ -22,6 +26,10 @@ export const ROUTES = {
 export const capsuleCoverPath = (capsuleId: string) => `/capsule/${capsuleId}`;
 export const capsuleDetailPath = (capsuleId: string) =>
   `/capsule/${capsuleId}/detail`;
+export const capsuleParticipantsPath = (capsuleId: string) =>
+  `/capsule/${capsuleId}/participants`;
+export const capsuleReceiversPath = (capsuleId: string) =>
+  `/capsule/${capsuleId}/receivers`;
 export const capsuleEditPath = (capsuleId: string) =>
   `/capsule/${capsuleId}/edit`;
 export const capsuleRevealPath = (capsuleId: string) =>

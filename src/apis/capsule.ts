@@ -21,13 +21,32 @@ const MOCK_STATUS_BY_ID: Record<string, CapsuleStatus> = {
   openable: 'openable',
 };
 
-const MOCK_MEMBERS: CapsuleMember[] = [
-  { id: '1', name: '상미', avatarUrl: avatar1 },
-  { id: '2', name: '민지', avatarUrl: avatar2 },
-  { id: '3', name: '지호', avatarUrl: avatar3 },
-  { id: '4', name: '민수', avatarUrl: avatar2 },
-  { id: '5', name: '현우', avatarUrl: avatar4 },
+const MOCK_AVATARS = [avatar1, avatar2, avatar3, avatar4];
+const MOCK_NAMES = [
+  '상미',
+  '민지',
+  '지호',
+  '민수',
+  '현우',
+  '유빈',
+  '세영',
+  '도윤',
+  '하린',
+  '준서',
+  '예은',
+  '시우',
 ];
+
+const createMockMembers = (count: number): CapsuleMember[] =>
+  Array.from({ length: count }, (_, index) => ({
+    id: String(index + 1),
+    name: MOCK_NAMES[index % MOCK_NAMES.length],
+    avatarUrl: MOCK_AVATARS[index % MOCK_AVATARS.length],
+    isOwner: index === 0,
+  }));
+
+const MOCK_PARTICIPANTS = createMockMembers(8);
+const MOCK_RECEIVERS = createMockMembers(12);
 
 const createMockCover = (id: string): CapsuleCover => ({
   id,
@@ -46,10 +65,10 @@ export const getCapsuleDetail = async (id: string): Promise<CapsuleDetail> => ({
   coverImageUrl: capsuleHero,
   memberCount: 5,
   letterCount: 13,
-  participants: MOCK_MEMBERS,
-  participantCount: 12,
-  receivers: MOCK_MEMBERS,
-  receiverCount: 12,
+  participants: MOCK_PARTICIPANTS,
+  participantCount: MOCK_PARTICIPANTS.length,
+  receivers: MOCK_RECEIVERS,
+  receiverCount: MOCK_RECEIVERS.length,
   isHost: true,
 });
 

@@ -44,9 +44,11 @@ export default function CapsuleEditPage() {
             />
 
             <InfoNote>
-              캡슐이 잠겨있는 동안에는 편지, 사진 수정 및 삭제와
-              <br />
-              캡슐 수정, 삭제가 불가능해요
+              <p>
+                캡슐이 잠겨있는 동안에는 편지, 사진 수정 및 삭제와
+                <br />
+                캡슐 수정, 삭제가 불가능해요
+              </p>
             </InfoNote>
           </div>
 

@@ -5,6 +5,7 @@ import { ROUTES } from '@/constants/routes';
 import CapsuleCoverPage from '@/pages/CapsuleCoverPage';
 import CapsuleDetailPage from '@/pages/CapsuleDetailPage';
 import CapsuleEditPage from '@/pages/CapsuleEditPage';
+import CapsuleMembersPage from '@/pages/CapsuleMembersPage';
 import CapsuleRevealPage from '@/pages/CapsuleRevealPage';
 import HomePage from '@/pages/HomePage';
 import LetterCreatePage from '@/pages/LetterCreatePage';
@@ -51,6 +52,14 @@ export default function App() {
         <Route path={ROUTES.CAPSULE_COVER} element={<CapsuleCoverPage />} />
         <Route path={ROUTES.CAPSULE_DETAIL} element={<CapsuleDetailPage />} />
         <Route path={ROUTES.CAPSULE_EDIT} element={<CapsuleEditPage />} />
+        <Route
+          path={ROUTES.CAPSULE_PARTICIPANTS}
+          element={<CapsuleMembersPage role="participant" />}
+        />
+        <Route
+          path={ROUTES.CAPSULE_RECEIVERS}
+          element={<CapsuleMembersPage role="receiver" />}
+        />
         <Route path={ROUTES.CAPSULE_REVEAL} element={<CapsuleRevealPage />} />
         <Route path={ROUTES.LETTER_PAPER} element={<LetterPaperSelectPage />} />
         <Route path={ROUTES.LETTER_WRITE} element={<LetterCreatePage />} />

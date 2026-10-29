@@ -12,7 +12,11 @@ import GhostButton from '@/components/common/GhostButton';
 import LetterViewer from '@/components/common/LetterViewer';
 import SectionHeader from '@/components/common/SectionHeader';
 import BackHeader from '@/components/layout/BackHeader';
-import { capsuleEditPath } from '@/constants/routes';
+import {
+  capsuleEditPath,
+  capsuleParticipantsPath,
+  capsuleReceiversPath,
+} from '@/constants/routes';
 import { useCapsuleDetail } from '@/hooks/useCapsule';
 import { useMyLetters } from '@/hooks/useLetter';
 import type { CapsuleStatus } from '@/types/calendar';
@@ -122,7 +126,7 @@ export default function CapsuleDetailPage() {
                 <SectionHeader
                   title="참여자"
                   count={`${capsule.participantCount}명`}
-                  onViewAll={() => {}}
+                  onViewAll={() => navigate(capsuleParticipantsPath(capsuleId))}
                 />
                 <AvatarGroup
                   members={capsule.participants}
@@ -135,7 +139,7 @@ export default function CapsuleDetailPage() {
                 <SectionHeader
                   title="수신자"
                   count={`${capsule.receiverCount}명`}
-                  onViewAll={() => {}}
+                  onViewAll={() => navigate(capsuleReceiversPath(capsuleId))}
                 />
                 <AvatarGroup
                   members={capsule.receivers}
