@@ -8,7 +8,7 @@ export default function GhostButton({
   return (
     <button
       type="button"
-      className={`flex h-[41px] w-full items-center justify-center rounded-md bg-white/10 px-5 text-button-sm font-semibold text-on-primary ${className}`}
+      className={`flex h-[41px] w-full items-center justify-center rounded-lg bg-white/10 px-5 text-button-sm font-semibold text-on-primary ${className}`}
       {...props}
     />
   );

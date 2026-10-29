@@ -49,7 +49,7 @@ const NAV_ITEMS: {
 export default function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-10 mx-auto w-full max-w-md p-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
-      <ul className="flex items-center justify-between rounded-lg border border-glass-border bg-primary-tint-strong p-2.5 shadow-floating backdrop-blur-[10px]">
+      <ul className="flex items-center justify-between rounded-xl border border-glass-border bg-primary-tint-strong p-2.5 shadow-floating backdrop-blur-[10px]">
         {NAV_ITEMS.map(({ to, label, Icon, iconClassName }) => (
           <li key={to}>
             <NavLink

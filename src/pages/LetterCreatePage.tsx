@@ -33,7 +33,7 @@ export default function LetterCreatePage() {
               <h2 className="font-display text-title-md font-bold text-ink">
                 어떤 추억을 담아볼까요?
               </h2>
-              <p className="font-display text-caption text-ink-muted">
+              <p className="font-display text-meta text-ink-muted">
                 캡슐이 열리는 날 AI가 제작한 이미지와 함께
                 <br />
                 추억의 순간을 전달해 드릴게요

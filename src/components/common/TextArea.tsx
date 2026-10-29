@@ -31,7 +31,7 @@ export default function TextArea({
       >
         {label}
       </label>
-      <div className="flex min-h-px flex-1 flex-col justify-between rounded-md bg-surface px-4 py-3.5 text-field-hint">
+      <div className="flex min-h-px flex-1 flex-col justify-between rounded-lg bg-surface px-4 py-3.5 text-field-hint">
         <textarea
           id={id}
           value={value}

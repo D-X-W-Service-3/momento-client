@@ -88,13 +88,13 @@ export default function CapsuleDetailPage() {
                     <h1 className="text-title-sm font-semibold text-on-primary">
                       {capsule.title}
                     </h1>
-                    <p className="font-display text-caption whitespace-pre-line text-on-primary/70">
+                    <p className="font-display text-meta whitespace-pre-line text-on-primary/70">
                       {capsule.description}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex shrink-0 flex-col items-end justify-end font-display text-caption whitespace-nowrap text-on-primary/50">
+                <div className="flex shrink-0 flex-col items-end justify-end font-display text-meta whitespace-nowrap text-on-primary/50">
                   <p>
                     {capsule.memberCount}명 | 편지 {capsule.letterCount}
                   </p>
@@ -147,7 +147,7 @@ export default function CapsuleDetailPage() {
               {isEditable && capsule.isHost && (
                 <section className="flex flex-col gap-list">
                   <SectionHeader title="타임캡슐 관리" note="(방장전용)" />
-                  <ul className="flex flex-col divide-y divide-white/10 rounded-lg bg-white/10 px-5 py-1">
+                  <ul className="flex flex-col divide-y divide-white/10 rounded-xl bg-white/10 px-5 py-1">
                     {ADMIN_ACTIONS.map((action) => (
                       <li key={action.key}>
                         <button
@@ -155,7 +155,7 @@ export default function CapsuleDetailPage() {
                           onClick={() => handleAdminAction(action.key)}
                           className="flex w-full items-center justify-between py-3"
                         >
-                          <span className="flex items-center gap-stack font-display text-body-sm text-on-primary">
+                          <span className="flex items-center gap-stack font-display text-list-item text-on-primary">
                             <img
                               src={action.icon}
                               alt=""

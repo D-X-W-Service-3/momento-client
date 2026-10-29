@@ -28,7 +28,7 @@ export default function TextField({
       >
         {label}
       </label>
-      <div className="flex h-14 w-full items-center gap-stack rounded-md bg-surface px-4 text-field-hint">
+      <div className="flex h-14 w-full items-center gap-stack rounded-lg bg-surface px-4 text-field-hint">
         <input
           id={id}
           type="text"

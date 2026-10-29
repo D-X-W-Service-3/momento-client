@@ -37,7 +37,7 @@ export default function CapsuleRevealPage() {
           <button
             type="button"
             onClick={() => navigate(ROUTES.HOME)}
-            className="flex h-[18px] items-center justify-center font-display text-caption text-on-primary underline"
+            className="flex h-[18px] items-center justify-center font-display text-meta text-on-primary underline"
           >
             홈으로
           </button>

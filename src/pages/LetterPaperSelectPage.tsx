@@ -23,7 +23,7 @@ export default function LetterPaperSelectPage() {
           <h2 className="font-display text-title-md font-bold text-black">
             원하는 편지지를 선택해주세요
           </h2>
-          <p className="font-display text-caption text-ink-muted">
+          <p className="font-display text-meta text-ink-muted">
             캡슐이 열리는 날 AI가 제작한 이미지와 함께
             <br />
             추억의 순간을 전달해 드릴게요

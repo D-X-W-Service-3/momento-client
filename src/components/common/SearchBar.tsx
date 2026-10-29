@@ -14,7 +14,7 @@ export default function SearchBar({
     >
       <input
         type="search"
-        className="min-w-0 flex-1 bg-transparent text-body-sm text-ink outline-none placeholder:text-ink-faint [&::-webkit-search-cancel-button]:hidden"
+        className="min-w-0 flex-1 bg-transparent text-list-item text-ink outline-none placeholder:text-ink-faint [&::-webkit-search-cancel-button]:hidden"
         {...props}
       />
       <img src={searchIcon} alt="" className="size-[16.5px] shrink-0" />

@@ -62,12 +62,12 @@ export default function ConfirmDialog({
         <div className="flex w-full flex-col gap-stack text-center">
           <h2
             id={titleId}
-            className="font-display text-h3 font-bold text-neutral-solid"
+            className="font-display text-dialog-title font-bold text-neutral-solid"
           >
             {title}
           </h2>
           {description && (
-            <p className="font-display text-body-md text-neutral-weak">
+            <p className="font-display text-dialog-body text-neutral-weak">
               {description}
             </p>
           )}

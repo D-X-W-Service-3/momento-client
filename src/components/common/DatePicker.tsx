@@ -1,122 +1,81 @@
-import dayjs from 'dayjs';
+import { useState } from 'react';
 
-import chevronPrevNextIcon from '@/assets/icons/chevron-prev-next.svg';
-import chevronUpIcon from '@/assets/icons/chevron-up.svg';
-import type { CalendarMonthEntries } from '@/types/calendar';
-import { getMonthGrid, toDateKey } from '@/utils/date';
-
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
-
-interface DatePickerProps {
-  /** YYYY-MM */
-  month: string;
-  /** YYYY-MM-DD */
-  selectedDate: string;
-  entries?: CalendarMonthEntries;
-  onSelectDate: (date: string) => void;
-  onMoveMonth: (offset: number) => void;
-}
+import { formatKoreanDate, monthCells, parseKoreanDate } from '@/utils/dates';
 
 export default function DatePicker({
-  month,
-  selectedDate,
-  entries,
-  onSelectDate,
-  onMoveMonth,
-}: DatePickerProps) {
-  const today = dayjs().startOf('day');
-  const viewMonth = dayjs(month);
-  const grid = getMonthGrid(viewMonth);
-
+  value,
+  onCancel,
+  onSelect,
+}: {
+  value?: string;
+  onCancel: () => void;
+  onSelect: (value: string) => void;
+}) {
+  const initial = parseKoreanDate(value ?? '') ?? new Date(2026, 7, 1);
+  const [view, setView] = useState(
+    new Date(initial.getFullYear(), initial.getMonth(), 1),
+  );
+  const [day, setDay] = useState(initial.getDate());
+  const year = view.getFullYear();
+  const month = view.getMonth() + 1;
+  const changeMonth = (offset: number) => {
+    setView(new Date(year, month - 1 + offset, 1));
+    setDay(1);
+  };
   return (
-    <section className="flex w-full flex-col gap-4 rounded-lg bg-surface p-card shadow-card">
-      <header className="flex items-center justify-between">
-        <h2 className="flex items-center gap-[5px] text-title-md font-bold text-ink">
-          {viewMonth.month() + 1}월
-          <img
-            src={chevronUpIcon}
-            alt=""
-            className="h-[6.375px] w-[10.75px] rotate-180"
-          />
-        </h2>
-        {/* 이전/다음 화살표가 한 장의 에셋이라 좌우 절반에 버튼을 겹친다. */}
-        <div className="relative h-[11.6px] w-[43.6px]">
-          <img src={chevronPrevNextIcon} alt="" className="size-full" />
-          <button
-            type="button"
-            aria-label="이전 달"
-            onClick={() => onMoveMonth(-1)}
-            className="absolute -inset-y-3 -left-3 right-1/2"
-          />
-          <button
-            type="button"
-            aria-label="다음 달"
-            onClick={() => onMoveMonth(1)}
-            className="absolute -inset-y-3 left-1/2 -right-3"
-          />
-        </div>
-      </header>
-
-      <div className="flex">
-        {WEEKDAYS.map((weekday) => (
-          <span
-            key={weekday}
-            className="flex h-6 flex-1 items-center justify-center text-label font-medium text-ink-faint"
-          >
-            {weekday}
-          </span>
+    <div className="date-picker">
+      <h2>
+        <button
+          type="button"
+          aria-label="이전 달"
+          onClick={() => changeMonth(-1)}
+        >
+          ‹
+        </button>
+        {year}년 {month}월
+        <button
+          type="button"
+          aria-label="다음 달"
+          onClick={() => changeMonth(1)}
+        >
+          ›
+        </button>
+      </h2>
+      <div className="weekday-row">
+        {'일월화수목금토'.split('').map((weekday) => (
+          <span key={weekday}>{weekday}</span>
         ))}
       </div>
-
-      <div className="flex flex-col gap-1">
-        {grid.map((week, row) => (
-          <div key={row} className="flex">
-            {week.map((date, col) => {
-              if (!date) return <div key={col} className="h-10 flex-1" />;
-
-              const key = toDateKey(date);
-              const entry = entries?.[key];
-              const isSelected = key === selectedDate;
-              const isToday = date.isSame(today, 'day');
-              const isPast = date.isBefore(today, 'day');
-
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  aria-pressed={isSelected}
-                  aria-label={date.format('M월 D일')}
-                  onClick={() => onSelectDate(key)}
-                  className="flex h-10 flex-1 flex-col items-center justify-center gap-[5px]"
-                >
-                  <span
-                    className={`flex size-[22px] items-center justify-center rounded-full text-body-sm ${
-                      isSelected
-                        ? 'bg-primary text-on-primary'
-                        : isToday
-                          ? 'border border-primary text-ink'
-                          : isPast
-                            ? 'text-ink-disabled'
-                            : 'text-ink'
-                    }`}
-                  >
-                    {date.date()}
-                  </span>
-                  {/* 보라: 타임캡슐, 코랄: 아카이브 */}
-                  <span className="flex h-[5px] gap-[3px]">
-                    {!!entry?.capsules.length && (
-                      <span className="size-[5px] rounded-full bg-primary" />
-                    )}
-                    {!!entry?.archives.length && (
-                      <span className="size-[5px] rounded-full bg-secondary" />
-                    )}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        ))}
+      <div className="day-grid">
+        {monthCells(year, month).map((cell, index) =>
+          cell === null ? (
+            <span key={`empty-${index}`} />
+          ) : (
+            <button
+              type="button"
+              key={cell}
+              className={cell === day ? 'selected' : ''}
+              onClick={() => setDay(cell)}
+            >
+              {cell}
+            </button>
+          ),
+        )}
       </div>
-    </section>
+      <div className="sheet-control">
+        <button type="button" className="button-secondary" onClick={onCancel}>
+          취소
+        </button>
+        <button
+          type="button"
+          className="button-primary"
+          onClick={() =>
+            onSelect(formatKoreanDate(new Date(year, month - 1, day)))
+          }
+        >
+          선택
+        </button>
+      </div>
+    </div>
   );
 }

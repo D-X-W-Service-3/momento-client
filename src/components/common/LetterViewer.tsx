@@ -79,7 +79,7 @@ export default function LetterViewer({
 
       <article
         onClick={(event) => event.stopPropagation()}
-        className="flex w-full max-w-[353px] flex-col items-center gap-list overflow-hidden rounded-lg bg-surface px-5 py-6 shadow-level-2"
+        className="flex w-full max-w-[353px] flex-col items-center gap-list overflow-hidden rounded-xl bg-surface px-5 py-6 shadow-level-2"
       >
         {letter.imageUrl && (
           <img
@@ -90,7 +90,7 @@ export default function LetterViewer({
         )}
 
         <div className="flex w-full flex-col gap-1">
-          <div className="flex w-full items-center justify-between font-display text-caption whitespace-nowrap">
+          <div className="flex w-full items-center justify-between font-display text-meta whitespace-nowrap">
             <span className="text-ink-muted">
               {formatKoreanDate(letter.date)}
             </span>

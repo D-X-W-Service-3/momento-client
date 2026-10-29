@@ -1,49 +1,62 @@
 import { useNavigate } from 'react-router-dom';
 
-import backWhiteIcon from '@/assets/icons/back-white.svg';
-import backIcon from '@/assets/icons/back.svg';
+import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
+import MoreVerticalIcon from '@/assets/icons/more-vertical.svg?react';
+import { textStyles } from '@/styles/tokens';
 
 interface BackHeaderProps {
-  /** 생략하면 뒤로가기 버튼만 있는 투명 헤더 */
   title?: string;
+  /** 생략하면 브라우저 뒤로가기 */
+  onBack?: () => void;
+  showMore?: boolean;
+  onMore?: () => void;
   /** dark: 어두운 배경 위에 올릴 때 흰색 아이콘/타이틀 */
   tone?: 'light' | 'dark';
-  /** 뒤로가기를 가로채고 싶을 때 (예: 작성 취소 확인) */
-  onBack?: () => void;
+  className?: string;
 }
 
-// AppBar 변형: 좌측 뒤로가기, 타이틀 중앙 정렬
 export default function BackHeader({
-  title,
-  tone = 'light',
+  title = '',
   onBack,
+  showMore = false,
+  onMore,
+  tone = 'light',
+  className = '',
 }: BackHeaderProps) {
   const navigate = useNavigate();
   const isDark = tone === 'dark';
+  // 아이콘 SVG 에 선 색이 박혀 있어서, 어두운 배경에서는 currentColor 로 덮어쓴다.
+  const iconTone = isDark ? '[&_path]:stroke-current' : '';
 
   return (
-    <header className="flex h-14 w-full items-center justify-between px-[25px]">
+    <header
+      className={`flex h-14 w-full items-center justify-between pl-[25px] ${
+        showMore ? 'pr-[25px]' : 'pr-5'
+      } ${isDark ? 'text-text-on-primary' : 'text-text-primary'} ${className}`}
+    >
       <button
         type="button"
-        aria-label="뒤로가기"
-        onClick={() => (onBack ? onBack() : navigate(-1))}
-        className="-m-3 p-3"
+        onClick={onBack ?? (() => navigate(-1))}
+        aria-label="뒤로 가기"
+        className={`-ml-2 flex h-8 w-8 cursor-pointer items-center justify-center ${iconTone}`}
       >
-        <img
-          src={isDark ? backWhiteIcon : backIcon}
-          alt=""
-          className="h-[15.8px] w-[8.8px]"
-        />
+        <ChevronLeftIcon className="h-[14px] w-[7px]" />
       </button>
-      {title && (
-        <h1
-          className={`text-title-sm font-semibold ${isDark ? 'text-on-primary' : 'text-ink'}`}
+
+      <h1 className={`text-center ${textStyles['header-title']}`}>{title}</h1>
+
+      {showMore ? (
+        <button
+          type="button"
+          onClick={onMore}
+          aria-label="더보기"
+          className={`-mr-2 flex h-8 w-8 cursor-pointer items-center justify-center ${iconTone}`}
         >
-          {title}
-        </h1>
+          <MoreVerticalIcon className="h-[14px] w-[2px]" />
+        </button>
+      ) : (
+        <span className="h-[14px] w-[7px]" aria-hidden="true" />
       )}
-      {/* 타이틀 중앙 정렬용 여백 */}
-      <span aria-hidden className="w-[8.8px]" />
     </header>
   );
 }

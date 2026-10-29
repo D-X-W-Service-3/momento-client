@@ -32,7 +32,7 @@ export default function CapsuleIconPicker({
 
       <div
         onScroll={handleScroll}
-        className="h-[200px] w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden rounded-md bg-surface [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="h-[200px] w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden rounded-lg bg-surface [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <ul className="flex h-full">
           {icons.map((icon) => (
