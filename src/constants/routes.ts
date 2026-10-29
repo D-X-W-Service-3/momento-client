@@ -15,6 +15,10 @@ export const ROUTES = {
   CAPSULE_EDIT: '/capsule/:capsuleId/edit',
   /** 개봉일 인트로 */
   CAPSULE_REVEAL: '/capsule/:capsuleId/reveal',
+  /** 초대 링크로 들어온 캡슐 커버 (role: participant | receiver) */
+  CAPSULE_INVITE: '/capsule/:capsuleId/invite/:role',
+  /** 초대 수락 전 캡슐 상세 */
+  CAPSULE_INVITE_DETAIL: '/capsule/:capsuleId/invite/:role/detail',
   /** 편지 작성 1단계: 편지지 화풍 선택 */
   LETTER_PAPER: '/capsule/:capsuleId/letters/new',
   /** 편지 작성 2단계: 제목/내용 입력 */
@@ -34,6 +38,10 @@ export const capsuleEditPath = (capsuleId: string) =>
   `/capsule/${capsuleId}/edit`;
 export const capsuleRevealPath = (capsuleId: string) =>
   `/capsule/${capsuleId}/reveal`;
+export const capsuleInvitePath = (capsuleId: string, role: string) =>
+  `/capsule/${capsuleId}/invite/${role}`;
+export const capsuleInviteDetailPath = (capsuleId: string, role: string) =>
+  `/capsule/${capsuleId}/invite/${role}/detail`;
 export const letterPaperPath = (capsuleId: string) =>
   `/capsule/${capsuleId}/letters/new`;
 export const letterWritePath = (capsuleId: string) =>

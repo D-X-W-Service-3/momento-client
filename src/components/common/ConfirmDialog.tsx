@@ -4,8 +4,10 @@ interface ConfirmDialogProps {
   open: boolean;
   title: string;
   description?: string;
-  /** 오른쪽 빨간 버튼 문구 */
+  /** 오른쪽 강조 버튼 문구 */
   confirmLabel: string;
+  /** danger: 되돌릴 수 없는 파괴적 행동 (기본) */
+  confirmTone?: 'danger' | 'primary';
   /** 왼쪽 테두리 버튼 문구 */
   cancelLabel: string;
   onConfirm: () => void;
@@ -21,6 +23,7 @@ export default function ConfirmDialog({
   title,
   description,
   confirmLabel,
+  confirmTone = 'danger',
   cancelLabel,
   onConfirm,
   onCancel,
@@ -84,7 +87,9 @@ export default function ConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            className="h-11 flex-1 rounded-button bg-danger text-button-xs font-semibold text-on-primary"
+            className={`h-11 flex-1 rounded-button text-button-xs font-semibold text-on-primary ${
+              confirmTone === 'danger' ? 'bg-danger' : 'bg-primary'
+            }`}
           >
             {confirmLabel}
           </button>
