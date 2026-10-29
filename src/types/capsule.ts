@@ -43,3 +43,6 @@ export interface CapsuleIconOption {
   id: string;
   imageUrl: string;
 }
+
+/** 캡슐 구성원 역할 */
+export type MemberRole = 'participant' | 'receiver';

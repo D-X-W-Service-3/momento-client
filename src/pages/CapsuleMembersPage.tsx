@@ -4,13 +4,12 @@ import { useParams } from 'react-router-dom';
 import personIcon from '@/assets/icons/person.svg';
 import Button from '@/components/common/Button';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import InviteSheet from '@/components/common/InviteSheet';
 import InfoNote from '@/components/common/InfoNote';
 import MemberGridItem from '@/components/common/MemberGridItem';
 import BackHeader from '@/components/layout/BackHeader';
 import { useCapsuleDetail } from '@/hooks/useCapsule';
-import type { CapsuleMember } from '@/types/capsule';
-
-export type MemberRole = 'participant' | 'receiver';
+import type { CapsuleMember, MemberRole } from '@/types/capsule';
 
 interface RoleContent {
   headerTitle: string;
@@ -69,6 +68,7 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
   const { capsuleId = '' } = useParams();
   const { data: capsule } = useCapsuleDetail(capsuleId);
   const [removing, setRemoving] = useState<CapsuleMember>();
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   const content = ROLE_CONTENT[role];
   const editable = capsule?.status === 'writing';
@@ -129,10 +129,19 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
             </InfoNote>
           </div>
 
-          {/* TODO: 초대 바텀시트 연결 */}
-          <Button disabled={!editable}>{content.inviteLabel}</Button>
+          <Button disabled={!editable} onClick={() => setInviteOpen(true)}>
+            {content.inviteLabel}
+          </Button>
         </main>
       </div>
+
+      {/* TODO: 초대링크를 서버에서 받아오도록 교체 */}
+      <InviteSheet
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+        role={role}
+        inviteUrl={`https://momento.app/invite/${capsuleId}`}
+      />
 
       {/* TODO: 내보내기 API 연결 */}
       <ConfirmDialog

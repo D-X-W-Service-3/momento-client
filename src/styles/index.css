@@ -155,6 +155,10 @@
   --color-badge-bg: #f0e8ff;
   --color-badge-text: #885cf4;
 
+  /* === 바텀시트 === */
+  /* 복사 버튼 배경 */
+  --color-fill-muted: #f3f4f5;
+
   /* === 모달 === */
   --color-neutral-solid: #1a1c20;
   --color-neutral-weak: #5b606b;
