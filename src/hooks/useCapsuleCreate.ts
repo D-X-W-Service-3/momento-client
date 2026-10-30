@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { capsuleCoverPath } from '@/constants/routes';
 import {
@@ -29,6 +29,30 @@ function parseStepParam(value: string | null): CapsuleCreateStep {
   return 'info';
 }
 
+/** 생성 플로우 진입(info) 이후 쌓인 히스토리 항목 수. 단계 push 시 state 로 넘긴다. */
+function getFlowDepth(state: unknown): number {
+  if (state && typeof state === 'object' && 'depth' in state) {
+    const { depth } = state as { depth: unknown };
+    if (typeof depth === 'number') return depth;
+  }
+  return 0;
+}
+
+/** BrowserRouter 가 history.state.idx 에 기록하는 앱 내 히스토리 위치 */
+function canGoBackInApp(): boolean {
+  const state = window.history.state as { idx?: number } | null;
+  return (state?.idx ?? 0) > 0;
+}
+
+const CAPSULE_HOME_PATH = '/capsules';
+
+/**
+ * editing   : 단계 입력 중
+ * finishing : 완료 처리 중 (플로우 히스토리를 진입 지점까지 되감는 중)
+ * completed : 완료 화면 (생성 단계로 다시 돌아갈 수 없음)
+ */
+type CreatePhase = 'editing' | 'finishing' | 'completed';
+
 function getStartOfToday(): Date {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -40,8 +64,14 @@ function addDays(base: Date, days: number): Date {
 
 export function useCapsuleCreate() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const step = parseStepParam(searchParams.get('step'));
+  const urlStep = parseStepParam(searchParams.get('step'));
+  const flowDepth = getFlowDepth(location.state);
+
+  const [phase, setPhase] = useState<CreatePhase>('editing');
+  // 되감기·앞으로가기 차단 중에도 생성 단계가 깜빡이지 않도록 완료 화면을 유지한다.
+  const step: CapsuleCreateStep = phase === 'editing' ? urlStep : 'complete';
 
   const [dateSheet, setDateSheet] = useState<
     'editDeadline' | 'openDate' | null
@@ -86,7 +116,49 @@ export function useCapsuleCreate() {
         : true;
 
   const setStep = (nextStep: CapsuleCreateStep) => {
-    setSearchParams(nextStep === 'info' ? {} : { step: nextStep });
+    setSearchParams(nextStep === 'info' ? {} : { step: nextStep }, {
+      state: { depth: flowDepth + 1 },
+    });
+  };
+
+  useEffect(() => {
+    if (phase === 'finishing') {
+      // navigate(-depth) 로 진입 지점(info)에 도착하면 그 항목을 완료 화면으로 교체한다.
+      // → 히스토리: [진입 전 페이지, /capsules/new?step=complete]
+      if (urlStep !== 'info') return;
+      setSearchParams({ step: 'complete' }, { replace: true });
+      setPhase('completed');
+      return;
+    }
+
+    if (phase === 'completed') {
+      // 되감은 뒤에도 forward 스택에 생성 단계가 남아 있으므로,
+      // 앞으로가기로 들어오면 완료 화면으로 되돌린다.
+      if (urlStep !== 'complete' && urlStep !== 'info') navigate(-1);
+      return;
+    }
+
+    // 완료하지 않은 상태로 완료 URL 에 들어온 경우 (새로고침·직접 진입)
+    if (urlStep === 'complete') {
+      navigate(CAPSULE_HOME_PATH, { replace: true });
+      return;
+    }
+
+    // 입력값 없이 중간 단계에 들어온 경우 (새로고침·직접 진입) 첫 단계로 보낸다.
+    if (urlStep !== 'info' && !form.name.trim()) {
+      setSearchParams({}, { replace: true });
+    }
+  }, [phase, urlStep, form.name, navigate, setSearchParams]);
+
+  const finishCreate = () => {
+    setDateSheet(null);
+    if (flowDepth > 0) {
+      setPhase('finishing');
+      navigate(-flowDepth);
+      return;
+    }
+    setSearchParams({ step: 'complete' }, { replace: true });
+    setPhase('completed');
   };
 
   const handleSelectIcon = (index: number) => {
@@ -195,22 +267,31 @@ export function useCapsuleCreate() {
     }
 
     if (step === 'dates') {
-      setStep('complete');
+      // TODO: 캡슐 생성 API 연결 후 성공 콜백에서 호출
+      finishCreate();
     }
   };
 
   const handleBack = () => {
     setDateSheet(null);
     setInviteSheetOpen(false);
+    // 완료 화면에서도 진입 전 페이지로 돌아간다 (생성 단계는 이미 되감겨 있음).
+    // 앱 첫 화면으로 직접 들어와 돌아갈 곳이 없으면 캡슐 홈으로 보낸다.
+    if (!canGoBackInApp()) {
+      navigate(CAPSULE_HOME_PATH, { replace: true });
+      return;
+    }
     navigate(-1);
   };
 
+  // 완료 화면을 히스토리에 남기지 않도록 replace 로 이동한다.
+  // → 이동한 화면에서 뒤로가기 시 진입 전 페이지로 돌아간다.
   const handleGoHome = () => {
-    navigate('/home');
+    navigate('/home', { replace: true });
   };
 
   const handleGoCapsules = () => {
-    navigate(capsuleCoverPath('1'));
+    navigate(capsuleCoverPath('1'), { replace: true });
   };
 
   return {
