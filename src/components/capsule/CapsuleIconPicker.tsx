@@ -1,6 +1,6 @@
 import { useState, type UIEvent } from 'react';
 
-import CapsuleIcon from '@/components/common/CapsuleIcon';
+import CapsuleIcon from '@/components/capsule/CapsuleIcon';
 import PaginationDots from '@/components/common/PaginationDots';
 import type { CapsuleIconOption } from '@/types/capsule';
 

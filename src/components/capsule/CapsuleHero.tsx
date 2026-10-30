@@ -1,4 +1,4 @@
-import CapsuleIcon from '@/components/common/CapsuleIcon';
+import CapsuleIcon from '@/components/capsule/CapsuleIcon';
 
 export type CapsuleHeroSize = 'md' | 'lg';
 

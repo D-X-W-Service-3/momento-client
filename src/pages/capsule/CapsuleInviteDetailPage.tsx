@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import AvatarGroup from '@/components/common/AvatarGroup';
 import Button from '@/components/common/Button';
-import CapsuleHero from '@/components/common/CapsuleHero';
-import CapsuleInfoBlock from '@/components/common/CapsuleInfoBlock';
+import CapsuleHero from '@/components/capsule/CapsuleHero';
+import CapsuleInfoBlock from '@/components/capsule/CapsuleInfoBlock';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import SectionHeader from '@/components/common/SectionHeader';
 import BackHeader from '@/components/layout/BackHeader';

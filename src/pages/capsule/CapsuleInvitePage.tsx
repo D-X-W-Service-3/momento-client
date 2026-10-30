@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Button from '@/components/common/Button';
-import CapsuleCoverLayout from '@/components/common/CapsuleCoverLayout';
+import CapsuleCoverLayout from '@/components/capsule/CapsuleCoverLayout';
 import { capsuleInviteDetailPath } from '@/constants/routes';
 import { useCapsuleCover } from '@/hooks/useCapsule';
 import type { MemberRole } from '@/types/capsule';

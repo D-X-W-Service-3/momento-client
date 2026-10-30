@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import FloatingLetters from '@/components/common/FloatingLetters';
+import FloatingLetters from '@/components/capsule/FloatingLetters';
 import BackHeader from '@/components/layout/BackHeader';
 
 interface CapsuleCoverLayoutProps {

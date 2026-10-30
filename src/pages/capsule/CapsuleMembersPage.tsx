@@ -4,9 +4,9 @@ import { useParams } from 'react-router-dom';
 import personIcon from '@/assets/icons/person.svg';
 import Button from '@/components/common/Button';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
-import InviteSheet from '@/components/common/InviteSheet';
+import InviteSheet from '@/components/capsule/InviteSheet';
 import InfoNote from '@/components/common/InfoNote';
-import MemberGridItem from '@/components/common/MemberGridItem';
+import MemberGridItem from '@/components/capsule/MemberGridItem';
 import BackHeader from '@/components/layout/BackHeader';
 import { useCapsuleDetail } from '@/hooks/useCapsule';
 import type { CapsuleMember, MemberRole } from '@/types/capsule';
@@ -76,7 +76,7 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
     (role === 'participant' ? capsule?.participants : capsule?.receivers) ?? [];
 
   return (
-    <div className="min-h-[100dvh] bg-surface-muted">
+    <div className="min-h-[100dvh] bg-surface-gray">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         <BackHeader title={content.headerTitle} />
 

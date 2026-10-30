@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import Button from '@/components/common/Button';
-import CapsuleIconPicker from '@/components/common/CapsuleIconPicker';
+import CapsuleIconPicker from '@/components/capsule/CapsuleIconPicker';
 import InfoNote from '@/components/common/InfoNote';
 import TextArea from '@/components/common/TextArea';
 import TextField from '@/components/common/TextField';
@@ -17,7 +17,7 @@ export default function CapsuleEditPage() {
   const [description, setDescription] = useState('');
 
   return (
-    <div className="min-h-[100dvh] bg-surface-muted">
+    <div className="min-h-[100dvh] bg-surface-gray">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         <BackHeader title="캡슐 수정하기" />
 

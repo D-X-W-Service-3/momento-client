@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import chevronLeftIcon from '@/assets/icons/chevron-left-sm.svg';
-import chevronRightIcon from '@/assets/icons/chevron-right-sm.svg';
+import chevronLeftIcon from '@/assets/icons/chevron-left-16.svg';
+import chevronRightIcon from '@/assets/icons/chevron-right-16.svg';
 import closeIcon from '@/assets/icons/close.svg';
 import trashIcon from '@/assets/icons/trash.svg';
 import type { Letter } from '@/types/letter';

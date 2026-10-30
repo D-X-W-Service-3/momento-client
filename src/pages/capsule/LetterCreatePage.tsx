@@ -22,7 +22,7 @@ export default function LetterCreatePage() {
   const handleBack = () => (isDirty ? setCancelOpen(true) : navigate(-1));
 
   return (
-    <div className="min-h-[100dvh] bg-surface-muted">
+    <div className="min-h-[100dvh] bg-surface-gray">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         <BackHeader title="편지 추가" onBack={handleBack} />
 

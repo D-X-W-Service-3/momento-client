@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Button from '@/components/common/Button';
-import LetterPaperCard from '@/components/common/LetterPaperCard';
+import LetterPaperCard from '@/components/capsule/LetterPaperCard';
 import BackHeader from '@/components/layout/BackHeader';
 import { letterWritePath } from '@/constants/routes';
 import { useLetterPapers } from '@/hooks/useLetter';
@@ -14,7 +14,7 @@ export default function LetterPaperSelectPage() {
   const [selectedId, setSelectedId] = useState<string>();
 
   return (
-    <div className="min-h-[100dvh] bg-surface-muted">
+    <div className="min-h-[100dvh] bg-surface-gray">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col items-center gap-[9px] pt-[env(safe-area-inset-top)] pb-[max(24px,env(safe-area-inset-bottom))]">
         <BackHeader title="편지 작성" />
 

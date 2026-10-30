@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import capsuleDeleteIcon from '@/assets/icons/capsule-delete.svg';
-import capsuleEditIcon from '@/assets/icons/capsule-edit.svg';
+import capsuleDeleteIcon from '@/assets/icons/capsule-delete-on-dark.svg';
+import capsuleEditIcon from '@/assets/icons/capsule-edit-on-dark.svg';
 import chevronRightIcon from '@/assets/icons/chevron-right.svg';
 import AvatarGroup from '@/components/common/AvatarGroup';
-import CapsuleHero from '@/components/common/CapsuleHero';
+import CapsuleHero from '@/components/capsule/CapsuleHero';
 import Chip, { type ChipTone } from '@/components/common/Chip';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import GhostButton from '@/components/common/GhostButton';
-import LetterViewer from '@/components/common/LetterViewer';
+import LetterViewer from '@/components/capsule/LetterViewer';
 import SectionHeader from '@/components/common/SectionHeader';
 import BackHeader from '@/components/layout/BackHeader';
 import {

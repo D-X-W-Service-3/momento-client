@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Button from '@/components/common/Button';
-import CapsuleCoverLayout from '@/components/common/CapsuleCoverLayout';
-import LetterViewer from '@/components/common/LetterViewer';
+import CapsuleCoverLayout from '@/components/capsule/CapsuleCoverLayout';
+import LetterViewer from '@/components/capsule/LetterViewer';
 import { capsuleDetailPath, letterPaperPath } from '@/constants/routes';
 import { useCapsuleCover } from '@/hooks/useCapsule';
 import { useCapsuleLetters } from '@/hooks/useLetter';
