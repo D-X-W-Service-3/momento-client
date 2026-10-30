@@ -1,5 +1,5 @@
 import { type ChangeEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import type {
   CapsuleCreateForm,
@@ -13,6 +13,21 @@ const MAX_NAME_LENGTH = 20;
 const MAX_DESCRIPTION_LENGTH = 45;
 const TOTAL_ICONS = 5;
 
+const VALID_STEPS: readonly CapsuleCreateStep[] = [
+  'info',
+  'type',
+  'visibility',
+  'dates',
+  'complete',
+];
+
+function parseStepParam(value: string | null): CapsuleCreateStep {
+  if (value && VALID_STEPS.includes(value as CapsuleCreateStep)) {
+    return value as CapsuleCreateStep;
+  }
+  return 'info';
+}
+
 function getStartOfToday(): Date {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -24,7 +39,9 @@ function addDays(base: Date, days: number): Date {
 
 export function useCapsuleCreate() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<CapsuleCreateStep>('info');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const step = parseStepParam(searchParams.get('step'));
+
   const [dateSheet, setDateSheet] = useState<
     'editDeadline' | 'openDate' | null
   >(null);
@@ -66,6 +83,10 @@ export function useCapsuleCreate() {
       : step === 'dates'
         ? hasValidDates
         : true;
+
+  const setStep = (nextStep: CapsuleCreateStep) => {
+    setSearchParams(nextStep === 'info' ? {} : { step: nextStep });
+  };
 
   const handleSelectIcon = (index: number) => {
     const clamped = Math.max(0, Math.min(TOTAL_ICONS - 1, index));
@@ -180,28 +201,9 @@ export function useCapsuleCreate() {
   };
 
   const handleBack = () => {
-    if (step === 'info' || step === 'complete') {
-      navigate(-1);
-      return;
-    }
-
-    if (step === 'type') {
-      setStep('info');
-      return;
-    }
-
-    if (step === 'visibility') {
-      setStep('type');
-      return;
-    }
-
-    if (step === 'dates') {
-      if (form.capsuleType === 'group') {
-        setStep('visibility');
-      } else {
-        setStep('type');
-      }
-    }
+    setDateSheet(null);
+    setInviteSheetOpen(false);
+    navigate(-1);
   };
 
   const handleGoHome = () => {
