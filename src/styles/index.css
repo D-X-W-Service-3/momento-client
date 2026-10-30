@@ -1,5 +1,7 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Agbalumo&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=42dot+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 @import 'tailwindcss';
 
 /**
@@ -94,6 +96,139 @@
   --spacing-10: 40px;
   --spacing-12: 48px;
   --spacing-16: 64px;
+
+  /* ======================================================================
+   * 캡슐 섹션 (Figma '캡슐 상세보기')
+   * 위 토큰과 이름이 겹치지 않도록 분리해 둔다.
+   * ==================================================================== */
+
+  /* === Font === */
+  --font-display: '42dot Sans', 'Pretendard Variable', Pretendard, sans-serif;
+  --font-serif: 'Gowun Batang', serif;
+
+  /* === Primary 보조 === */
+  /* --color-primary 와 같은 값. 캡슐 화면에서 쓰는 이름 */
+  --color-primary-strong: #6e5db5;
+  --color-primary-tint-strong: #8273c41f;
+  --color-on-primary: #ffffff;
+  --color-secondary: #e87962;
+
+  /* === Ink === */
+  --color-ink: #1a1716;
+  --color-ink-muted: #1a17168c;
+  --color-ink-faint: #1a171661;
+  --color-ink-disabled: #1a171642;
+  --color-icon-default: #5c5c5c;
+
+  /* === Surface / Line === */
+  --color-background: #fafafe;
+  --color-surface: #ffffff;
+  --color-hairline: #1a171617;
+  --color-glass-border: #fdfbff;
+  --color-fill-subtle: #1a17160a;
+
+  /* === Semantic === */
+  --color-neutral-bg: #f4f4f4;
+  --color-info-bg: #f2f1f9;
+  --color-info-text: #5b4c9c;
+  --color-success-bg: #f1f8f2;
+  --color-success-text: #2a5a3c;
+  --color-warning-bg: #fffbeb;
+  --color-warning-text: #8a5a16;
+
+  /* === 타임캡슐 몰입 화면 === */
+  --color-capsule-bg-from: #190041;
+  --color-capsule-bg-to: #6d30d4;
+  --color-capsule-accent: #7b5dfa;
+  --color-capsule-title-from: #ffffff;
+  --color-capsule-title-to: #afc7fe;
+  /* 캡슐 공개 배경 이미지의 가장자리 색 */
+  --color-reveal-bg-from: #ab95fb;
+  --color-reveal-bg-via: #8068fc;
+  --color-reveal-bg-to: #b796fb;
+
+  /* === 입력 폼 === */
+  --color-field-ink: #2a3038;
+  --color-field-hint: #b0b3ba;
+  --color-hint: #77768e;
+  --color-badge-bg: #f0e8ff;
+  --color-badge-text: #885cf4;
+
+  /* === 바텀시트 === */
+  /* 복사 버튼 배경 */
+  --color-fill-muted: #f3f4f5;
+
+  /* === 모달 === */
+  --color-neutral-solid: #1a1c20;
+  --color-neutral-weak: #5b606b;
+  --color-stroke-muted: #e1e3e8;
+  --color-danger: #fb2c36;
+
+  /* === Font Size === */
+  /* 캡슐 메타/설명. 위 --text-caption(11px) 과 다른 값이라 이름을 분리한다 */
+  --text-meta: 13px;
+  --text-meta--line-height: 1.4;
+  --text-label: 12px;
+  --text-label--line-height: 1.3;
+  --text-label--letter-spacing: 0.01em;
+  /* 글자수·안내문 같은 보조 텍스트 */
+  --text-note: 12px;
+  --text-note--line-height: 1.4;
+  /* 관리 메뉴 항목 */
+  --text-list-item: 14px;
+  --text-list-item--line-height: 1.6;
+  --text-title-sm: 17px;
+  --text-title-sm--line-height: 1.4;
+  --text-title-sm--letter-spacing: -0.01em;
+  --text-title-md: 20px;
+  --text-title-md--line-height: 1.35;
+  --text-title-md--letter-spacing: -0.02em;
+  --text-title-lg: 24px;
+  --text-title-lg--line-height: 1.3;
+  --text-title-lg--letter-spacing: -0.02em;
+  --text-display-serif: 28px;
+  --text-display-serif--line-height: 1.35;
+  --text-display-serif--letter-spacing: -0.02em;
+  /* 편지 본문 (Figma letter / quote) */
+  --text-letter: 17px;
+  --text-letter--line-height: 1.9;
+  --text-quote: 16px;
+  --text-quote--line-height: 1.8;
+  --text-field-label: 13px;
+  --text-field-label--line-height: 1;
+  --text-field-label--letter-spacing: -0.02em;
+  --text-field-value: 16px;
+  --text-field-value--line-height: 1.4;
+  --text-field-value--letter-spacing: -0.02em;
+  --text-dialog-title: 18px;
+  --text-dialog-title--line-height: 1.4;
+  --text-dialog-title--letter-spacing: -0.02em;
+  --text-dialog-body: 14px;
+  --text-dialog-body--line-height: 1.4;
+  --text-dialog-body--letter-spacing: -0.02em;
+  --text-button: 16px;
+  --text-button--line-height: 1.2;
+  --text-button-sm: 14px;
+  --text-button-sm--line-height: 1.2;
+  --text-button-xs: 13px;
+  --text-button-xs--line-height: 1;
+  --text-button-xs--letter-spacing: -0.02em;
+
+  /* === Radius === */
+  /* 모달 액션 버튼 */
+  --radius-button: 10px;
+
+  /* === Shadow === */
+  --shadow-level-1: 0 2px 8px 0 #1a17160f;
+  --shadow-level-2: 0 8px 24px 0 #1a171612;
+  --shadow-card: 0 2px 4px 0 #1a17160f;
+  --shadow-floating: 0 8px 12px 0 #1a17161a;
+
+  /* === Spacing (Figma 시맨틱) === */
+  --spacing-stack: 8px;
+  --spacing-list: 12px;
+  --spacing-card: 20px;
+  --spacing-section: 32px;
 }
 
 @layer base {
@@ -111,6 +246,8 @@
     background-color: var(--color-surface-white);
     /* 더블탭 확대 방지 (스크롤·탭은 유지) */
     touch-action: manipulation;
+    /* 화면 전환 애니메이션 중 가로 스크롤이 생기지 않게 */
+    overflow-x: clip;
   }
   * {
     box-sizing: border-box;
