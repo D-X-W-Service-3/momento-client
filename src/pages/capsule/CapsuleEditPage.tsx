@@ -8,7 +8,13 @@ import TextField from '@/components/common/TextField';
 import BackHeader from '@/components/layout/BackHeader';
 import { useCapsuleIcons } from '@/hooks/useCapsule';
 
-const NAME_MAX_LENGTH = 200;
+/**
+ * 캡슐 생성 화면(PR #7)과 같은 값으로 맞춘다.
+ * Figma '캡슐 수정' 에는 200 으로 적혀 있지만 '편지 제목'(200) 을 복사한
+ * 흔적으로 보이고, 같은 필드가 화면마다 다르면 생성 후 수정에서 길이가
+ * 늘어나 목록/카드 레이아웃이 깨진다. 디자이너 확정 시 다시 맞출 것.
+ */
+const NAME_MAX_LENGTH = 20;
 const DESCRIPTION_MAX_LENGTH = 45;
 
 export default function CapsuleEditPage() {
