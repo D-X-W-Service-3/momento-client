@@ -1,15 +1,18 @@
 import ChevronRightSmIcon from '@/assets/icons/chevron-right-sm.svg?react';
+import Chip from '@/components/common/Chip';
 import { textStyles } from '@/styles/tokens';
 import type { HomeCapsuleItem } from '@/types/home';
 
 interface HomeCapsuleSectionProps {
   capsule: HomeCapsuleItem;
   onViewAll?: () => void;
+  onSelectCapsule?: (id: string) => void;
 }
 
 export default function HomeCapsuleSection({
   capsule,
   onViewAll,
+  onSelectCapsule,
 }: HomeCapsuleSectionProps) {
   return (
     <section className="flex w-full flex-col gap-3">
@@ -31,13 +34,12 @@ export default function HomeCapsuleSection({
         </button>
       </div>
 
-      <article className="bg-surface-white flex min-h-[103px] w-full items-center justify-between gap-3 rounded-xl px-5 py-[15px]">
+      <article
+        onClick={() => onSelectCapsule?.(String(capsule.id))}
+        className="bg-surface-white flex min-h-[103px] w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-5 py-[15px]"
+      >
         <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <span
-            className={`bg-chip-open-bg text-chip-open-text inline-flex h-6 w-fit items-center rounded-full px-[10px] py-1 ${textStyles['body-small-med']}`}
-          >
-            {capsule.stateLabel}
-          </span>
+          <Chip tone="openable">{capsule.stateLabel}</Chip>
 
           <div className="flex flex-col gap-1">
             <h3

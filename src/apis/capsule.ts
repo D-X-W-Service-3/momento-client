@@ -19,6 +19,24 @@ import { toDateKey } from '@/utils/date';
 const MOCK_STATUS_BY_ID: Record<string, CapsuleStatus> = {
   sealed: 'sealed',
   openable: 'openable',
+  'featured-1': 'openable',
+  'featured-2': 'openable',
+  'featured-3': 'sealed',
+  'featured-4': 'sealed',
+  'edit-1': 'writing',
+  'edit-2': 'writing',
+  'edit-3': 'writing',
+  'lock-1': 'sealed',
+  'lock-2': 'sealed',
+  'lock-3': 'sealed',
+  'open-1': 'openable',
+  'open-2': 'openable',
+  'open-3': 'openable',
+  'list-2026-1': 'openable',
+  'list-2026-2': 'writing',
+  'list-2027-1': 'sealed',
+  'list-2027-2': 'writing',
+  'list-2027-3': 'openable',
 };
 
 const MOCK_AVATARS = [avatar1, avatar2, avatar3, avatar4];
@@ -73,8 +91,13 @@ export const getCapsuleDetail = async (id: string): Promise<CapsuleDetail> => ({
 });
 
 // TODO: 아이콘 세트가 나오면 교체. 지금은 같은 이미지를 Figma 의 점 개수(5개)만큼 둔다.
-export const getCapsuleIcons = async (): Promise<CapsuleIconOption[]> =>
-  Array.from({ length: 5 }, (_, index) => ({
+export const MOCK_CAPSULE_ICONS: CapsuleIconOption[] = Array.from(
+  { length: 5 },
+  (_, index) => ({
     id: `icon-${index + 1}`,
     imageUrl: capsuleHero,
-  }));
+  }),
+);
+
+export const getCapsuleIcons = async (): Promise<CapsuleIconOption[]> =>
+  MOCK_CAPSULE_ICONS;

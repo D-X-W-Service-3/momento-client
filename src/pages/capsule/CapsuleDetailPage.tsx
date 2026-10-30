@@ -23,7 +23,7 @@ import type { CapsuleStatus } from '@/types/calendar';
 import { formatDotDate } from '@/utils/date';
 
 /**
- * 상태 칩. 캘린더 카드(CapsuleStateChip)와 문구가 달라 상세 전용으로 둔다.
+ * 상태 칩. 목록 카드와 문구가 달라 상세 전용으로 둔다.
  * openable 은 Figma 에서도 "잠긴캡슐" 을 회색으로 비활성 처리해 두었다.
  */
 const STATUS_CHIP: Record<

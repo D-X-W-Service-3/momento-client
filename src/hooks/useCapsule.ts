@@ -4,6 +4,7 @@ import {
   getCapsuleCover,
   getCapsuleDetail,
   getCapsuleIcons,
+  MOCK_CAPSULE_ICONS,
 } from '@/apis/capsule';
 
 export const useCapsuleCover = (capsuleId: string) =>
@@ -24,5 +25,6 @@ export const useCapsuleIcons = () =>
   useQuery({
     queryKey: ['capsule', 'icons'],
     queryFn: getCapsuleIcons,
+    initialData: MOCK_CAPSULE_ICONS,
     staleTime: Infinity,
   });

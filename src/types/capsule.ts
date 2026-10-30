@@ -123,3 +123,7 @@ export interface CapsuleIconOption {
 
 /** 캡슐 구성원 역할 */
 export type MemberRole = 'participant' | 'receiver';
+
+/** 캡슐 이름/설명 글자수 제한 (생성·수정 공통) */
+export const CAPSULE_NAME_MAX_LENGTH = 20;
+export const CAPSULE_DESCRIPTION_MAX_LENGTH = 45;

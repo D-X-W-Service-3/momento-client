@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { fetchCapsuleHomeData } from '@/apis/capsules';
+import { capsuleCoverPath } from '@/constants/routes';
 import type { CapsuleFilterKey } from '@/types/capsule';
 
 export function useCapsuleHome() {
@@ -30,6 +31,10 @@ export function useCapsuleHome() {
     navigate('/capsules/list');
   };
 
+  const handleSelectCapsule = (capsuleId: string) => {
+    navigate(capsuleCoverPath(capsuleId));
+  };
+
   const handleSelectSlide = (index: number) => {
     setActiveSlide(index);
   };
@@ -44,6 +49,7 @@ export function useCapsuleHome() {
     handleSearchClick,
     handleNotifications,
     handleViewList,
+    handleSelectCapsule,
     handleSelectSlide,
   };
 }

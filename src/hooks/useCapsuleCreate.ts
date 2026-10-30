@@ -1,16 +1,17 @@
-import { type ChangeEvent, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import type {
-  CapsuleCreateForm,
-  CapsuleCreateStep,
-  CapsuleCreateType,
-  CapsuleVisibilityType,
+import { capsuleCoverPath } from '@/constants/routes';
+import {
+  CAPSULE_DESCRIPTION_MAX_LENGTH,
+  CAPSULE_NAME_MAX_LENGTH,
+  type CapsuleCreateForm,
+  type CapsuleCreateStep,
+  type CapsuleCreateType,
+  type CapsuleVisibilityType,
 } from '@/types/capsule';
 import { parseKoreanDate } from '@/utils/dates';
 
-const MAX_NAME_LENGTH = 20;
-const MAX_DESCRIPTION_LENGTH = 45;
 const TOTAL_ICONS = 5;
 
 const VALID_STEPS: readonly CapsuleCreateStep[] = [
@@ -93,16 +94,14 @@ export function useCapsuleCreate() {
     setForm((prev) => ({ ...prev, iconIndex: clamped }));
   };
 
-  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const next = e.target.value;
-    if (next.length <= MAX_NAME_LENGTH) {
+  const handleNameChange = (next: string) => {
+    if (next.length <= CAPSULE_NAME_MAX_LENGTH) {
       setForm((prev) => ({ ...prev, name: next }));
     }
   };
 
-  const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const next = e.target.value;
-    if (next.length <= MAX_DESCRIPTION_LENGTH) {
+  const handleDescriptionChange = (next: string) => {
+    if (next.length <= CAPSULE_DESCRIPTION_MAX_LENGTH) {
       setForm((prev) => ({ ...prev, description: next }));
     }
   };
@@ -211,7 +210,7 @@ export function useCapsuleCreate() {
   };
 
   const handleGoCapsules = () => {
-    navigate('/capsules');
+    navigate(capsuleCoverPath('1'));
   };
 
   return {
@@ -220,8 +219,8 @@ export function useCapsuleCreate() {
     activeSegments,
     totalSegments: 4,
     totalIcons: TOTAL_ICONS,
-    maxNameLength: MAX_NAME_LENGTH,
-    maxDescriptionLength: MAX_DESCRIPTION_LENGTH,
+    maxNameLength: CAPSULE_NAME_MAX_LENGTH,
+    maxDescriptionLength: CAPSULE_DESCRIPTION_MAX_LENGTH,
     isNextEnabled,
     dateSheet,
     datePickerMinDate,

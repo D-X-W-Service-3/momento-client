@@ -19,6 +19,7 @@ export default function CapsuleHomePage() {
     handleSearchClick,
     handleNotifications,
     handleViewList,
+    handleSelectCapsule,
     handleSelectSlide,
   } = useCapsuleHome();
 
@@ -61,6 +62,7 @@ export default function CapsuleHomePage() {
             activeSlide={activeSlide}
             onSelectSlide={handleSelectSlide}
             onViewAll={() => handleViewList('all')}
+            onSelectCapsule={handleSelectCapsule}
           />
         )}
 
@@ -68,18 +70,21 @@ export default function CapsuleHomePage() {
           title="수정할 수 있어요"
           items={editableCapsules}
           onViewAll={() => handleViewList('editable')}
+          onSelectCapsule={handleSelectCapsule}
         />
 
         <CapsuleHorizontalSection
           title="캡슐이 잠겨있어요"
           items={lockedCapsules}
           onViewAll={() => handleViewList('locked')}
+          onSelectCapsule={handleSelectCapsule}
         />
 
         <CapsuleHorizontalSection
           title="추억이 열렸어요"
           items={openedCapsules}
           onViewAll={() => handleViewList('opened')}
+          onSelectCapsule={handleSelectCapsule}
         />
       </div>
 

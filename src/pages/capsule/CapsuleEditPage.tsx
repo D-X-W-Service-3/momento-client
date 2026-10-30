@@ -7,15 +7,10 @@ import TextArea from '@/components/common/TextArea';
 import TextField from '@/components/common/TextField';
 import BackHeader from '@/components/layout/BackHeader';
 import { useCapsuleIcons } from '@/hooks/useCapsule';
-
-/**
- * 캡슐 생성 화면(PR #7)과 같은 값으로 맞춘다.
- * Figma '캡슐 수정' 에는 200 으로 적혀 있지만 '편지 제목'(200) 을 복사한
- * 흔적으로 보이고, 같은 필드가 화면마다 다르면 생성 후 수정에서 길이가
- * 늘어나 목록/카드 레이아웃이 깨진다. 디자이너 확정 시 다시 맞출 것.
- */
-const NAME_MAX_LENGTH = 20;
-const DESCRIPTION_MAX_LENGTH = 45;
+import {
+  CAPSULE_DESCRIPTION_MAX_LENGTH,
+  CAPSULE_NAME_MAX_LENGTH,
+} from '@/types/capsule';
 
 export default function CapsuleEditPage() {
   const { data: icons } = useCapsuleIcons();
@@ -38,7 +33,7 @@ export default function CapsuleEditPage() {
               placeholder="캡슐 이름을 입력해주세요"
               value={name}
               onChange={setName}
-              maxLength={NAME_MAX_LENGTH}
+              maxLength={CAPSULE_NAME_MAX_LENGTH}
             />
 
             <TextArea
@@ -46,7 +41,7 @@ export default function CapsuleEditPage() {
               placeholder="캡슐 설명을 작성해 주세요."
               value={description}
               onChange={setDescription}
-              maxLength={DESCRIPTION_MAX_LENGTH}
+              maxLength={CAPSULE_DESCRIPTION_MAX_LENGTH}
             />
 
             <InfoNote>

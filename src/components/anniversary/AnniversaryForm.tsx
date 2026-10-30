@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import BottomSheet from '@/components/common/BottomSheet';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 import DatePicker from '@/components/common/DatePicker';
-import Modal from '@/components/common/Modal';
 import TimePicker from '@/components/anniversary/TimePicker';
 import type { AnniversaryForm as AnniversaryFormType } from '@/types/momento';
 
@@ -231,7 +231,7 @@ export default function AnniversaryForm({
           ))}
         </div>
       </BottomSheet>
-      <Modal
+      <ConfirmDialog
         open={deleteOpen}
         title="기념일을 삭제할까요?"
         description="이 기념일에 대한 알림을 더 이상 받을 수 없어요"

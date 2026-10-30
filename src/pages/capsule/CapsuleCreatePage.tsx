@@ -18,7 +18,6 @@ export default function CapsuleCreatePage() {
     form,
     activeSegments,
     totalSegments,
-    totalIcons,
     maxNameLength,
     maxDescriptionLength,
     isNextEnabled,
@@ -83,7 +82,6 @@ export default function CapsuleCreatePage() {
           {step === 'info' && (
             <CapsuleInfoStep
               iconIndex={form.iconIndex}
-              totalIcons={totalIcons}
               name={form.name}
               description={form.description}
               maxNameLength={maxNameLength}

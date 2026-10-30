@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { fetchHomeDashboard } from '@/apis/home';
+import { capsuleCoverPath } from '@/constants/routes';
 
 export function useHomeDashboard() {
   const navigate = useNavigate();
@@ -27,6 +28,10 @@ export function useHomeDashboard() {
     navigate('/capsules');
   };
 
+  const handleSelectCapsule = (capsuleId: string) => {
+    navigate(capsuleCoverPath(capsuleId));
+  };
+
   return {
     dashboard: query.data,
     isLoading: query.isLoading,
@@ -34,5 +39,6 @@ export function useHomeDashboard() {
     handleProfile,
     handleCreateCapsule,
     handleViewAllCapsules,
+    handleSelectCapsule,
   };
 }

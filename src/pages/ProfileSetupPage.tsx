@@ -1,6 +1,6 @@
 import AvatarUpload from '@/components/common/AvatarUpload';
 import Button from '@/components/common/Button';
-import Input from '@/components/common/Input';
+import TextField from '@/components/common/TextField';
 import BackHeader from '@/components/layout/BackHeader';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { useProfileSetup } from '@/hooks/useProfileSetup';
@@ -42,13 +42,14 @@ export default function ProfileSetupPage() {
             </div>
           </div>
 
-          <Input
+          <TextField
             label="닉네임"
             value={nickname}
             onChange={handleNicknameChange}
             placeholder="닉네임을 입력해주세요"
             helperText={validation.message}
             isError={validation.isError}
+            variant="outlined"
           />
         </div>
 
