@@ -23,6 +23,15 @@
   --color-primary: #6e5db5;
   --color-primary-dark: #5b4c9c;
   --color-primary-tint: #f2f1f9;
+  --color-primary-badge: #e2d8ff;
+  --color-streak-pill: #fbf2ff;
+  --color-fab: #8273c4;
+
+  /* === Chip === */
+  --color-chip-open-bg: #f1f8f2;
+  --color-chip-open-text: #2a5a3c;
+  --color-chip-edit-bg: #fffbeb;
+  --color-chip-edit-text: #8a5a16;
 
   /* === Brand / Social === */
   --color-kakao: #fee500;
@@ -33,6 +42,14 @@
 
   /* === Text === */
   --color-text-primary: #1a1716;
+  --color-text-dark: #1a1c20;
+  --color-text-heading: #111827;
+  --color-text-notif-title: #282532;
+  --color-text-label: #2a3038;
+  --color-text-button-sub: #5b606b;
+  --color-text-meta: #868b94;
+  --color-text-notif-sub: #8c8794;
+  --color-text-hint: #b0b3ba;
   --color-text-secondary: rgba(26, 23, 22, 0.55);
   --color-text-placeholder: rgba(26, 23, 22, 0.38);
   --color-text-muted: rgba(26, 23, 22, 0.38);
@@ -40,17 +57,23 @@
 
   /* === Border === */
   --color-border-default: rgba(26, 23, 22, 0.16);
+  --color-border-subtle: #edeef0;
+  --color-border-input: #e1e3e8;
+  --color-border-nav: #fdfbff;
 
   /* === Gray === */
   --color-gray-100: #f2f5f7;
   --color-gray-200: #e8edf2;
   --color-gray-300: #e7e7e7;
   --color-gray-400: #d9d9d9;
+  --color-gray-450: #acacac;
   --color-gray-500: #8d8d8d;
 
   /* === Surface === */
   --color-surface-white: #ffffff;
   --color-surface-gray: #f6f7fa;
+  --color-surface-muted: #f3f4f5;
+  --color-surface-avatar: #f7f8f9;
   --color-surface-subtle: rgba(26, 23, 22, 0.04);
 
   /* === Status === */
@@ -68,6 +91,7 @@
   --text-body-sm: 12px;
   --text-body-xs: 13px;
   --text-body-md: 14px;
+  --text-body-15: 15px;
   --text-body-lg: 16px;
   --text-header: 17px;
   --text-h3: 18px;
@@ -79,7 +103,9 @@
   /* === Radius === */
   --radius-sm: 4px;
   --radius-md: 8px;
+  --radius-badge: 10px;
   --radius-lg: 12px;
+  --radius-card: 14px;
   --radius-icon: 15px;
   --radius-xl: 16px;
   --radius-2xl: 20px;
@@ -289,7 +315,7 @@
     min-height: 100dvh;
     margin: 0 auto;
     background: var(--color-surface-gray);
-    overflow-x: hidden;
+    overflow-x: clip;
     box-shadow: 0 0 32px rgb(0 0 0 / 0.04);
   }
   .app-content {
@@ -303,8 +329,9 @@
   }
   .brand-header,
   .back-header {
-    position: relative;
-    z-index: 20;
+    position: sticky;
+    top: 0;
+    z-index: 30;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -353,36 +380,41 @@
     max-width: 393px;
     height: 70px;
     margin: auto;
-    padding: 8px 20px max(8px, env(safe-area-inset-bottom));
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px env(safe-area-inset-bottom);
+    border: 1px solid var(--color-border-nav);
+    border-radius: 16px 16px 0 0;
     background: rgb(255 255 255 / 0.95);
-    box-shadow: 0 -1px 8px rgb(0 0 0 / 0.03);
     backdrop-filter: blur(20px);
   }
   .bottom-nav a {
     display: flex;
-    flex: 1;
+    width: 60px;
+    height: 50px;
+    flex: 0 0 60px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    color: #b0b3ba;
-    font-size: 9px;
+    gap: 7px;
+    padding: 10px;
+    border-radius: 999px;
+    color: var(--color-text-hint);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 14.4px;
+    text-align: center;
+    white-space: nowrap;
   }
   .bottom-nav a.active {
-    color: #25282e;
-    font-weight: 600;
+    color: var(--color-text-label);
+    font-weight: 500;
   }
   .nav-icon {
-    width: 25px;
-    height: 21px;
+    width: auto;
+    height: 20px;
+    flex-shrink: 0;
     object-fit: contain;
-  }
-  .bottom-nav a.active .nav-icon {
-    filter: brightness(0.28);
-  }
-  .bottom-nav a[href='/archives'].active .nav-icon,
-  .bottom-nav a[href='/calendar'].active .nav-icon {
-    filter: none;
   }
   .archive-hero,
   .calendar-hero {
@@ -475,6 +507,23 @@
     border-radius: 16px;
     background: linear-gradient(105deg, rgb(240 228 251 / 0.66), #fee5ff);
     box-shadow: 0 2px 4px rgb(26 23 22 / 0.05);
+  }
+  .capsule-request-banner {
+    background: linear-gradient(
+      135deg,
+      rgb(240 228 251 / 0.66) 0%,
+      #fee5ff 100%
+    );
+    box-shadow: 0 2px 4px rgb(26 23 22 / 0.05);
+  }
+  .capsule-openable-card {
+    background: linear-gradient(
+      135deg,
+      #7468fb 0%,
+      #c298fb 46.15%,
+      #eee3f3 100%
+    );
+    box-shadow: 0 2px 8px rgb(26 23 22 / 0.05);
   }
   .shared-banner span:first-child {
     display: flex;
@@ -664,6 +713,38 @@
     border-radius: 16px;
     object-fit: cover;
   }
+  @keyframes sheet-backdrop-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes sheet-backdrop-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes sheet-slide-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes sheet-slide-down {
+    from {
+      transform: translateY(var(--sheet-drag-y, 0px));
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
   .sheet-backdrop,
   .modal-backdrop {
     position: fixed;
@@ -673,20 +754,41 @@
     align-items: flex-end;
     justify-content: center;
     background: rgb(0 0 0 / 0.35);
+    animation: sheet-backdrop-fade-in 0.2s ease-out forwards;
+  }
+  .sheet-backdrop.closing {
+    pointer-events: none;
+    animation: sheet-backdrop-fade-out 0.24s ease-in forwards;
   }
   .bottom-sheet {
     width: min(393px, 100%);
-    padding: 8px 20px 20px;
+    padding: 10px 20px 20px;
     border-radius: 24px 24px 0 0;
     background: white;
     box-shadow: 0 -8px 30px rgb(0 0 0 / 0.08);
+    animation: sheet-slide-up 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .bottom-sheet.closing {
+    animation: sheet-slide-down 0.24s cubic-bezier(0.4, 0, 1, 1) forwards;
+  }
+  .sheet-grabber-area {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: 0 0 10px;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+  .sheet-grabber-area:active {
+    cursor: grabbing;
   }
   .sheet-grabber {
     width: 36px;
     height: 4px;
-    margin: 2px auto 16px;
-    border-radius: 4px;
-    background: #d7d9de;
+    margin: 0;
+    border-radius: 999px;
+    background: var(--color-border-default);
   }
   .bottom-sheet > h2 {
     margin: 4px 0 12px;

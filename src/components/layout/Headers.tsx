@@ -1,18 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import { BellIcon, ChevronLeft, MoreIcon } from '@/components/common/Icons';
+import { ChevronLeft, MoreIcon } from '@/components/common/Icons';
+import HomeHeader from '@/components/layout/HomeHeader';
 
 export function BrandHeader() {
-  return (
-    <header className="brand-header">
-      <Link to="/home" aria-label="Momento 홈으로">
-        <strong>Momento</strong>
-      </Link>
-      <button type="button" aria-label="알림">
-        <BellIcon />
-      </button>
-    </header>
-  );
+  return <HomeHeader />;
 }
 
 type BackHeaderProps = {

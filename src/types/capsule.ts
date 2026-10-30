@@ -1,5 +1,82 @@
 import type { CapsuleStatus } from '@/types/calendar';
 
+export type CapsuleFilterKey =
+  'all' | 'openable' | 'editable' | 'locked' | 'opened';
+
+export type CapsuleChipTone = 'openable' | 'editable' | 'locked' | 'opened';
+
+export interface CapsuleChipBadge {
+  label: string;
+  tone: CapsuleChipTone;
+}
+
+export interface CapsuleFeaturedItem {
+  id: string;
+  statusLabel: string;
+  dDayText: string;
+  title: string;
+  description: string;
+  countText: string;
+  openDateText: string;
+}
+
+export interface CapsuleHorizontalItem {
+  id: string;
+  badge: CapsuleChipBadge;
+  title: string;
+  openDateText: string;
+}
+
+export interface CapsuleListItem {
+  id: string;
+  year: number;
+  filterCategory: Exclude<CapsuleFilterKey, 'all'>;
+  variant: 'gradient' | 'white' | 'translucent';
+  badges: CapsuleChipBadge[];
+  title: string;
+  description: string;
+  dDayText?: string;
+  dateText: string;
+  countText: string;
+}
+
+export interface CapsuleFilterChipOption {
+  key: CapsuleFilterKey;
+  label: string;
+  count: number;
+}
+
+export interface CapsuleHomeData {
+  hasPendingRequest: boolean;
+  featuredCapsules: CapsuleFeaturedItem[];
+  editableCapsules: CapsuleHorizontalItem[];
+  lockedCapsules: CapsuleHorizontalItem[];
+  openedCapsules: CapsuleHorizontalItem[];
+}
+
+export interface CapsuleListData {
+  filters: CapsuleFilterChipOption[];
+  items: CapsuleListItem[];
+}
+
+export type CapsuleCreateType = 'solo' | 'friend' | 'group';
+
+export type CapsuleVisibilityType = 'all_participants' | 'designated_only';
+
+export type CapsuleCreateStep =
+  'info' | 'type' | 'visibility' | 'dates' | 'complete';
+
+export interface CapsuleCreateForm {
+  iconIndex: number;
+  name: string;
+  description: string;
+  capsuleType: CapsuleCreateType;
+  visibility: CapsuleVisibilityType;
+  inviteLink: string;
+  editDeadline: string;
+  openDate: string;
+}
+
 /**
  * 캡슐 커버(진입) 화면에 필요한 최소 정보.
  * status 는 캘린더와 같은 값을 쓰고 커버 디자인에 1:1로 대응한다.

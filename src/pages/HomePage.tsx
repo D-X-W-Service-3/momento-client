@@ -1,10 +1,45 @@
+import AttendanceStreakCard from '@/components/home/AttendanceStreakCard';
+import CapsuleCreateBanner from '@/components/home/CapsuleCreateBanner';
+import HeroCapsuleCard from '@/components/home/HeroCapsuleCard';
+import HomeCapsuleSection from '@/components/home/HomeCapsuleSection';
+import HomeHeader from '@/components/layout/HomeHeader';
+import MobileLayout from '@/components/layout/MobileLayout';
+import { useHomeDashboard } from '@/hooks/useHomeDashboard';
+
 export default function HomePage() {
+  const {
+    dashboard,
+    handleNotifications,
+    handleProfile,
+    handleCreateCapsule,
+    handleViewAllCapsules,
+  } = useHomeDashboard();
+
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col items-center justify-center gap-2 px-5">
-      <h1 className="text-h1 font-bold text-primary">Momento</h1>
-      <p className="text-body-md text-text-secondary">
-        프로젝트 세팅 완료 — 여기서부터 개발을 시작하세요.
-      </p>
-    </div>
+    <MobileLayout withNav>
+      <HomeHeader
+        onClickBell={handleNotifications}
+        onClickProfile={handleProfile}
+      />
+
+      {dashboard && (
+        <div className="bg-surface-gray flex flex-col gap-5 px-5 pt-[10px] pb-5">
+          <section className="flex flex-col gap-3">
+            <HeroCapsuleCard capsule={dashboard.heroCapsule} />
+            <CapsuleCreateBanner onClick={handleCreateCapsule} />
+          </section>
+
+          <HomeCapsuleSection
+            capsule={dashboard.featuredCapsule}
+            onViewAll={handleViewAllCapsules}
+          />
+
+          <AttendanceStreakCard
+            days={dashboard.attendanceDays}
+            streakCount={dashboard.streakCount}
+          />
+        </div>
+      )}
+    </MobileLayout>
   );
 }

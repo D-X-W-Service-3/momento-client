@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { updateProfile } from '@/apis/auth';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useMyPageStore } from '@/stores/useMyPageStore';
 import { validateNickname } from '@/utils/validation';
 
 export function useProfileSetup() {
   const navigate = useNavigate();
   const storedProfile = useAuthStore((state) => state.profile);
   const setProfile = useAuthStore((state) => state.setProfile);
+  const updateMyPageProfile = useMyPageStore((state) => state.updateProfile);
 
   const [nickname, setNickname] = useState(storedProfile.nickname);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(
@@ -22,6 +24,11 @@ export function useProfileSetup() {
     mutationFn: updateProfile,
     onSuccess: (updated) => {
       setProfile(updated);
+      updateMyPageProfile({
+        name: updated.nickname,
+        ...(updated.avatarUrl ? { avatarUrl: updated.avatarUrl } : {}),
+      });
+      navigate('/home');
     },
   });
 
