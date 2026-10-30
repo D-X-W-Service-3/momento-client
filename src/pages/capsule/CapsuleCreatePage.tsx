@@ -1,9 +1,9 @@
 import BottomSheet from '@/components/common/BottomSheet';
 import DatePicker from '@/components/common/DatePicker';
+import InviteSheet from '@/components/capsule/InviteSheet';
 import CapsuleCompleteStep from '@/components/capsule/create/CapsuleCompleteStep';
 import CapsuleDateStep from '@/components/capsule/create/CapsuleDateStep';
 import CapsuleInfoStep from '@/components/capsule/create/CapsuleInfoStep';
-import CapsuleInviteStep from '@/components/capsule/create/CapsuleInviteStep';
 import CapsuleStepProgress from '@/components/capsule/create/CapsuleStepProgress';
 import CapsuleTypeStep from '@/components/capsule/create/CapsuleTypeStep';
 import CapsuleVisibilityStep from '@/components/capsule/create/CapsuleVisibilityStep';
@@ -29,8 +29,6 @@ export default function CapsuleCreatePage() {
     handleDescriptionChange,
     handleSelectCapsuleType,
     handleSelectVisibility,
-    handleCopyInviteLink,
-    handleShareInviteLink,
     handleOpenDateSheet,
     handleCloseDateSheet,
     handleSelectDate,
@@ -53,13 +51,12 @@ export default function CapsuleCreatePage() {
           onGoCapsules={handleGoCapsules}
         />
 
-        <BottomSheet open={inviteSheetOpen} onClose={handleCloseInviteSheet}>
-          <CapsuleInviteStep
-            inviteLink={form.inviteLink}
-            onCopyLink={handleCopyInviteLink}
-            onShareLink={handleShareInviteLink}
-          />
-        </BottomSheet>
+        <InviteSheet
+          open={inviteSheetOpen}
+          onClose={handleCloseInviteSheet}
+          role="participant"
+          inviteUrl={form.inviteLink}
+        />
       </MobileLayout>
     );
   }
