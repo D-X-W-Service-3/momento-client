@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { fetchCapsuleListData } from '@/apis/capsules';
+import { capsuleCoverPath } from '@/constants/routes';
 import type { CapsuleFilterKey, CapsuleListItem } from '@/types/capsule';
 
 const VALID_FILTERS: CapsuleFilterKey[] = [
@@ -79,6 +80,10 @@ export function useCapsuleList() {
     navigate('/notifications');
   };
 
+  const handleSelectCapsule = (capsuleId: string) => {
+    navigate(capsuleCoverPath(capsuleId));
+  };
+
   return {
     filters: query.data?.filters ?? [],
     selectedFilter,
@@ -89,5 +94,6 @@ export function useCapsuleList() {
     handleFilterChange,
     handleSearchChange,
     handleNotifications,
+    handleSelectCapsule,
   };
 }

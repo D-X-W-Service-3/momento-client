@@ -1,12 +1,19 @@
 import type { ReactNode } from 'react';
 
-export type ChipTone = 'info' | 'success' | 'warning' | 'neutral';
+import type { CapsuleChipTone } from '@/types/capsule';
+
+export type ChipTone =
+  'info' | 'success' | 'warning' | 'neutral' | CapsuleChipTone;
 
 const TONE_STYLES: Record<ChipTone, string> = {
   info: 'bg-info-bg text-info-text',
+  locked: 'bg-info-bg text-info-text',
   success: 'bg-success-bg text-success-text',
+  openable: 'bg-success-bg text-success-text',
   warning: 'bg-warning-bg text-warning-text',
+  editable: 'bg-warning-bg text-warning-text',
   neutral: 'bg-neutral-bg text-ink-faint',
+  opened: 'bg-neutral-bg text-ink-faint',
 };
 
 interface ChipProps {
@@ -20,7 +27,7 @@ interface ChipProps {
 export default function Chip({ tone, children, className = '' }: ChipProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-label font-medium whitespace-nowrap ${TONE_STYLES[tone]} ${className}`}
+      className={`inline-flex h-6 w-fit items-center rounded-full px-2.5 py-1 text-label font-medium whitespace-nowrap ${TONE_STYLES[tone]} ${className}`}
     >
       {children}
     </span>

@@ -5,11 +5,20 @@ import type { HeroCapsuleInfo } from '@/types/home';
 
 interface HeroCapsuleCardProps {
   capsule: HeroCapsuleInfo;
+  onClick?: () => void;
 }
 
-export default function HeroCapsuleCard({ capsule }: HeroCapsuleCardProps) {
+export default function HeroCapsuleCard({
+  capsule,
+  onClick,
+}: HeroCapsuleCardProps) {
   return (
-    <article className="relative h-[330px] w-full overflow-hidden rounded-xl">
+    <article
+      onClick={onClick}
+      className={`relative h-[330px] w-full overflow-hidden rounded-xl ${
+        onClick ? 'cursor-pointer' : ''
+      }`}
+    >
       <img
         src={homeHeroBg}
         alt=""

@@ -9,6 +9,7 @@ import CapsuleHero from '@/components/capsule/CapsuleHero';
 import Chip, { type ChipTone } from '@/components/common/Chip';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import GhostButton from '@/components/common/GhostButton';
+import InviteSheet from '@/components/capsule/InviteSheet';
 import LetterViewer from '@/components/capsule/LetterViewer';
 import SectionHeader from '@/components/common/SectionHeader';
 import BackHeader from '@/components/layout/BackHeader';
@@ -16,14 +17,16 @@ import {
   capsuleEditPath,
   capsuleParticipantsPath,
   capsuleReceiversPath,
+  letterPaperPath,
 } from '@/constants/routes';
 import { useCapsuleDetail } from '@/hooks/useCapsule';
 import { useMyLetters } from '@/hooks/useLetter';
 import type { CapsuleStatus } from '@/types/calendar';
+import type { MemberRole } from '@/types/capsule';
 import { formatDotDate } from '@/utils/date';
 
 /**
- * 상태 칩. 캘린더 카드(CapsuleStateChip)와 문구가 달라 상세 전용으로 둔다.
+ * 상태 칩. 목록 카드와 문구가 달라 상세 전용으로 둔다.
  * openable 은 Figma 에서도 "잠긴캡슐" 을 회색으로 비활성 처리해 두었다.
  */
 const STATUS_CHIP: Record<
@@ -47,17 +50,38 @@ export default function CapsuleDetailPage() {
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [lettersOpen, setLettersOpen] = useState(false);
-  const { data: myLetters } = useMyLetters(capsuleId, lettersOpen);
-
-  const handleAdminAction = (key: (typeof ADMIN_ACTIONS)[number]['key']) => {
-    if (key === 'edit') navigate(capsuleEditPath(capsuleId));
-    if (key === 'delete') setDeleteOpen(true);
-  };
+  const [deletingLetterId, setDeletingLetterId] = useState<string>();
+  const [deletedLetterIds, setDeletedLetterIds] = useState<string[]>([]);
+  const [inviteRole, setInviteRole] = useState<MemberRole>();
 
   // 편지를 모으는 중(수정가능)일 때만 편지·초대·관리 기능을 노출한다.
   // 봉인된 뒤에는 참여자/수신자만 보여주고, 내용 블록을 화면 아래에 붙인다.
   const isEditable = capsule?.status === 'writing';
   const chip = capsule && STATUS_CHIP[capsule.status];
+  const { data: myLetters } = useMyLetters(capsuleId, isEditable);
+
+  const visibleMyLetters = (myLetters ?? []).filter(
+    (letter) => !deletedLetterIds.includes(letter.id),
+  );
+  const hasMyLetters = visibleMyLetters.length > 0;
+
+  const handleConfirmDeleteLetter = () => {
+    if (!deletingLetterId) return;
+    // TODO: 편지 삭제 API 연결
+    const nextDeletedIds = [...deletedLetterIds, deletingLetterId];
+    setDeletedLetterIds(nextDeletedIds);
+    setDeletingLetterId(undefined);
+    if (
+      (myLetters ?? []).every((letter) => nextDeletedIds.includes(letter.id))
+    ) {
+      setLettersOpen(false);
+    }
+  };
+
+  const handleAdminAction = (key: (typeof ADMIN_ACTIONS)[number]['key']) => {
+    if (key === 'edit') navigate(capsuleEditPath(capsuleId));
+    if (key === 'delete') setDeleteOpen(true);
+  };
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-capsule-bg-from to-capsule-bg-to">
@@ -132,7 +156,11 @@ export default function CapsuleDetailPage() {
                   members={capsule.participants}
                   totalCount={capsule.participantCount}
                 />
-                {isEditable && <GhostButton>참여자 초대</GhostButton>}
+                {isEditable && (
+                  <GhostButton onClick={() => setInviteRole('participant')}>
+                    참여자 초대
+                  </GhostButton>
+                )}
               </section>
 
               <section className="flex flex-col gap-list">
@@ -145,7 +173,11 @@ export default function CapsuleDetailPage() {
                   members={capsule.receivers}
                   totalCount={capsule.receiverCount}
                 />
-                {isEditable && <GhostButton>수신자 초대</GhostButton>}
+                {isEditable && (
+                  <GhostButton onClick={() => setInviteRole('receiver')}>
+                    수신자 초대
+                  </GhostButton>
+                )}
               </section>
 
               {isEditable && capsule.isHost && (
@@ -184,11 +216,43 @@ export default function CapsuleDetailPage() {
       </div>
 
       <LetterViewer
-        open={lettersOpen}
-        letters={myLetters ?? []}
+        open={lettersOpen && hasMyLetters}
+        letters={visibleMyLetters}
         onClose={() => setLettersOpen(false)}
-        // TODO: 편지 삭제 확인 모달 + API 연결 (Figma 에 삭제 플로우가 아직 없음)
-        onDelete={() => {}}
+        onDelete={(letterId) => setDeletingLetterId(letterId)}
+      />
+
+      <ConfirmDialog
+        open={lettersOpen && myLetters !== undefined && !hasMyLetters}
+        title="내가 작성한 편지가 없어요"
+        description="새로운 편지를 작성할까요?"
+        cancelLabel="닫기"
+        confirmLabel="작성하러 가기"
+        confirmTone="primary"
+        onCancel={() => setLettersOpen(false)}
+        onConfirm={() => {
+          setLettersOpen(false);
+          navigate(letterPaperPath(capsuleId));
+        }}
+      />
+
+      {/* TODO: 편지 삭제 API 연결 */}
+      <ConfirmDialog
+        open={Boolean(deletingLetterId)}
+        title="작성한 편지를 삭제할까요?"
+        description="삭제한 편지는 되돌릴 수 없어요."
+        cancelLabel="취소"
+        confirmLabel="삭제"
+        onCancel={() => setDeletingLetterId(undefined)}
+        onConfirm={handleConfirmDeleteLetter}
+      />
+
+      {/* TODO: 초대링크를 서버에서 받아오도록 교체 */}
+      <InviteSheet
+        open={Boolean(inviteRole)}
+        onClose={() => setInviteRole(undefined)}
+        role={inviteRole ?? 'participant'}
+        inviteUrl={`https://momento.app/invite/${capsuleId}`}
       />
 
       {/* TODO: 캡슐 삭제 API 연결 */}

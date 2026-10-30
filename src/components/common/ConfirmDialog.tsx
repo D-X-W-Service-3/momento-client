@@ -1,4 +1,4 @@
-import { useEffect, useId } from 'react';
+import { type ReactNode, useEffect, useId } from 'react';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -8,27 +8,35 @@ interface ConfirmDialogProps {
   confirmLabel: string;
   /** danger: 되돌릴 수 없는 파괴적 행동 (기본) */
   confirmTone?: 'danger' | 'primary';
-  /** 왼쪽 테두리 버튼 문구 */
-  cancelLabel: string;
+  /** Modal 호환용 boolean prop */
+  danger?: boolean;
+  /** 왼쪽 테두리 버튼 문구 (기본 '취소') */
+  cancelLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
+  children?: ReactNode;
 }
 
 /**
- * 되돌릴 수 없는 행동을 확인받는 모달.
- * 파괴적 행동(오른쪽)은 danger 로 채우고, 취소가 기본 동작이다.
+ * 사용자의 확인을 받는 공용 다이얼로그 모달.
+ * 파괴적 행동(오른쪽)은 danger 로 채우고, 일반 확인은 confirmTone="primary" 를 사용한다.
  */
 export default function ConfirmDialog({
   open,
   title,
   description,
   confirmLabel,
-  confirmTone = 'danger',
-  cancelLabel,
+  confirmTone,
+  danger,
+  cancelLabel = '취소',
   onConfirm,
   onCancel,
+  children,
 }: ConfirmDialogProps) {
   const titleId = useId();
+  const resolvedTone =
+    confirmTone ??
+    (danger !== undefined ? (danger ? 'danger' : 'primary') : 'danger');
 
   useEffect(() => {
     if (!open) return;
@@ -76,19 +84,21 @@ export default function ConfirmDialog({
           )}
         </div>
 
+        {children}
+
         <div className="flex w-full gap-2.5">
           <button
             type="button"
             onClick={onCancel}
-            className="h-11 flex-1 rounded-button border border-stroke-muted text-button-xs font-semibold text-neutral-weak"
+            className="h-11 flex-1 cursor-pointer rounded-button border border-stroke-muted text-button-xs font-semibold text-neutral-weak"
           >
             {cancelLabel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className={`h-11 flex-1 rounded-button text-button-xs font-semibold text-on-primary ${
-              confirmTone === 'danger' ? 'bg-danger' : 'bg-primary'
+            className={`h-11 flex-1 cursor-pointer rounded-button text-button-xs font-semibold text-on-primary ${
+              resolvedTone === 'danger' ? 'bg-danger' : 'bg-primary'
             }`}
           >
             {confirmLabel}

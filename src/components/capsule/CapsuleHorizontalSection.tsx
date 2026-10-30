@@ -1,6 +1,6 @@
 import ChevronRightSmIcon from '@/assets/icons/chevron-right-sm.svg?react';
 import capsulePopsicleImg from '@/assets/images/home-capsule-popsicle.png';
-import CapsuleStateChip from '@/components/capsule/CapsuleStateChip';
+import Chip from '@/components/common/Chip';
 import { useHorizontalDragScroll } from '@/hooks/useHorizontalDragScroll';
 import { textStyles } from '@/styles/tokens';
 import type { CapsuleHorizontalItem } from '@/types/capsule';
@@ -9,12 +9,14 @@ interface CapsuleHorizontalSectionProps {
   title: string;
   items: CapsuleHorizontalItem[];
   onViewAll: () => void;
+  onSelectCapsule: (id: string) => void;
 }
 
 export default function CapsuleHorizontalSection({
   title,
   items,
   onViewAll,
+  onSelectCapsule,
 }: CapsuleHorizontalSectionProps) {
   const { containerRef, dragProps } = useHorizontalDragScroll<HTMLDivElement>();
 
@@ -46,10 +48,11 @@ export default function CapsuleHorizontalSection({
         {items.map((item) => (
           <article
             key={item.id}
-            className="bg-surface-white flex h-[126px] w-[260px] shrink-0 items-center justify-between gap-3 rounded-xl px-5 py-[15px] shadow-[0_2px_8px_rgb(26_23_22/0.05)]"
+            onClick={() => onSelectCapsule(item.id)}
+            className="bg-surface-white flex h-[126px] w-[260px] shrink-0 cursor-pointer items-center justify-between gap-3 rounded-xl px-5 py-[15px] shadow-[0_2px_8px_rgb(26_23_22/0.05)]"
           >
             <div className="flex w-[132px] flex-col gap-3">
-              <CapsuleStateChip badge={item.badge} />
+              <Chip tone={item.badge.tone}>{item.badge.label}</Chip>
               <div className="flex flex-col gap-1">
                 <h3
                   className={`line-clamp-2 text-black ${textStyles['body-large-semi']}`}

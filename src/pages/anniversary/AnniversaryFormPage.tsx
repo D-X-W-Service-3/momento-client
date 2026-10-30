@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import AnniversaryForm from '@/components/anniversary/AnniversaryForm';
-import Modal from '@/components/common/Modal';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 import { BackHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { useMomentoStore } from '@/stores/useMomentoStore';
@@ -40,7 +40,7 @@ export default function AnniversaryFormPage() {
             navigate('/calendar');
           }}
         />
-        <Modal
+        <ConfirmDialog
           open={cancelOpen}
           title={editing ? '수정을 취소할까요?' : '생성을 취소할까요?'}
           description="저장되지 않은 내용은 사라져요"

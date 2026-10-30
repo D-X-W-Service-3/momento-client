@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import BottomSheet from '@/components/common/BottomSheet';
-import Modal from '@/components/common/Modal';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import PhotoCount from '@/components/archive/PhotoCount';
 import { BackHeader } from '@/components/layout/Headers';
@@ -108,7 +108,7 @@ export default function ArchiveDetailPage() {
           </button>
         </div>
       </BottomSheet>
-      <Modal
+      <ConfirmDialog
         open={deleteOpen}
         title="아카이브를 삭제할까요?"
         description="삭제한 아카이브는 되돌릴 수 없어요."

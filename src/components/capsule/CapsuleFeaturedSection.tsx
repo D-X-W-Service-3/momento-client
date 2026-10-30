@@ -10,6 +10,7 @@ interface CapsuleFeaturedSectionProps {
   activeSlide: number;
   onSelectSlide: (index: number) => void;
   onViewAll: () => void;
+  onSelectCapsule: (id: string) => void;
 }
 
 export default function CapsuleFeaturedSection({
@@ -17,6 +18,7 @@ export default function CapsuleFeaturedSection({
   activeSlide,
   onSelectSlide,
   onViewAll,
+  onSelectCapsule,
 }: CapsuleFeaturedSectionProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const isDownRef = useRef(false);
@@ -68,12 +70,12 @@ export default function CapsuleFeaturedSection({
     }
   };
 
-  const handleCardClick = () => {
+  const handleCardClick = (capsuleId: string) => {
     if (Math.abs(deltaXRef.current) > 10) {
       deltaXRef.current = 0;
       return;
     }
-    onViewAll();
+    onSelectCapsule(capsuleId);
   };
 
   return (
@@ -108,7 +110,7 @@ export default function CapsuleFeaturedSection({
         {capsules.map((capsule) => (
           <article
             key={capsule.id}
-            onClick={handleCardClick}
+            onClick={() => handleCardClick(capsule.id)}
             className="relative flex h-[343px] w-full shrink-0 snap-center flex-col justify-between overflow-hidden rounded-xl p-5 shadow-[0_2px_8px_rgb(26_23_22/0.05)]"
           >
             <img

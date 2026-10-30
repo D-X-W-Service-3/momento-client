@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react';
+import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,8 +32,8 @@ export function useProfileSetup() {
     },
   });
 
-  const handleNicknameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNickname(e.target.value);
+  const handleNicknameChange = (value: string) => {
+    setNickname(value);
   };
 
   const handleAvatarChange = (file: File) => {

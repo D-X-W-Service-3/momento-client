@@ -49,7 +49,15 @@ export default function LetterViewer({
     };
   }, [open, onClose, letters.length]);
 
-  const letter = letters[index];
+  // 편지가 삭제되어 마지막 인덱스를 벗어나면 이전 장으로 맞춘다.
+  useEffect(() => {
+    if (letters.length > 0 && index >= letters.length) {
+      setIndex(letters.length - 1);
+    }
+  }, [index, letters.length]);
+
+  const safeIndex = Math.min(index, Math.max(0, letters.length - 1));
+  const letter = letters[safeIndex];
   if (!open || !letter) return null;
 
   return (
@@ -113,20 +121,20 @@ export default function LetterViewer({
         <button
           type="button"
           aria-label="이전 편지"
-          disabled={index === 0}
-          onClick={() => setIndex(index - 1)}
+          disabled={safeIndex === 0}
+          onClick={() => setIndex(safeIndex - 1)}
           className="disabled:opacity-30"
         >
           <img src={chevronLeftIcon} alt="" className="size-4" />
         </button>
         <span className="w-[18px] text-center text-note font-semibold text-ink">
-          {index + 1}/{letters.length}
+          {safeIndex + 1}/{letters.length}
         </span>
         <button
           type="button"
           aria-label="다음 편지"
-          disabled={index === letters.length - 1}
-          onClick={() => setIndex(index + 1)}
+          disabled={safeIndex === letters.length - 1}
+          onClick={() => setIndex(safeIndex + 1)}
           className="disabled:opacity-30"
         >
           <img src={chevronRightIcon} alt="" className="size-4" />
