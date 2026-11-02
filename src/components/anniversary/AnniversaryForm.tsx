@@ -236,7 +236,6 @@ export default function AnniversaryForm({
         title="기념일을 삭제할까요?"
         description="이 기념일에 대한 알림을 더 이상 받을 수 없어요"
         confirmLabel="삭제"
-        danger
         onCancel={() => setDeleteOpen(false)}
         onConfirm={() => onDelete?.()}
       />

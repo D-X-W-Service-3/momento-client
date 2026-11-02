@@ -1,19 +1,12 @@
 import type { ReactNode } from 'react';
 
-import type { CapsuleChipTone } from '@/types/capsule';
-
-export type ChipTone =
-  'info' | 'success' | 'warning' | 'neutral' | CapsuleChipTone;
+export type ChipTone = 'info' | 'success' | 'warning' | 'neutral';
 
 const TONE_STYLES: Record<ChipTone, string> = {
   info: 'bg-info-bg text-info-text',
-  locked: 'bg-info-bg text-info-text',
   success: 'bg-success-bg text-success-text',
-  openable: 'bg-success-bg text-success-text',
   warning: 'bg-warning-bg text-warning-text',
-  editable: 'bg-warning-bg text-warning-text',
   neutral: 'bg-neutral-bg text-ink-faint',
-  opened: 'bg-neutral-bg text-ink-faint',
 };
 
 interface ChipProps {

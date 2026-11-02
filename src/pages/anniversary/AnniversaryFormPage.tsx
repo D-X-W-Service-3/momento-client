@@ -46,7 +46,6 @@ export default function AnniversaryFormPage() {
           description="저장되지 않은 내용은 사라져요"
           cancelLabel="닫기"
           confirmLabel="취소"
-          danger
           onCancel={() => setCancelOpen(false)}
           onConfirm={cancel}
         />

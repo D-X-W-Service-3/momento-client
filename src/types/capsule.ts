@@ -1,13 +1,12 @@
+import type { ChipTone } from '@/components/common/Chip';
 import type { CapsuleStatus } from '@/types/calendar';
 
 export type CapsuleFilterKey =
   'all' | 'openable' | 'editable' | 'locked' | 'opened';
 
-export type CapsuleChipTone = 'openable' | 'editable' | 'locked' | 'opened';
-
 export interface CapsuleChipBadge {
   label: string;
-  tone: CapsuleChipTone;
+  tone: ChipTone;
 }
 
 export interface CapsuleFeaturedItem {

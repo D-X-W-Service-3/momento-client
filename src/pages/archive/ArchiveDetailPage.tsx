@@ -113,7 +113,6 @@ export default function ArchiveDetailPage() {
         title="아카이브를 삭제할까요?"
         description="삭제한 아카이브는 되돌릴 수 없어요."
         confirmLabel="삭제"
-        danger
         onCancel={() => setDeleteOpen(false)}
         onConfirm={() => {
           deleteArchive(archive.id);

@@ -8,8 +8,6 @@ interface ConfirmDialogProps {
   confirmLabel: string;
   /** danger: 되돌릴 수 없는 파괴적 행동 (기본) */
   confirmTone?: 'danger' | 'primary';
-  /** Modal 호환용 boolean prop */
-  danger?: boolean;
   /** 왼쪽 테두리 버튼 문구 (기본 '취소') */
   cancelLabel?: string;
   onConfirm: () => void;
@@ -26,17 +24,13 @@ export default function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  confirmTone,
-  danger,
+  confirmTone = 'danger',
   cancelLabel = '취소',
   onConfirm,
   onCancel,
   children,
 }: ConfirmDialogProps) {
   const titleId = useId();
-  const resolvedTone =
-    confirmTone ??
-    (danger !== undefined ? (danger ? 'danger' : 'primary') : 'danger');
 
   useEffect(() => {
     if (!open) return;
@@ -98,7 +92,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             className={`h-11 flex-1 cursor-pointer rounded-button text-button-xs font-semibold text-on-primary ${
-              resolvedTone === 'danger' ? 'bg-danger' : 'bg-primary'
+              confirmTone === 'danger' ? 'bg-danger' : 'bg-primary'
             }`}
           >
             {confirmLabel}
