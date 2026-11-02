@@ -6,6 +6,7 @@ export type Archive = {
   author: string;
   content: string;
   images: string[];
+  imageCount?: number;
 };
 
 export type CalendarItem = {

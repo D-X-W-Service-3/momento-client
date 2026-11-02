@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 
@@ -25,15 +25,9 @@ export default function ArchivePage() {
     author: item.authorNickname,
     content: '',
     images: item.thumbnailUrl ? [item.thumbnailUrl] : [],
+    imageCount: item.imageCount,
   }));
-  const filtered = useMemo(
-    () =>
-      archives.filter((archive) =>
-        `${archive.title} ${archive.content}`.includes(query),
-      ),
-    [archives, query],
-  );
-  const grouped = filtered.reduce<Record<string, Archive[]>>(
+  const grouped = archives.reduce<Record<string, Archive[]>>(
     (result, archive) => {
       const year = String(archive.year);
       result[year] = [...(result[year] ?? []), archive];
