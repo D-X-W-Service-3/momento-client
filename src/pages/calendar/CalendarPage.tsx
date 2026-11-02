@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import BottomSheet from '@/components/common/BottomSheet';
@@ -7,14 +8,17 @@ import CalendarCard from '@/components/calendar/CalendarCards';
 import MonthCalendar from '@/components/calendar/MonthCalendar';
 import { BrandHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
-import { useCalendarItems } from '@/hooks/useCalendarItems';
+import {
+  getCalendarDaily,
+  getCalendarMonth,
+  toCalendarItems,
+} from '@/apis/momento';
 import type { CalendarItem } from '@/types/momento';
 import { formatKoreanDate, parseKoreanDate } from '@/utils/dates';
 
 export default function CalendarPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const calendarItems = useCalendarItems();
   const initialDate =
     parseKoreanDate(searchParams.get('date') ?? '') ?? new Date();
   const [view, setView] = useState(
@@ -25,12 +29,33 @@ export default function CalendarPage() {
   const [makeOpen, setMakeOpen] = useState(false);
   const year = view.getFullYear();
   const month = view.getMonth() + 1;
-  const today = new Date();
+  const selectedDate = `${year}-${String(month).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+  const monthQuery = useQuery({
+    queryKey: ['calendar', year, month],
+    queryFn: () => getCalendarMonth(year, month),
+    retry: false,
+  });
+  const dailyQuery = useQuery({
+    queryKey: ['calendar', selectedDate],
+    queryFn: () => getCalendarDaily(selectedDate),
+    retry: false,
+  });
+  const calendarItems: CalendarItem[] = dailyQuery.data
+    ? toCalendarItems(dailyQuery.data)
+    : [];
+  const monthDays = monthQuery.data?.days ?? [];
+  const counts = monthQuery.data?.counts ?? {
+    all: 0,
+    capsules: 0,
+    memories: 0,
+    anniversaries: 0,
+  };
+  const error = monthQuery.error ?? dailyQuery.error;
   const filters = [
-    `전체 ${calendarItems.length}`,
-    `캡슐 ${calendarItems.filter((item) => item.type === 'capsule').length}`,
-    `아카이브 ${calendarItems.filter((item) => item.type === 'archive').length}`,
-    `기념일 ${calendarItems.filter((item) => item.type === 'anniversary').length}`,
+    `전체 ${counts.all}`,
+    `캡슐 ${counts.capsules}`,
+    `아카이브 ${counts.memories}`,
+    `기념일 ${counts.anniversaries}`,
   ];
   const visibleItems = calendarItems.filter(
     (item) =>
@@ -38,17 +63,25 @@ export default function CalendarPage() {
       item.type === ['capsule', 'archive', 'anniversary'][selectedFilter - 1],
   );
   const markersByDay: Record<number, CalendarItem['type'][]> = {};
-  visibleItems.forEach((item) => {
+  monthDays.forEach((item) => {
     const date = parseKoreanDate(item.date);
-    if (
-      !date ||
-      (!item.yearly && date.getFullYear() !== year) ||
-      date.getMonth() + 1 !== month
-    )
+    if (!date || date.getFullYear() !== year || date.getMonth() + 1 !== month)
       return;
     const day = date.getDate();
     const types = markersByDay[day] ?? [];
-    if (!types.includes(item.type)) markersByDay[day] = [...types, item.type];
+    const next = (item.types ?? [])
+      .map(
+        (type) =>
+          (
+            ({
+              CAPSULE: 'capsule',
+              ANNIVERSARY: 'anniversary',
+              MEMORY: 'archive',
+            }) as const
+          )[type as 'CAPSULE' | 'ANNIVERSARY' | 'MEMORY'],
+      )
+      .filter((type): type is CalendarItem['type'] => Boolean(type));
+    markersByDay[day] = [...new Set([...types, ...next])];
   });
 
   return (
@@ -69,6 +102,11 @@ export default function CalendarPage() {
         </div>
       </section>
       <section className="page-body calendar-body">
+        {error && (
+          <p className="field-error" role="alert">
+            {error.message}
+          </p>
+        )}
         <Link className="search-field calendar-search" to="/calendar/search">
           <span>캡슐 및 아카이브, 기념일 검색</span>
           <SearchIcon />
@@ -97,7 +135,7 @@ export default function CalendarPage() {
           }}
         />
         <section className="calendar-results">
-          <h2>{formatKoreanDate(today)}</h2>
+          <h2>{formatKoreanDate(new Date(year, month - 1, selectedDay))}</h2>
           {visibleItems.length === 0 && (
             <p className="empty-state">저장된 추억이 없어요.</p>
           )}

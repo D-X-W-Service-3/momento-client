@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import BottomSheet from '@/components/common/BottomSheet';
@@ -6,7 +7,14 @@ import DatePicker from '@/components/common/DatePicker';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import { BackHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
-import { useMomentoStore } from '@/stores/useMomentoStore';
+import {
+  createMemory,
+  getMemory,
+  toIsoDate,
+  toKoreanDate,
+  updateMemory,
+  uploadMemoryImages,
+} from '@/apis/momento';
 
 async function preparePhoto(file: File): Promise<string> {
   const bitmap = await createImageBitmap(file);
@@ -22,38 +30,76 @@ async function preparePhoto(file: File): Promise<string> {
 export default function ArchiveFormPage() {
   const { archiveId } = useParams();
   const navigate = useNavigate();
-  const archives = useMomentoStore((state) => state.archives);
-  const addArchive = useMomentoStore((state) => state.addArchive);
-  const updateArchive = useMomentoStore((state) => state.updateArchive);
-  const existing = archives.find((archive) => archive.id === Number(archiveId));
-  const editing = Boolean(existing);
-  const [name, setName] = useState(existing?.title.replace('\n', ' ') ?? '');
-  const [date, setDate] = useState(existing?.date ?? '');
-  const [content, setContent] = useState(existing?.content ?? '');
+  const editing = Boolean(archiveId);
+  const [name, setName] = useState('');
+  const [date, setDate] = useState('');
+  const [content, setContent] = useState('');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [imageKeys, setImageKeys] = useState<Record<string, string>>({});
+  const [newFiles, setNewFiles] = useState<Record<string, File>>({});
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
-  const [photos, setPhotos] = useState(existing?.images ?? []);
+  const [photos, setPhotos] = useState<string[]>([]);
+  const memoryQuery = useQuery({
+    queryKey: ['memory', archiveId],
+    queryFn: () => getMemory(Number(archiveId)),
+    enabled: editing,
+    retry: false,
+  });
+  useEffect(() => {
+    const item = memoryQuery.data;
+    if (item) {
+      setName(item.title);
+      setDate(toKoreanDate(item.memoryDate));
+      setContent(item.content);
+      setPhotos(item.images.map((image) => image.imageUrl));
+      setImageKeys(
+        Object.fromEntries(
+          item.images.map((image) => [image.imageUrl, image.imageKey]),
+        ),
+      );
+    }
+  }, [memoryQuery.data]);
+  const displayError = error || memoryQuery.error?.message;
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const save = () => {
-    if (!photos.length || !name.trim() || !date) {
+  const save = async () => {
+    if (!name.trim() || !date) {
       setShowErrors(true);
       return;
     }
-    const value = {
-      title: name.trim(),
-      date,
-      author: existing?.author ?? '나',
-      content: content.trim(),
-      images: photos,
-    };
-    if (existing) {
-      updateArchive(existing.id, value);
-      navigate(`/archives/${existing.id}`);
-    } else {
-      const id = addArchive(value);
-      navigate(`/archives/${id}`);
+    setSaving(true);
+    try {
+      const files = photos
+        .filter((photo) => newFiles[photo])
+        .map((photo) => newFiles[photo]);
+      const uploaded = await uploadMemoryImages(files);
+      const uploadedKeys = Object.fromEntries(
+        photos
+          .filter((photo) => newFiles[photo])
+          .map((photo, index) => [photo, uploaded[index]]),
+      );
+      const value = {
+        title: name.trim(),
+        content: content.trim(),
+        memoryDate: toIsoDate(date),
+        imageKeys: photos.map(
+          (photo) => imageKeys[photo] ?? uploadedKeys[photo],
+        ),
+      };
+      if (archiveId) {
+        await updateMemory(Number(archiveId), value);
+        navigate(`/archives/${archiveId}`);
+      } else {
+        await createMemory(value);
+        navigate('/archives');
+      }
+    } catch (reason) {
+      setError((reason as Error).message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -62,6 +108,12 @@ export default function ArchiveFormPage() {
     const available = Math.max(0, 8 - photos.length);
     const selected = Array.from(files).slice(0, available);
     const prepared = await Promise.all(selected.map(preparePhoto));
+    setNewFiles((current) => ({
+      ...current,
+      ...Object.fromEntries(
+        prepared.map((photo, index) => [photo, selected[index]]),
+      ),
+    }));
     setPhotos((current) => [...current, ...prepared].slice(0, 8));
     if (fileInput.current) fileInput.current.value = '';
   };
@@ -73,7 +125,7 @@ export default function ArchiveFormPage() {
         className="form-page"
         onSubmit={(event) => {
           event.preventDefault();
-          save();
+          void save();
         }}
       >
         {!editing && (
@@ -137,11 +189,6 @@ export default function ArchiveFormPage() {
               상세 이미지 화면에서 삭제, 대표사진을 변경해보세요
             </span>
           </p>
-          {showErrors && !photos.length && (
-            <small className="field-error">
-              사진을 한 장 이상 추가해 주세요.
-            </small>
-          )}
         </section>
         <label className="input-group">
           <span>아카이브 이름</span>
@@ -187,7 +234,16 @@ export default function ArchiveFormPage() {
             <small>{content.length}/45</small>
           </div>
         </label>
-        <button className="button-primary submit-button" type="submit">
+        {displayError && (
+          <p className="field-error" role="alert">
+            {displayError}
+          </p>
+        )}
+        <button
+          className="button-primary submit-button"
+          type="submit"
+          disabled={saving}
+        >
           {editing ? '수정하기' : '저장하기'}
         </button>
       </form>

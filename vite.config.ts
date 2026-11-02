@@ -89,6 +89,18 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://13.125.44.162:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.removeHeader('origin');
+          });
+        },
+      },
+    },
     // 로컬 개발 시 백엔드로 프록시. 배포는 vercel.json 의 rewrites 를 사용.
     // proxy: {
     //   '/api': {
