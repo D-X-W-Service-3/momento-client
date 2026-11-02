@@ -1,5 +1,7 @@
-import type { CalendarItem } from '@/types/momento';
 import { Link } from 'react-router-dom';
+
+import { capsuleCoverPath } from '@/constants/routes';
+import type { CalendarItem } from '@/types/momento';
 
 const statusLabels = {
   open: '개봉 가능',
@@ -60,5 +62,16 @@ export default function CalendarCard({ item }: { item: CalendarItem }) {
         </div>
       </Link>
     );
-  return <article className="calendar-card">{contents}</article>;
+  const capsuleRouteId =
+    item.status === 'open'
+      ? 'openable'
+      : item.status === 'sealed'
+        ? 'sealed'
+        : String(item.id);
+
+  return (
+    <Link to={capsuleCoverPath(capsuleRouteId)} className="calendar-card">
+      {contents}
+    </Link>
+  );
 }

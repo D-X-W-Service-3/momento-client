@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import CapsuleRefreshIcon from '@/assets/icons/capsule-refresh.svg?react';
 import linkIcon from '@/assets/icons/link.svg';
 import BottomSheet from '@/components/common/BottomSheet';
 import Button from '@/components/common/Button';
@@ -8,8 +9,7 @@ import type { MemberRole } from '@/types/capsule';
 const ROLE_TEXT: Record<MemberRole, { title: string; description: string }> = {
   participant: {
     title: '참여자를 초대해볼까요?',
-    description:
-      '아래 링크를 친구에게 공유하면 누구나 이 캡슐에 참여할 수 있어요',
+    description: '아래 링크를 친구에게 공유하면 이 캡슐에 참여할 수 있어요',
   },
   receiver: {
     title: '수신자를 초대해볼까요?',
@@ -22,6 +22,7 @@ interface InviteSheetProps {
   onClose: () => void;
   role: MemberRole;
   inviteUrl: string;
+  onRefreshLink?: () => void;
 }
 
 export default function InviteSheet({
@@ -29,6 +30,7 @@ export default function InviteSheet({
   onClose,
   role,
   inviteUrl,
+  onRefreshLink,
 }: InviteSheetProps) {
   const [copied, setCopied] = useState(false);
   const text = ROLE_TEXT[role];
@@ -43,7 +45,13 @@ export default function InviteSheet({
     }
   };
 
+  const refreshLink = () => {
+    // TODO: 초대링크 재생성 API 연결
+    onRefreshLink?.();
+  };
+
   const share = async () => {
+    onClose();
     // 공유 시트를 지원하지 않으면 링크 복사로 대신한다.
     if (!navigator.share) return copyLink();
     try {
@@ -70,17 +78,25 @@ export default function InviteSheet({
             초대링크
           </p>
 
-          <div className="flex w-full items-start gap-stack">
+          <div className="flex w-full items-center gap-stack">
             <p className="flex h-9 min-w-0 flex-1 items-center overflow-hidden rounded-lg border border-border-default px-4 font-display text-button-sm leading-[1.6] text-ink-faint">
-              {inviteUrl}
+              <span className="truncate">{inviteUrl}</span>
             </p>
             <button
               type="button"
               onClick={copyLink}
               aria-label="초대링크 복사"
-              className="flex size-9 shrink-0 items-center justify-center rounded-md bg-fill-muted"
+              className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md bg-fill-muted"
             >
               <img src={linkIcon} alt="" className="size-[18px]" />
+            </button>
+            <button
+              type="button"
+              onClick={refreshLink}
+              aria-label="초대링크 재생성"
+              className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md bg-fill-muted"
+            >
+              <CapsuleRefreshIcon className="size-[14px]" />
             </button>
           </div>
 

@@ -20,7 +20,7 @@ interface ChipProps {
 export default function Chip({ tone, children, className = '' }: ChipProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-label font-medium whitespace-nowrap ${TONE_STYLES[tone]} ${className}`}
+      className={`inline-flex h-6 w-fit items-center rounded-full px-2.5 py-1 text-label font-medium whitespace-nowrap ${TONE_STYLES[tone]} ${className}`}
     >
       {children}
     </span>

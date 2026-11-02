@@ -13,6 +13,7 @@ export default function HomePage() {
     handleProfile,
     handleCreateCapsule,
     handleViewAllCapsules,
+    handleSelectCapsule,
   } = useHomeDashboard();
 
   return (
@@ -25,13 +26,17 @@ export default function HomePage() {
       {dashboard && (
         <div className="bg-surface-gray flex flex-col gap-5 px-5 pt-[10px] pb-5">
           <section className="flex flex-col gap-3">
-            <HeroCapsuleCard capsule={dashboard.heroCapsule} />
+            <HeroCapsuleCard
+              capsule={dashboard.heroCapsule}
+              onClick={() => handleSelectCapsule('sealed')}
+            />
             <CapsuleCreateBanner onClick={handleCreateCapsule} />
           </section>
 
           <HomeCapsuleSection
             capsule={dashboard.featuredCapsule}
             onViewAll={handleViewAllCapsules}
+            onSelectCapsule={() => handleSelectCapsule('openable')}
           />
 
           <AttendanceStreakCard

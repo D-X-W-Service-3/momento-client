@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Modal from '@/components/common/Modal';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import PhotoCount from '@/components/archive/PhotoCount';
 import MobileLayout from '@/components/layout/MobileLayout';
@@ -100,11 +100,12 @@ export default function SharedArchivePage() {
           </div>
         </section>
       </article>
-      <Modal
+      <ConfirmDialog
         open={confirmOpen}
         title="아카이브를 저장할까요?"
         cancelLabel="저장 안 함"
         confirmLabel="저장하기"
+        confirmTone="primary"
         onCancel={() => setConfirmOpen(false)}
         onConfirm={() => {
           saveShared();

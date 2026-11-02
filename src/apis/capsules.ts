@@ -44,19 +44,19 @@ export const mockCapsuleHomeData: CapsuleHomeData = {
   editableCapsules: [
     {
       id: 'edit-1',
-      badge: { label: '수정마감 D-12', tone: 'editable' },
+      badge: { label: '수정마감 D-12', tone: 'warning' },
       title: '2024 우리, 다시 만나는 날',
       openDateText: '2027.04.15 공개',
     },
     {
       id: 'edit-2',
-      badge: { label: '수정마감 D-12', tone: 'editable' },
+      badge: { label: '수정마감 D-12', tone: 'warning' },
       title: '2024 우리, 다시 만나는 날',
       openDateText: '2027.04.15 공개',
     },
     {
       id: 'edit-3',
-      badge: { label: '수정마감 D-5', tone: 'editable' },
+      badge: { label: '수정마감 D-5', tone: 'warning' },
       title: '바니바니 바니바니 당근 당근',
       openDateText: '2027.06.20 공개',
     },
@@ -64,19 +64,19 @@ export const mockCapsuleHomeData: CapsuleHomeData = {
   lockedCapsules: [
     {
       id: 'lock-1',
-      badge: { label: 'D-12', tone: 'locked' },
+      badge: { label: 'D-12', tone: 'info' },
       title: '2024 우리, 다시 만나는 날',
       openDateText: '2027.04.15 공개',
     },
     {
       id: 'lock-2',
-      badge: { label: 'D-12', tone: 'locked' },
+      badge: { label: 'D-12', tone: 'info' },
       title: '2024 우리, 다시 만나는 날',
       openDateText: '2027.04.15 공개',
     },
     {
       id: 'lock-3',
-      badge: { label: 'D-30', tone: 'locked' },
+      badge: { label: 'D-30', tone: 'info' },
       title: '우리들의 여름방학 이야기',
       openDateText: '2027.08.01 공개',
     },
@@ -84,19 +84,19 @@ export const mockCapsuleHomeData: CapsuleHomeData = {
   openedCapsules: [
     {
       id: 'open-1',
-      badge: { label: 'D+12', tone: 'opened' },
+      badge: { label: 'D+12', tone: 'neutral' },
       title: '2024 우리, 다시 만나는 날',
       openDateText: '2027.04.15 공개',
     },
     {
       id: 'open-2',
-      badge: { label: 'D+12', tone: 'opened' },
+      badge: { label: 'D+12', tone: 'neutral' },
       title: '2024 우리, 다시 만나는 날',
       openDateText: '2027.04.15 공개',
     },
     {
       id: 'open-3',
-      badge: { label: 'D+30', tone: 'opened' },
+      badge: { label: 'D+30', tone: 'neutral' },
       title: '바니바니 바니바니 당근 당근',
       openDateText: '2027.03.10 공개',
     },
@@ -117,7 +117,7 @@ export const mockCapsuleListData: CapsuleListData = {
       year: 2026,
       filterCategory: 'openable',
       variant: 'gradient',
-      badges: [{ label: '개봉 가능', tone: 'openable' }],
+      badges: [{ label: '개봉 가능', tone: 'success' }],
       title: '2024 우리, 다시 만나는 날',
       description:
         '1년 동안 서로에게 응원과 사랑을 보냈던 우리의 소중한 타임캡슐',
@@ -130,7 +130,7 @@ export const mockCapsuleListData: CapsuleListData = {
       year: 2026,
       filterCategory: 'editable',
       variant: 'translucent',
-      badges: [{ label: '수정마감 D-12', tone: 'editable' }],
+      badges: [{ label: '수정마감 D-12', tone: 'warning' }],
       title: '바니바니 바니바니 당근 당근',
       description: '제주도에서의 추억을 담아 만든 타임캡슐 🥕',
       dateText: '3일 후 봉인 예정',
@@ -142,8 +142,8 @@ export const mockCapsuleListData: CapsuleListData = {
       filterCategory: 'locked',
       variant: 'white',
       badges: [
-        { label: '봉인됨', tone: 'locked' },
-        { label: 'D-30', tone: 'locked' },
+        { label: '봉인됨', tone: 'info' },
+        { label: 'D-30', tone: 'info' },
       ],
       title: '2024 우리, 다시 만나는 날',
       description:
@@ -156,7 +156,7 @@ export const mockCapsuleListData: CapsuleListData = {
       year: 2027,
       filterCategory: 'editable',
       variant: 'translucent',
-      badges: [{ label: '수정마감 D-12', tone: 'editable' }],
+      badges: [{ label: '수정마감 D-12', tone: 'warning' }],
       title: '바니바니 바니바니 당근 당근',
       description: '제주도에서의 추억을 담아 만든 타임캡슐 🥕',
       dateText: '3일 후 봉인 예정',
@@ -168,8 +168,8 @@ export const mockCapsuleListData: CapsuleListData = {
       filterCategory: 'opened',
       variant: 'translucent',
       badges: [
-        { label: '개봉됨', tone: 'opened' },
-        { label: 'D+30', tone: 'opened' },
+        { label: '개봉됨', tone: 'neutral' },
+        { label: 'D+30', tone: 'neutral' },
       ],
       title: '바니바니 바니바니 당근 당근',
       description: '제주도에서의 추억을 담아 만든 타임캡슐 🥕',
