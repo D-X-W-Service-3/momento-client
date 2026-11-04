@@ -8,7 +8,7 @@ interface LetterPaperCardProps {
   onSelect: () => void;
 }
 
-/** 우표 모양 편지지 선택 카드. 미선택은 흐리게 보여준다. */
+/** 우표 모양 화풍 선택 카드. 선택 표시는 체크 동그라미와 뱃지로만 한다. */
 export default function LetterPaperCard({
   paper,
   selected,
@@ -25,7 +25,7 @@ export default function LetterPaperCard({
         src={paper.imageUrl}
         alt={paper.name}
         loading="lazy"
-        className={`size-full object-cover ${selected ? '' : 'opacity-72'}`}
+        className="size-full object-cover"
       />
 
       <span className="absolute top-2 right-2 block size-6">
