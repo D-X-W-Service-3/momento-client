@@ -47,7 +47,7 @@ export default function AnniversaryFormPage() {
   const cancel = () => navigate('/calendar');
   const [cancelOpen, setCancelOpen] = useState(false);
   return (
-    <MobileLayout>
+    <MobileLayout className="anniversary-page">
       <div className="anniversary-page">
         <BackHeader
           title={editing ? '기념일 수정' : '기념일 생성'}

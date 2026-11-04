@@ -79,6 +79,7 @@ export default function AnniversaryForm({
             <button
               type="button"
               className="input-button"
+              data-filled={Boolean(value.date)}
               onClick={() => setSheet('date')}
             >
               {value.date || '날짜를 선택해주세요'}
@@ -98,6 +99,9 @@ export default function AnniversaryForm({
             <button
               type="button"
               className={value.yearly ? 'toggle on' : 'toggle'}
+              role="switch"
+              aria-checked={value.yearly}
+              aria-label="매년 반복"
               onClick={() => update('yearly', !value.yearly)}
             >
               <span />
@@ -106,7 +110,9 @@ export default function AnniversaryForm({
         </section>
         <section className="form-card">
           <label className="input-group">
-            <span>메모 (선택)</span>
+            <span>
+              메모 <span className="optional-label">(선택)</span>
+            </span>
             <div className="textarea-wrap">
               <textarea
                 maxLength={200}
@@ -132,6 +138,9 @@ export default function AnniversaryForm({
               <button
                 type="button"
                 className={value.notification ? 'toggle on' : 'toggle'}
+                role="switch"
+                aria-checked={value.notification}
+                aria-label="알림 받기"
                 onClick={() => update('notification', !value.notification)}
               >
                 <span />
@@ -220,13 +229,18 @@ export default function AnniversaryForm({
             <button
               type="button"
               key={option}
+              aria-pressed={value.reminder === option}
               onClick={() => {
                 update('reminder', option);
                 setSheet(null);
               }}
             >
               {option}
-              <span>{value.reminder === option ? '✓' : ''}</span>
+              <img
+                src={`/assets/anniversary/check-${value.reminder === option ? 'active' : 'inactive'}.svg`}
+                alt=""
+                aria-hidden="true"
+              />
             </button>
           ))}
         </div>

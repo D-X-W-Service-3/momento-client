@@ -49,10 +49,8 @@ export async function fetchCapsuleListData(
   keyword: string,
   cursor?: string,
 ): Promise<CapsuleListData> {
-  const params = new URLSearchParams({
-    status: capsuleStatusParam[filter],
-    size: '20',
-  });
+  const params = new URLSearchParams({ size: '20' });
+  if (filter !== 'all') params.set('status', capsuleStatusParam[filter]);
   if (keyword) params.set('keyword', keyword);
   if (cursor) params.set('cursor', cursor);
   const data = await api.get<CapsuleListResponse>(
@@ -60,6 +58,7 @@ export async function fetchCapsuleListData(
   );
   return {
     filters: [
+      { key: 'all', label: '전체', count: data.counts.all },
       { key: 'editable', label: '수정 가능', count: data.counts.writing },
       { key: 'locked', label: '잠긴 캡슐', count: data.counts.locked },
       { key: 'opened', label: '열린 캡슐', count: data.counts.opened },

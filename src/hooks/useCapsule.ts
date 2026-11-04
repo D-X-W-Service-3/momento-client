@@ -118,6 +118,7 @@ export const useRegenerateInviteLink = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => regenerateInviteLink(capsuleId, role),
+    retry: false,
     onSuccess: (invite: CapsuleInvite) =>
       queryClient.setQueryData(capsuleKeys.invite(capsuleId, role), invite),
   });

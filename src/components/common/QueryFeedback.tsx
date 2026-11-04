@@ -1,22 +1,28 @@
+import ContentState from '@/components/common/ContentState';
+
 interface Props {
   loading?: boolean;
   error?: Error | null;
   onRetry?: () => unknown;
   empty?: boolean;
   emptyMessage?: string;
+  emptyDescription?: string;
 }
 export default function QueryFeedback({
   loading,
   error,
   onRetry,
   empty,
+  emptyDescription = '새로운 추억을 남겨보세요.',
   emptyMessage = '아직 표시할 내용이 없어요.',
 }: Props) {
   if (loading)
     return (
-      <p className="text-body-sm text-text-muted p-5" role="status">
-        불러오는 중이에요…
-      </p>
+      <ContentState
+        title="불러오는 중이에요"
+        description="잠시만 기다려주세요."
+        loading
+      />
     );
   if (error)
     return (
@@ -34,6 +40,6 @@ export default function QueryFeedback({
       </div>
     );
   return empty ? (
-    <p className="text-body-sm text-text-muted p-5">{emptyMessage}</p>
+    <ContentState title={emptyMessage} description={emptyDescription} />
   ) : null;
 }

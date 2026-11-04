@@ -96,7 +96,7 @@ export default function CapsuleDetailPage() {
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-capsule-bg-from to-capsule-bg-to">
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         <BackHeader tone="dark" />
 
         {capsule && chip && permissions && (

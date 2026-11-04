@@ -111,7 +111,7 @@ export default function ArchiveFormPage() {
   };
 
   return (
-    <MobileLayout>
+    <MobileLayout className="archive-form-page">
       <BackHeader title={editing ? '아카이브 수정' : '아카이브 추가'} />
       <form
         className="form-page"
@@ -219,6 +219,7 @@ export default function ArchiveFormPage() {
           <button
             type="button"
             className="input-button"
+            data-filled={Boolean(date)}
             onClick={() => setCalendarOpen(true)}
           >
             {date || '날짜를 선택해 주세요'}{' '}

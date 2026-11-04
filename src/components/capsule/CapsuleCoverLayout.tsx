@@ -17,7 +17,7 @@ export default function CapsuleCoverLayout({
 }: CapsuleCoverLayoutProps) {
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-capsule-bg-from to-capsule-bg-to">
-      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col overflow-hidden pt-[env(safe-area-inset-top)]">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-app flex-col overflow-hidden pt-[env(safe-area-inset-top)]">
         <FloatingLetters />
 
         <div className="relative flex flex-1 flex-col">

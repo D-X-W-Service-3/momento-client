@@ -18,6 +18,8 @@ export type CalendarItem = {
   dDay?: string;
   meta?: string;
   image?: string;
+  imageCount?: number;
+  author?: string;
   yearly?: boolean;
 };
 

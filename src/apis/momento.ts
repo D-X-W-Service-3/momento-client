@@ -196,6 +196,8 @@ export function toCalendarItems(data: CalendarData) {
       title: item.title,
       date: toKoreanDate(item.memoryDate),
       image: item.thumbnailUrl ?? undefined,
+      imageCount: item.imageCount,
+      author: item.authorNickname,
       meta: `사진 ${item.imageCount}`,
     })),
   ];

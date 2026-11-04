@@ -46,7 +46,7 @@ export default function MobileLayout({
 
     return (
       <div
-        className={`mx-auto flex min-h-[100dvh] w-full max-w-[393px] flex-col ${bgClass} ${className}`}
+        className={`mx-auto flex min-h-[100dvh] w-full max-w-app flex-col ${bgClass} ${className}`}
       >
         {children}
       </div>
@@ -54,7 +54,7 @@ export default function MobileLayout({
   }
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell ${className}`}>
       <div className={withNav ? 'app-content with-nav' : 'app-content'}>
         {children}
       </div>

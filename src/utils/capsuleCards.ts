@@ -5,7 +5,10 @@ import type {
   CapsuleChipBadge,
 } from '@/types/capsule';
 
-export const capsuleStatusParam: Record<CapsuleFilterKey, string> = {
+export const capsuleStatusParam: Record<
+  Exclude<CapsuleFilterKey, 'all'>,
+  string
+> = {
   editable: 'WRITING',
   locked: 'LOCKED',
   opened: 'OPENED',

@@ -15,7 +15,9 @@ export function useCapsuleList() {
       ? 'locked'
       : param === 'opened' || param === 'openable'
         ? 'opened'
-        : 'editable';
+        : param === 'editable'
+          ? 'editable'
+          : 'all';
   const shouldFocusSearch = searchParams.get('focus') === 'search';
   const [searchQuery, setSearchQuery] = useState('');
   const keyword = useDebouncedValue(searchQuery.trim());
@@ -45,6 +47,7 @@ export function useCapsuleList() {
   }, [query.data]);
   return {
     filters: query.data?.pages[0].filters ?? [
+      { key: 'all' as const, label: '전체', count: 0 },
       { key: 'editable' as const, label: '수정 가능', count: 0 },
       { key: 'locked' as const, label: '잠긴 캡슐', count: 0 },
       { key: 'opened' as const, label: '열린 캡슐', count: 0 },

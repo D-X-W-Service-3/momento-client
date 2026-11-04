@@ -1,6 +1,6 @@
 import type { ChipTone } from '@/components/common/Chip';
 
-export type CapsuleFilterKey = 'editable' | 'locked' | 'opened';
+export type CapsuleFilterKey = 'all' | 'editable' | 'locked' | 'opened';
 
 export interface CapsuleChipBadge {
   label: string;
@@ -27,7 +27,7 @@ export interface CapsuleHorizontalItem {
 export interface CapsuleListItem {
   id: string;
   year: number;
-  filterCategory: CapsuleFilterKey;
+  filterCategory: Exclude<CapsuleFilterKey, 'all'>;
   variant: 'gradient' | 'white' | 'translucent';
   badges: CapsuleChipBadge[];
   title: string;

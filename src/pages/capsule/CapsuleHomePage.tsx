@@ -1,3 +1,4 @@
+import PageIntro from '@/components/layout/PageIntro';
 import capsuleHomeMascotImg from '@/assets/images/capsule-home-mascot.png';
 import CapsuleFab from '@/components/capsule/CapsuleFab';
 import ReceivedInvitesSheet from '@/components/capsule/ReceivedInvitesSheet';
@@ -9,7 +10,6 @@ import CapsuleSearchBar from '@/components/capsule/CapsuleSearchBar';
 import HomeHeader from '@/components/layout/HomeHeader';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { useCapsuleHome } from '@/hooks/useCapsuleHome';
-import { textStyles } from '@/styles/tokens';
 
 export default function CapsuleHomePage() {
   const {
@@ -35,35 +35,29 @@ export default function CapsuleHomePage() {
     <MobileLayout withNav>
       <HomeHeader onClickBell={handleNotifications} />
 
-      <div className="flex flex-col gap-8 px-5 pb-8">
-        <section className="relative flex w-full flex-col">
-          <div className="relative flex h-[200px] w-full items-center justify-between">
-            <div className="relative z-10 flex w-[198px] flex-col gap-2 py-10">
-              <h1 className={`text-text-primary ${textStyles['heading-h2']}`}>
-                타임캡슐
-              </h1>
-              <p className={`text-text-secondary ${textStyles['body-xs']}`}>
-                우리의 시간이
-                <br />
-                차곡차곡 쌓이고 있어요
-              </p>
-            </div>
-
+      <div className="flex flex-col gap-5 px-5 pb-8">
+        <PageIntro
+          title="타임캡슐"
+          description={
+            <>
+              우리의 시간이
+              <br />
+              차곡차곡 쌓이고 있어요
+            </>
+          }
+          illustration={
             <img
               src={capsuleHomeMascotImg}
-              alt="타임캡슐 모모 캐릭터"
-              className="relative z-10 h-[168px] w-[155px] shrink-0 object-contain"
+              alt="모모 캐릭터"
+              className="h-[168px] w-auto"
             />
-          </div>
-
-          <div className="relative z-20 -mt-[30px] flex w-full flex-col gap-3">
-            <CapsuleSearchBar readOnly onClick={handleSearchClick} />
-            {data?.hasPendingRequest && (
-              <CapsuleRequestBanner onClick={openInvites} />
-            )}
-          </div>
-        </section>
-
+          }
+        >
+          <CapsuleSearchBar readOnly onClick={handleSearchClick} />
+          {data?.hasPendingRequest && (
+            <CapsuleRequestBanner onClick={openInvites} />
+          )}
+        </PageIntro>
         {data && (
           <CapsuleFeaturedSection
             capsules={data.featuredCapsules}
@@ -73,7 +67,6 @@ export default function CapsuleHomePage() {
             onSelectCapsule={handleSelectCapsule}
           />
         )}
-
         <QueryFeedback loading={isLoading} error={error} onRetry={retry} />
         {data && (
           <>

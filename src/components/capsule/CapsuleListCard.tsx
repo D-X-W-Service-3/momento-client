@@ -28,8 +28,8 @@ export default function CapsuleListCard({
       onClick={onClick}
       className={`flex w-full cursor-pointer flex-col gap-3 rounded-xl p-5 ${cardBgClass}`}
     >
-      <div className="flex w-full items-end justify-between gap-3">
-        <div className="flex w-[197px] flex-col gap-2">
+      <div className="flex w-full items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex flex-wrap items-center gap-3">
             {item.badges.map((badge) => (
               <Chip key={badge.label} tone={badge.tone}>

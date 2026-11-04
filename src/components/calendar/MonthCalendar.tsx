@@ -103,7 +103,7 @@ export default function MonthCalendar({
             </div>
           )}
         </div>
-        <span>
+        <span className="month-actions">
           <button
             type="button"
             aria-label="이전 달"
@@ -112,7 +112,9 @@ export default function MonthCalendar({
               onChangeMonth(-1);
             }}
           >
-            ‹
+            <span className="month-action-icon previous" aria-hidden="true">
+              <img src="/assets/calendar/month-actions.svg" alt="" />
+            </span>
           </button>
           <button
             type="button"
@@ -122,7 +124,9 @@ export default function MonthCalendar({
               onChangeMonth(1);
             }}
           >
-            ›
+            <span className="month-action-icon next" aria-hidden="true">
+              <img src="/assets/calendar/month-actions.svg" alt="" />
+            </span>
           </button>
         </span>
       </header>

@@ -1,3 +1,4 @@
+import QueryFeedback from '@/components/common/QueryFeedback';
 import type { ReactNode } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
@@ -14,11 +15,9 @@ export default function RequireLetterWriting({
   const { data: capsule, error } = useCapsuleDetail(capsuleId);
   if (!capsule) {
     return (
-      <div className="mx-auto max-w-md p-5">
+      <div className="mx-auto max-w-app p-5">
         <BackHeader title="편지 작성" />
-        <p role={error ? 'alert' : 'status'}>
-          {error?.message ?? '작성 권한을 확인하고 있어요...'}
-        </p>
+        <QueryFeedback loading={!error} error={error} />
       </div>
     );
   }
