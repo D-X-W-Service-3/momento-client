@@ -15,7 +15,7 @@
 @theme {
   /* === Font === */
   --font-sans: 'Pretendard Variable', Pretendard, sans-serif;
-  --font-logo: var(--font-sans);
+  --font-logo: 'Agbalumo', cursive;
   --font-header-logo: 'Agbalumo', cursive;
   --container-app: 393px;
 

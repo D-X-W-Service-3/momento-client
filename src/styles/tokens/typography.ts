@@ -6,7 +6,7 @@ export const textStyles = {
   'display-hero': 'text-display font-normal',
   'display-dday': 'text-logo font-bold leading-[45px] tracking-[-1.08px]',
   'brand-logo':
-    'font-logo text-logo font-normal leading-[45px] tracking-[-1.08px]',
+    'font-header-logo text-logo font-normal leading-[45px] tracking-[-1.08px]',
   'header-logo':
     'font-header-logo text-h2 font-normal leading-[28px] tracking-[-0.2px]',
   'heading-h1': 'text-h1 font-bold leading-[31.2px] tracking-[-0.48px]',

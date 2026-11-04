@@ -4,8 +4,8 @@ import FloatingLetters from '@/components/capsule/FloatingLetters';
 import BackHeader from '@/components/layout/BackHeader';
 
 interface CapsuleCoverLayoutProps {
-  /** 두 줄 고정 대제목 */
-  titleLines: [string, string];
+  /** 대제목 줄 배열 */
+  titleLines: string[];
   /** 하단 버튼들 */
   children: ReactNode;
 }
@@ -24,9 +24,12 @@ export default function CapsuleCoverLayout({
           <BackHeader tone="dark" />
 
           <h1 className="mt-6 bg-[linear-gradient(109.3deg,var(--color-capsule-title-from)_1.79%,var(--color-capsule-title-to)_106.3%)] bg-clip-text px-5 text-center font-display text-title-lg font-bold text-transparent">
-            {titleLines[0]}
-            <br />
-            {titleLines[1]}
+            {titleLines.map((line, index) => (
+              <span key={index}>
+                {line}
+                {index < titleLines.length - 1 && <br />}
+              </span>
+            ))}
           </h1>
 
           <div className="mt-auto flex flex-col gap-list px-5 pb-[max(20px,env(safe-area-inset-bottom))]">
