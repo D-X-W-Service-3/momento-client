@@ -1,44 +1,8 @@
 import type { AnniversaryForm } from '@/types/momento';
+import { request } from '@/apis/client';
 import { validateMemoryImages } from '@/utils/archivePhotos';
 
-const baseUrl =
-  import.meta.env.VITE_API_BASE_URL ||
-  (import.meta.env.DEV ? '/api' : 'https://api.getmomento.site');
-
-export async function request<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
-  const token = localStorage.getItem('accessToken');
-  const response = await fetch(`${baseUrl}${path}`, {
-    ...options,
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-  const raw = await response.text();
-  let body: { code?: string; message?: string; data?: T } = {};
-  try {
-    body = raw ? JSON.parse(raw) : {};
-  } catch {
-    throw new Error(
-      response.status === 403 && raw.includes('Invalid CORS request')
-        ? '서버가 요청 출처를 허용하지 않았어요. 개발 서버 설정을 확인해 주세요.'
-        : `서버 응답을 읽을 수 없어요. (${response.status})`,
-    );
-  }
-  if (response.status === 401) {
-    throw new Error(
-      '로그인 정보가 없거나 만료됐어요. 실제 로그인 연동이 필요해요.',
-    );
-  }
-  if (!response.ok || body.code !== 'SUCCESS') {
-    throw new Error(body.message || '요청에 실패했어요.');
-  }
-  return body.data as T;
-}
+export { request } from '@/apis/client';
 
 export const toIsoDate = (date: string) => {
   const match = date.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
