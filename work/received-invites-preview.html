@@ -1,0 +1,92 @@
+<div id="momento-received-invites-preview" class="viz-dotted-background">
+  <div class="momento-screen" lang="ko">
+    <div class="momento-header"><span>Momento</span><span class="momento-example">예시 데이터</span></div>
+    <div class="momento-background">
+      <h1>타임캡슐</h1>
+      <p>우리의 시간이<br>차곡차곡 쌓이고 있어요</p>
+      <button type="button" class="momento-invite-banner cursor-interaction">받은 초대가 있어요 <span aria-hidden="true">›</span></button>
+    </div>
+    <div class="momento-overlay">
+      <section class="momento-sheet" aria-label="받은 초대 목록">
+        <button type="button" class="momento-grabber cursor-interaction" aria-label="받은 초대 닫기"><span></span></button>
+        <h2>받은 초대</h2>
+        <div class="momento-invite-list">
+          <button type="button" class="momento-invite cursor-interaction" data-capsule="스무 살의 우리에게">
+            <span class="momento-inviter">유빈님의 초대 · 참여자</span>
+            <strong>스무 살의 우리에게</strong>
+            <span class="momento-open-date">2027년 3월 1일 개봉</span>
+          </button>
+          <button type="button" class="momento-invite cursor-interaction" data-capsule="미래의 너에게 보내는 편지">
+            <span class="momento-inviter">지민님의 초대 · 받는 사람</span>
+            <strong>미래의 너에게 보내는 편지</strong>
+            <span class="momento-open-date">2027년 5월 15일 개봉</span>
+          </button>
+          <button type="button" class="momento-invite cursor-interaction" data-capsule="우리들의 졸업 타임캡슐">
+            <span class="momento-inviter">서연님의 초대 · 참여자</span>
+            <strong>우리들의 졸업 타임캡슐</strong>
+            <span class="momento-open-date">2028년 2월 20일 개봉</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+  <output class="momento-preview-status" aria-live="polite"></output>
+</div>
+<style>
+  #momento-received-invites-preview { padding: 20px 0; }
+  #momento-received-invites-preview * { box-sizing: border-box; }
+  #momento-received-invites-preview .momento-screen {
+    --momento-background: light-dark(#f5f5f5, #202024);
+    --momento-sheet: light-dark(#ffffff, #2b2b31);
+    --momento-text: light-dark(#262626, #f4f4f5);
+    --momento-secondary: light-dark(#737373, #c3c3cb);
+    --momento-muted: light-dark(#999999, #afafb9);
+    --momento-primary: light-dark(#7b5dfa, #b6a4ff);
+    width: 100%; max-width: 393px; min-height: 620px; margin: 0 auto;
+    position: relative; overflow: hidden; border-radius: 20px;
+    background: var(--momento-background); color: var(--momento-text);
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px; line-height: 1.5;
+  }
+  #momento-received-invites-preview button { font-family: inherit; color: inherit; }
+  #momento-received-invites-preview .momento-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; color: var(--momento-primary); font-size: 20px; font-weight: 700; }
+  #momento-received-invites-preview .momento-example { font-size: 11px; font-weight: 400; color: var(--momento-secondary); }
+  #momento-received-invites-preview .momento-background { padding: 20px; }
+  #momento-received-invites-preview h1 { margin: 0 0 8px; font-size: 24px; font-weight: 700; }
+  #momento-received-invites-preview .momento-background p { font-size: 13px; line-height: 1.5; margin: 0 0 24px; color: var(--momento-secondary); }
+  #momento-received-invites-preview .momento-invite-banner { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 14px 16px; border: 0; border-radius: 12px; background: var(--momento-sheet); font-size: 14px; }
+  #momento-received-invites-preview .momento-overlay { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: rgb(0 0 0 / 35%); }
+  #momento-received-invites-preview .momento-overlay[hidden] { display: none; }
+  #momento-received-invites-preview .momento-sheet { width: 100%; padding: 10px 20px 20px; border-radius: 24px 24px 0 0; background: var(--momento-sheet); box-shadow: 0 -8px 30px rgb(0 0 0 / 8%); }
+  #momento-received-invites-preview .momento-grabber { display: flex; justify-content: center; align-items: flex-start; width: 100%; height: 14px; padding: 0 0 10px; background: transparent; border: 0; }
+  #momento-received-invites-preview .momento-grabber span { display: block; width: 36px; height: 4px; border-radius: 999px; background: light-dark(#dedee3, #60606a); }
+  #momento-received-invites-preview h2 { margin: 4px 0 12px; text-align: center; font-size: 18px; font-weight: 500; }
+  #momento-received-invites-preview .momento-invite-list { display: flex; flex-direction: column; gap: 12px; padding: 0 20px 20px; }
+  #momento-received-invites-preview .momento-invite { display: flex; width: 100%; flex-direction: column; align-items: flex-start; gap: 4px; padding: 16px; text-align: left; border: 0; border-radius: 12px; background: var(--momento-background); }
+  #momento-received-invites-preview .momento-inviter { color: var(--momento-secondary); font-size: 12px; line-height: 18px; }
+  #momento-received-invites-preview .momento-invite strong { font-size: 16px; font-weight: 700; line-height: 24px; overflow-wrap: anywhere; }
+  #momento-received-invites-preview .momento-open-date { color: var(--momento-muted); font-size: 12px; line-height: 18px; }
+  #momento-received-invites-preview .momento-preview-status { display: block; min-height: 20px; margin: 12px auto 0; max-width: 393px; font-size: 12px; text-align: center; }
+  @media (max-width: 360px) { #momento-received-invites-preview .momento-invite-list { padding-right: 12px; padding-left: 12px; } }
+</style>
+<script>
+  (() => {
+    const root = document.getElementById('momento-received-invites-preview');
+    const overlay = root.querySelector('.momento-overlay');
+    const status = root.querySelector('.momento-preview-status');
+    const setOpen = (open) => {
+      overlay.hidden = !open;
+      status.textContent = '';
+    };
+    root.querySelector('.momento-grabber').addEventListener('click', () => setOpen(false));
+    root.querySelector('.momento-invite-banner').addEventListener('click', () => setOpen(true));
+    overlay.addEventListener('click', (event) => { if (event.target === overlay) setOpen(false); });
+    root.querySelectorAll('.momento-invite').forEach((item) => {
+      item.addEventListener('click', () => {
+        const title = item.dataset.capsule;
+        status.textContent = `미리보기: ‘${title}’ 초대 상세로 이동`;
+        if (window.openai?.setWidgetState) window.openai.setWidgetState({ modelContent: { selectedInvite: title }, privateContent: null }).catch(() => {});
+      });
+    });
+  })();
+</script>

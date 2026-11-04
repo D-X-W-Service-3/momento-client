@@ -1,10 +1,67 @@
+import AttendanceStreakCard from '@/components/home/AttendanceStreakCard';
+import QueryFeedback from '@/components/common/QueryFeedback';
+import CapsuleCreateBanner from '@/components/home/CapsuleCreateBanner';
+import HeroCapsuleCard from '@/components/home/HeroCapsuleCard';
+import HomeCapsuleSection from '@/components/home/HomeCapsuleSection';
+import HomeHeader from '@/components/layout/HomeHeader';
+import MobileLayout from '@/components/layout/MobileLayout';
+import { useHomeDashboard } from '@/hooks/useHomeDashboard';
+
 export default function HomePage() {
+  const {
+    dashboard,
+    isLoading,
+    error,
+    retry,
+    handleNotifications,
+    handleProfile,
+    handleCreateCapsule,
+    handleViewAllCapsules,
+    handleSelectCapsule,
+  } = useHomeDashboard();
+
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col items-center justify-center gap-2 px-5">
-      <h1 className="text-h1 font-bold text-primary">Momento</h1>
-      <p className="text-body-md text-text-secondary">
-        프로젝트 세팅 완료 — 여기서부터 개발을 시작하세요.
-      </p>
-    </div>
+    <MobileLayout withNav>
+      <HomeHeader
+        onClickBell={handleNotifications}
+        onClickProfile={handleProfile}
+        hasUnreadNotification={dashboard?.hasUnreadNotification}
+      />
+
+      <QueryFeedback loading={isLoading} error={error} onRetry={retry} />
+      {dashboard && (
+        <div className="bg-surface-gray flex flex-col gap-5 px-5 pt-[10px] pb-5">
+          <section className="flex flex-col gap-3">
+            <HeroCapsuleCard
+              capsule={dashboard.heroCapsule}
+              onClick={() =>
+                dashboard.heroCapsule
+                  ? handleSelectCapsule(String(dashboard.heroCapsule.id))
+                  : handleCreateCapsule()
+              }
+            />
+            <CapsuleCreateBanner onClick={handleCreateCapsule} />
+          </section>
+
+          {dashboard.featuredCapsules.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {dashboard.featuredCapsules.map((capsule, index) => (
+                <HomeCapsuleSection
+                  key={capsule.id}
+                  capsule={capsule}
+                  showHeading={index === 0}
+                  onViewAll={handleViewAllCapsules}
+                  onSelectCapsule={handleSelectCapsule}
+                />
+              ))}
+            </div>
+          )}
+          <AttendanceStreakCard
+            days={dashboard.attendanceDays}
+            streakCount={dashboard.streakCount}
+          />
+        </div>
+      )}
+    </MobileLayout>
   );
 }

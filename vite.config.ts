@@ -89,12 +89,16 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    // 로컬 개발 시 백엔드로 프록시. 배포는 vercel.json 의 rewrites 를 사용.
-    // proxy: {
-    //   '/api': {
-    //     target: 'http://localhost:8080',
-    //     changeOrigin: true,
-    //   },
-    // },
+    // 로컬 개발은 동일 출처의 /api 를 HTTPS 백엔드로 전달한다.
+    proxy: {
+      '/api': {
+        target: 'https://api.getmomento.site',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => proxyReq.removeHeader('origin'));
+        },
+      },
+    },
   },
 });
