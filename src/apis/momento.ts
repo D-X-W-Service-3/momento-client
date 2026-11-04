@@ -149,9 +149,9 @@ export const getCalendarMonth = (year: number, month: number) =>
   request<{
     counts: {
       all: number;
-      capsules: number;
-      anniversaries: number;
-      memories: number;
+      capsule: number;
+      anniversary: number;
+      memory: number;
     };
     days: { date: string; types?: string[] }[];
   }>(`/v1/calendar?year=${year}&month=${month}`);

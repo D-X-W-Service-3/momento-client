@@ -44,18 +44,13 @@ export default function CalendarPage() {
     ? toCalendarItems(dailyQuery.data)
     : [];
   const monthDays = monthQuery.data?.days ?? [];
-  const counts = monthQuery.data?.counts ?? {
-    all: 0,
-    capsules: 0,
-    memories: 0,
-    anniversaries: 0,
-  };
+  const counts = monthQuery.data?.counts;
   const error = monthQuery.error ?? dailyQuery.error;
   const filters = [
-    `전체 ${counts.all}`,
-    `캡슐 ${counts.capsules}`,
-    `아카이브 ${counts.memories}`,
-    `기념일 ${counts.anniversaries}`,
+    `전체 ${counts?.all ?? 0}`,
+    `캡슐 ${counts?.capsule ?? 0}`,
+    `아카이브 ${counts?.memory ?? 0}`,
+    `기념일 ${counts?.anniversary ?? 0}`,
   ];
   const visibleItems = calendarItems.filter(
     (item) =>

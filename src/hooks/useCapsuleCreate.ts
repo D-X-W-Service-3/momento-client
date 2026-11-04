@@ -7,6 +7,7 @@ import { invalidateCapsuleQueries } from '@/utils/queryInvalidation';
 import { capsuleCoverPath } from '@/constants/routes';
 import {
   CAPSULE_DESCRIPTION_MAX_LENGTH,
+  CAPSULE_DESCRIPTION_MIN_LENGTH,
   CAPSULE_NAME_MAX_LENGTH,
   type CapsuleCreateForm,
   type CapsuleCreateStep,
@@ -130,12 +131,12 @@ export function useCapsuleCreate() {
     parsedOpenDate >= addDays(parsedEditDeadline, 2),
   );
 
-  const isNextEnabled =
-    step === 'info'
-      ? form.name.trim().length > 0
-      : step === 'dates'
-        ? hasValidDates
-        : true;
+  const hasValidInfo =
+    form.name.trim().length > 0 &&
+    form.name.trim().length <= CAPSULE_NAME_MAX_LENGTH &&
+    form.description.trim().length >= CAPSULE_DESCRIPTION_MIN_LENGTH &&
+    form.description.length <= CAPSULE_DESCRIPTION_MAX_LENGTH;
+  const isNextEnabled = hasValidInfo && (step !== 'dates' || hasValidDates);
 
   const setStep = (nextStep: CapsuleCreateStep) => {
     setSearchParams(nextStep === 'info' ? {} : { step: nextStep }, {
@@ -167,10 +168,10 @@ export function useCapsuleCreate() {
     }
 
     // 입력값 없이 중간 단계에 들어온 경우 (새로고침·직접 진입) 첫 단계로 보낸다.
-    if (urlStep !== 'info' && !form.name.trim()) {
+    if (urlStep !== 'info' && !hasValidInfo) {
       setSearchParams({}, { replace: true });
     }
-  }, [phase, urlStep, form.name, navigate, setSearchParams]);
+  }, [phase, urlStep, hasValidInfo, navigate, setSearchParams]);
 
   const finishCreate = () => {
     setDateSheet(null);

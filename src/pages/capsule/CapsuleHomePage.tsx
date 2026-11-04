@@ -64,7 +64,7 @@ export default function CapsuleHomePage() {
           </div>
         </section>
 
-        {data?.featuredCapsules && data.featuredCapsules.length > 0 && (
+        {data && (
           <CapsuleFeaturedSection
             capsules={data.featuredCapsules}
             activeSlide={activeSlide}
@@ -79,6 +79,7 @@ export default function CapsuleHomePage() {
           <>
             <CapsuleHorizontalSection
               title="수정할 수 있어요"
+              emptyDescription="새로운 캡슐을 만들어 편지를 모아보세요."
               items={editableCapsules}
               onViewAll={() => handleViewList('editable')}
               onSelectCapsule={handleSelectCapsule}
@@ -86,6 +87,7 @@ export default function CapsuleHomePage() {
 
             <CapsuleHorizontalSection
               title="캡슐이 잠겨있어요"
+              emptyDescription="편지 작성이 끝나면 이곳에 모여요."
               items={lockedCapsules}
               onViewAll={() => handleViewList('locked')}
               onSelectCapsule={handleSelectCapsule}
@@ -93,6 +95,7 @@ export default function CapsuleHomePage() {
 
             <CapsuleHorizontalSection
               title="추억이 열렸어요"
+              emptyDescription="개봉일이 지나면 이곳에서 만나요."
               items={openedCapsules}
               onViewAll={() => handleViewList('opened')}
               onSelectCapsule={handleSelectCapsule}

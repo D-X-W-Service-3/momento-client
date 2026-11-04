@@ -231,3 +231,5 @@ export interface CapsuleIconOption {
 /** 캡슐 이름/설명 글자수 제한 (생성·수정 공통) */
 export const CAPSULE_NAME_MAX_LENGTH = 20;
 export const CAPSULE_DESCRIPTION_MAX_LENGTH = 45;
+/** 생성 시 설명은 앞뒤 공백을 제외하고 5자 이상 입력한다. */
+export const CAPSULE_DESCRIPTION_MIN_LENGTH = 5;

@@ -4,7 +4,7 @@ import { textStyles } from '@/styles/tokens';
 import type { HeroCapsuleInfo } from '@/types/home';
 
 interface HeroCapsuleCardProps {
-  capsule: HeroCapsuleInfo;
+  capsule: HeroCapsuleInfo | null;
   onClick?: () => void;
 }
 
@@ -15,6 +15,14 @@ export default function HeroCapsuleCard({
   return (
     <article
       onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(event) => {
+        if (onClick && (event.key === 'Enter' || event.key === ' ')) {
+          event.preventDefault();
+          onClick();
+        }
+      }}
       className={`relative h-[330px] w-full overflow-hidden rounded-xl ${
         onClick ? 'cursor-pointer' : ''
       }`}
@@ -37,26 +45,50 @@ export default function HeroCapsuleCard({
           <span
             className={`bg-primary-badge text-primary inline-flex h-[30px] items-center justify-center rounded-full px-[10px] py-[7px] ${textStyles['body-small-med']}`}
           >
-            {capsule.tag}
+            {capsule?.tag ?? '새로운 타임캡슐'}
           </span>
 
           <div className="flex flex-col gap-[5px]">
             <h2 className={`text-text-primary ${textStyles['heading-h1']}`}>
-              {capsule.title}
+              {capsule ? (
+                capsule.title
+              ) : (
+                <>
+                  새로운 캡슐을
+                  <br />
+                  만들어보세요
+                </>
+              )}
             </h2>
-            <p className={`text-primary ${textStyles['display-dday']}`}>
-              {capsule.dDay}
-            </p>
+            {capsule && (
+              <p className={`text-primary ${textStyles['display-dday']}`}>
+                {capsule.dDay}
+              </p>
+            )}
             <p className={`text-text-secondary ${textStyles['body-medium']}`}>
-              {capsule.releaseDate}
+              {capsule ? (
+                capsule.releaseDate
+              ) : (
+                <>
+                  오늘의 마음을
+                  <br />
+                  미래에 전해보세요
+                </>
+              )}
             </p>
           </div>
         </div>
 
         <div className="bg-surface-white rounded-badge inline-flex h-[30px] w-fit items-center justify-center px-[7px] py-[7px]">
           <p className={textStyles['body-small-med']}>
-            <span className="text-primary">{capsule.remainingTime} </span>
-            <span className="text-gray-450">{capsule.remainingSuffix}</span>
+            {capsule ? (
+              <>
+                <span className="text-primary">{capsule.remainingTime} </span>
+                <span className="text-gray-450">{capsule.remainingSuffix}</span>
+              </>
+            ) : (
+              <span className="text-primary">캡슐 만들기 →</span>
+            )}
           </p>
         </div>
       </div>

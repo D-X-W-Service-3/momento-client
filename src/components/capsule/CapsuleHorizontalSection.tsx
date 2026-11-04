@@ -7,6 +7,7 @@ import type { CapsuleHorizontalItem } from '@/types/capsule';
 
 interface CapsuleHorizontalSectionProps {
   title: string;
+  emptyDescription: string;
   items: CapsuleHorizontalItem[];
   onViewAll: () => void;
   onSelectCapsule: (id: string) => void;
@@ -14,6 +15,7 @@ interface CapsuleHorizontalSectionProps {
 
 export default function CapsuleHorizontalSection({
   title,
+  emptyDescription,
   items,
   onViewAll,
   onSelectCapsule,
@@ -40,16 +42,31 @@ export default function CapsuleHorizontalSection({
         </button>
       </div>
 
-      {items.length === 0 && (
-        <p className="text-text-muted text-body-sm py-3">
-          아직 해당하는 캡슐이 없어요.
-        </p>
-      )}
       <div
         ref={containerRef}
         {...dragProps}
         className="-mr-5 flex cursor-grab touch-pan-x gap-3 overflow-x-auto pr-5 select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
       >
+        {items.length === 0 && (
+          <div className="bg-surface-white flex h-[126px] w-[260px] shrink-0 items-center justify-between gap-3 rounded-xl px-5 py-[15px] shadow-[0_2px_8px_rgb(26_23_22/0.05)]">
+            <div className="flex w-[132px] flex-col gap-1">
+              <h3
+                className={`text-text-primary ${textStyles['body-large-semi']}`}
+              >
+                아직 캡슐이 없어요
+              </h3>
+              <p className={`text-text-secondary ${textStyles['body-xs']}`}>
+                {emptyDescription}
+              </p>
+            </div>
+            <img
+              src={capsulePopsicleImg}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none h-[70px] w-[76px] shrink-0 object-contain"
+            />
+          </div>
+        )}
         {items.map((item) => (
           <article
             key={item.id}

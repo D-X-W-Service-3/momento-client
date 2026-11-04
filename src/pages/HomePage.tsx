@@ -32,15 +32,18 @@ export default function HomePage() {
       {dashboard && (
         <div className="bg-surface-gray flex flex-col gap-5 px-5 pt-[10px] pb-5">
           <section className="flex flex-col gap-3">
-            {dashboard.heroCapsule && (
-              <HeroCapsuleCard
-                capsule={dashboard.heroCapsule}
-                onClick={() =>
-                  handleSelectCapsule(String(dashboard.heroCapsule!.id))
-                }
-              />
+            <HeroCapsuleCard
+              capsule={dashboard.heroCapsule}
+              onClick={() =>
+                dashboard.heroCapsule
+                  ? handleSelectCapsule(String(dashboard.heroCapsule.id))
+                  : handleCreateCapsule()
+              }
+            />
+            {(dashboard.heroCapsule ||
+              dashboard.featuredCapsules.length > 0) && (
+              <CapsuleCreateBanner onClick={handleCreateCapsule} />
             )}
-            <CapsuleCreateBanner onClick={handleCreateCapsule} />
           </section>
 
           {dashboard.featuredCapsules.map((capsule, index) => (
@@ -52,11 +55,6 @@ export default function HomePage() {
               onSelectCapsule={handleSelectCapsule}
             />
           ))}
-          <QueryFeedback
-            empty={dashboard.featuredCapsules.length === 0}
-            emptyMessage="첫 타임캡슐을 만들어 보세요."
-          />
-
           <AttendanceStreakCard
             days={dashboard.attendanceDays}
             streakCount={dashboard.streakCount}

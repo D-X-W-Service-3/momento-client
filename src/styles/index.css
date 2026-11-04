@@ -1281,6 +1281,11 @@
     display: flex;
     gap: 8px;
     overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .filter-chips::-webkit-scrollbar {
+    display: none;
   }
   .filter-chips button {
     flex: none;

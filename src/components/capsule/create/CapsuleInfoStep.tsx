@@ -3,6 +3,7 @@ import TextArea from '@/components/common/TextArea';
 import TextField from '@/components/common/TextField';
 import { useCapsuleIcons } from '@/hooks/useCapsule';
 import { textStyles } from '@/styles/tokens';
+import { CAPSULE_DESCRIPTION_MIN_LENGTH } from '@/types/capsule';
 
 interface CapsuleInfoStepProps {
   iconIndex: number;
@@ -56,7 +57,9 @@ export default function CapsuleInfoStep({
 
         <TextArea
           label="캡슐 설명"
-          placeholder="캡슐 설명을 작성해 주세요."
+          placeholder="캡슐 설명을 5자 이상 작성해 주세요."
+          required
+          minLength={CAPSULE_DESCRIPTION_MIN_LENGTH}
           value={description}
           onChange={onDescriptionChange}
           maxLength={maxDescriptionLength}
