@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { updateProfile } from '@/apis/auth';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useMyPageStore } from '@/stores/useMyPageStore';
+import { takeRedirect } from '@/utils/auth';
 import { validateNickname } from '@/utils/validation';
 
 export function useProfileSetup() {
@@ -28,7 +29,8 @@ export function useProfileSetup() {
         name: updated.nickname,
         ...(updated.avatarUrl ? { avatarUrl: updated.avatarUrl } : {}),
       });
-      navigate('/home');
+      // 초대 링크로 들어왔다가 가입한 경우 그 링크로 돌려보낸다.
+      navigate(takeRedirect() ?? '/home');
     },
   });
 

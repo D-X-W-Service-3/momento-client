@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import Button from '@/components/common/Button';
 import CapsuleIconPicker from '@/components/capsule/CapsuleIconPicker';
@@ -6,16 +7,44 @@ import InfoNote from '@/components/common/InfoNote';
 import TextArea from '@/components/common/TextArea';
 import TextField from '@/components/common/TextField';
 import BackHeader from '@/components/layout/BackHeader';
-import { useCapsuleIcons } from '@/hooks/useCapsule';
+import {
+  useCapsuleDetail,
+  useCapsuleIcons,
+  useUpdateCapsule,
+} from '@/hooks/useCapsule';
 import {
   CAPSULE_DESCRIPTION_MAX_LENGTH,
   CAPSULE_NAME_MAX_LENGTH,
 } from '@/types/capsule';
 
 export default function CapsuleEditPage() {
+  const { capsuleId = '' } = useParams();
+  const navigate = useNavigate();
   const { data: icons } = useCapsuleIcons();
+  const { data: capsule } = useCapsuleDetail(capsuleId);
+  const updateCapsule = useUpdateCapsule(capsuleId);
+
+  const [iconIndex, setIconIndex] = useState(0);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+
+  // 수정 화면이라 서버 값으로 한 번 채워준다.
+  useEffect(() => {
+    if (!capsule) return;
+    setName(capsule.title);
+    setDescription(capsule.description ?? '');
+    const index = icons?.findIndex((icon) => icon.id === capsule.iconType);
+    if (index !== undefined && index >= 0) setIconIndex(index);
+  }, [capsule, icons]);
+
+  const handleSubmit = () => {
+    const iconType = icons?.[iconIndex]?.id ?? capsule?.iconType;
+    if (!iconType) return;
+    updateCapsule.mutate(
+      { iconType, title: name.trim(), description: description.trim() },
+      { onSuccess: () => navigate(-1) },
+    );
+  };
 
   return (
     <div className="min-h-[100dvh] bg-surface-gray">
@@ -25,7 +54,12 @@ export default function CapsuleEditPage() {
         <main className="flex flex-1 flex-col justify-between px-5 pb-5">
           <div className="flex flex-col gap-card">
             {icons && (
-              <CapsuleIconPicker icons={icons} label="아이콘 선택하기" />
+              <CapsuleIconPicker
+                icons={icons}
+                label="아이콘 선택하기"
+                selectedIndex={iconIndex}
+                onSelectIndex={setIconIndex}
+              />
             )}
 
             <TextField
@@ -53,8 +87,12 @@ export default function CapsuleEditPage() {
             </InfoNote>
           </div>
 
-          {/* TODO: 캡슐 수정 API 연결 */}
-          <Button disabled={!name.trim()}>다음</Button>
+          <Button
+            disabled={!name.trim() || updateCapsule.isPending}
+            onClick={handleSubmit}
+          >
+            수정하기
+          </Button>
         </main>
       </div>
     </div>

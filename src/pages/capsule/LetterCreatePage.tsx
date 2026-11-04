@@ -1,25 +1,66 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
+import { findLetterPaper } from '@/apis/letter';
 import Button from '@/components/common/Button';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import TextArea from '@/components/common/TextArea';
 import TextField from '@/components/common/TextField';
 import BackHeader from '@/components/layout/BackHeader';
-
-const TITLE_MAX_LENGTH = 200;
-const CONTENT_MAX_LENGTH = 500;
+import { capsuleDetailPath, letterTypePath } from '@/constants/routes';
+import { useCreateLetter } from '@/hooks/useLetter';
+import {
+  LETTER_CONTENT_MAX_LENGTH,
+  LETTER_TITLE_MAX_LENGTH,
+  type LetterType,
+} from '@/types/letter';
 
 export default function LetterCreatePage() {
+  const { capsuleId = '' } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [cancelOpen, setCancelOpen] = useState(false);
+  const createLetter = useCreateLetter(capsuleId);
+
+  // 앞선 두 단계에서 고른 값. 새로고침 등으로 없으면 처음부터 다시 받는다.
+  const step = location.state as {
+    letterType?: LetterType;
+    paperId?: string;
+  } | null;
+  const paper = step?.paperId ? findLetterPaper(step.paperId) : undefined;
+  const letterType = step?.letterType;
 
   const isDirty = Boolean(title.trim() || content.trim());
 
   // 쓰던 내용이 있을 때만 확인을 받는다.
   const handleBack = () => (isDirty ? setCancelOpen(true) : navigate(-1));
+
+  const handleSubmit = () => {
+    if (!paper || !letterType) return;
+    createLetter.mutate(
+      {
+        title: title.trim(),
+        content: content.trim(),
+        themeType: paper.themeType,
+        letterType,
+      },
+      {
+        onSuccess: () =>
+          navigate(capsuleDetailPath(capsuleId), { replace: true }),
+      },
+    );
+  };
+
+  if (!paper || !letterType) {
+    return <Navigate to={letterTypePath(capsuleId)} replace />;
+  }
 
   return (
     <div className="min-h-[100dvh] bg-surface-gray">
@@ -45,7 +86,7 @@ export default function LetterCreatePage() {
               placeholder="제목을 입력해주세요"
               value={title}
               onChange={setTitle}
-              maxLength={TITLE_MAX_LENGTH}
+              maxLength={LETTER_TITLE_MAX_LENGTH}
             />
 
             <TextArea
@@ -53,13 +94,17 @@ export default function LetterCreatePage() {
               placeholder="편지 내용을 작성해 주세요."
               value={content}
               onChange={setContent}
-              maxLength={CONTENT_MAX_LENGTH}
+              maxLength={LETTER_CONTENT_MAX_LENGTH}
               className="h-[460px]"
             />
           </div>
 
-          {/* TODO: 편지 저장 API 연결 */}
-          <Button disabled={!title.trim() || !content.trim()}>
+          <Button
+            disabled={
+              !title.trim() || !content.trim() || createLetter.isPending
+            }
+            onClick={handleSubmit}
+          >
             캡슐에 담기
           </Button>
         </main>

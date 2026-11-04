@@ -1,7 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
+import { ApiError } from '@/apis/client';
 import { ROUTES } from '@/constants/routes';
+import RequireAuth from '@/routes/RequireAuth';
+import RequireLetterWriting from '@/routes/RequireLetterWriting';
 import CapsuleCoverPage from '@/pages/capsule/CapsuleCoverPage';
 import CapsuleDetailPage from '@/pages/capsule/CapsuleDetailPage';
 import CapsuleEditPage from '@/pages/capsule/CapsuleEditPage';
@@ -12,6 +15,7 @@ import CapsuleRevealPage from '@/pages/capsule/CapsuleRevealPage';
 import HomePage from '@/pages/HomePage';
 import LetterCreatePage from '@/pages/capsule/LetterCreatePage';
 import LetterPaperSelectPage from '@/pages/capsule/LetterPaperSelectPage';
+import LetterTypeSelectPage from '@/pages/capsule/LetterTypeSelectPage';
 import LoginPage from '@/pages/LoginPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import NotificationPage from '@/pages/NotificationPage';
@@ -32,7 +36,17 @@ import MyPage from '@/pages/mypage/MyPage';
 import NotificationSettingsPage from '@/pages/mypage/NotificationSettingsPage';
 import ProfileEditPage from '@/pages/mypage/ProfileEditPage';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // 권한·검증 실패(4xx)는 다시 해도 같은 결과라 바로 포기한다.
+      retry: (failureCount, error) => {
+        if (error instanceof ApiError && error.status < 500) return false;
+        return failureCount < 2;
+      },
+    },
+  },
+});
 
 export default function App() {
   return (
@@ -40,7 +54,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path="/oauth/kakao" element={<OAuthCallbackPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/profile-setup" element={<ProfileSetupPage />} />
@@ -73,20 +87,60 @@ export default function App() {
         <Route path={ROUTES.CAPSULE_EDIT} element={<CapsuleEditPage />} />
         <Route
           path={ROUTES.CAPSULE_PARTICIPANTS}
-          element={<CapsuleMembersPage role="participant" />}
+          element={<CapsuleMembersPage role="PARTICIPANT" />}
         />
         <Route
           path={ROUTES.CAPSULE_RECEIVERS}
-          element={<CapsuleMembersPage role="receiver" />}
+          element={<CapsuleMembersPage role="RECIPIENT" />}
         />
         <Route path={ROUTES.CAPSULE_REVEAL} element={<CapsuleRevealPage />} />
-        <Route path={ROUTES.CAPSULE_INVITE} element={<CapsuleInvitePage />} />
+        {/* 초대 링크는 비로그인 상태로 열리는 게 정상이라 가드를 둔다. */}
         <Route
-          path={ROUTES.CAPSULE_INVITE_DETAIL}
-          element={<CapsuleInviteDetailPage />}
+          path={ROUTES.INVITE}
+          element={
+            <RequireAuth>
+              <CapsuleInvitePage />
+            </RequireAuth>
+          }
         />
-        <Route path={ROUTES.LETTER_PAPER} element={<LetterPaperSelectPage />} />
-        <Route path={ROUTES.LETTER_WRITE} element={<LetterCreatePage />} />
+        <Route
+          path={ROUTES.INVITE_DETAIL}
+          element={
+            <RequireAuth>
+              <CapsuleInviteDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={ROUTES.LETTER_TYPE}
+          element={
+            <RequireAuth>
+              <RequireLetterWriting>
+                <LetterTypeSelectPage />
+              </RequireLetterWriting>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={ROUTES.LETTER_PAPER}
+          element={
+            <RequireAuth>
+              <RequireLetterWriting>
+                <LetterPaperSelectPage />
+              </RequireLetterWriting>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={ROUTES.LETTER_WRITE}
+          element={
+            <RequireAuth>
+              <RequireLetterWriting>
+                <LetterCreatePage />
+              </RequireLetterWriting>
+            </RequireAuth>
+          }
+        />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

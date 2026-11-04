@@ -4,11 +4,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Button from '@/components/common/Button';
 import CapsuleCoverLayout from '@/components/capsule/CapsuleCoverLayout';
 import LetterViewer from '@/components/capsule/LetterViewer';
-import { capsuleDetailPath, letterPaperPath } from '@/constants/routes';
-import { useCapsuleCover } from '@/hooks/useCapsule';
+import { capsuleDetailPath, letterTypePath } from '@/constants/routes';
+import { useCapsuleDetail } from '@/hooks/useCapsule';
 import { useCapsuleLetters } from '@/hooks/useLetter';
-import type { CapsuleStatus } from '@/types/calendar';
-import { getDDay } from '@/utils/date';
+import type { CapsuleDetail } from '@/types/capsule';
 
 type CoverActionKey = 'detail' | 'write' | 'letters';
 
@@ -24,35 +23,50 @@ interface CoverContent {
   actions: CoverAction[];
 }
 
-const getCoverContent = (
-  status: CapsuleStatus,
-  daysLeft: number,
-): CoverContent => {
-  switch (status) {
-    case 'sealed':
-      return {
-        titleLines: [`${daysLeft}일 후에`, '타임캡슐이 열려요'],
-        actions: [
-          { key: 'detail', label: '캡슐 정보보기', variant: 'primary' },
-        ],
-      };
-    case 'openable':
-      return {
-        titleLines: ['편지를 눌러', '캡슐에 담긴 추억을 확인해보세요'],
-        actions: [
-          { key: 'detail', label: '캡슐 정보보기', variant: 'secondary' },
-          { key: 'letters', label: '편지보기', variant: 'primary' },
-        ],
-      };
-    case 'writing':
-      return {
-        titleLines: ['친구들의 편지가', '차근차근 모이고 있어요'],
-        actions: [
-          { key: 'detail', label: '캡슐 정보보기', variant: 'secondary' },
-          { key: 'write', label: '나도 편지 작성하기', variant: 'primary' },
-        ],
-      };
+/**
+ * 서버 status 3가지가 Figma 의 수정가능 / 잠긴캡슐 / 열린캡슐 커버와 1:1 이다.
+ * 버튼 노출은 서버가 준 permissions 를 그대로 따른다.
+ */
+const getCoverContent = (capsule: CapsuleDetail): CoverContent => {
+  const { canWriteLetter, canViewLetters } = capsule.permissions;
+
+  if (capsule.status === 'WRITING') {
+    return {
+      titleLines: ['친구들의 편지가', '차근차근 모이고 있어요'],
+      actions: [
+        { key: 'detail', label: '캡슐 정보보기', variant: 'secondary' },
+        ...(canWriteLetter
+          ? ([
+              {
+                key: 'write',
+                label: '나도 편지 작성하기',
+                variant: 'primary',
+              },
+            ] as CoverAction[])
+          : []),
+      ],
+    };
   }
+
+  // 잠긴 캡슐 — 개봉까지 남은 날을 센다
+  if (capsule.status === 'LOCKED') {
+    return {
+      titleLines: [`${capsule.dDay}일 후에`, '타임캡슐이 열려요'],
+      actions: [{ key: 'detail', label: '캡슐 정보보기', variant: 'primary' }],
+    };
+  }
+
+  return {
+    titleLines: ['편지를 눌러', '캡슐에 담긴 추억을 확인해보세요'],
+    actions: [
+      { key: 'detail', label: '캡슐 정보보기', variant: 'secondary' },
+      ...(canViewLetters
+        ? ([
+            { key: 'letters', label: '편지보기', variant: 'primary' },
+          ] as CoverAction[])
+        : []),
+    ],
+  };
 };
 
 // 어두운 배경 전용 CTA 색. 공용 Button 토큰 대신 캡슐 전용 보라를 쓴다.
@@ -61,21 +75,19 @@ const ACTION_STYLES: Record<CoverAction['variant'], string> = {
   secondary: 'bg-surface text-capsule-accent',
 };
 
-/** 캡슐 상세 진입 화면. 상태(writing/sealed/openable)에 따라 문구와 버튼만 달라진다. */
+/** 캡슐 상세 진입 화면. 캡슐 상태에 따라 문구와 버튼만 달라진다. */
 export default function CapsuleCoverPage() {
   const { capsuleId = '' } = useParams();
   const navigate = useNavigate();
-  const { data: capsule } = useCapsuleCover(capsuleId);
+  const { data: capsule } = useCapsuleDetail(capsuleId);
   const [lettersOpen, setLettersOpen] = useState(false);
   const { data: letters } = useCapsuleLetters(capsuleId, lettersOpen);
 
-  const content = capsule
-    ? getCoverContent(capsule.status, getDDay(capsule.openDate))
-    : null;
+  const content = capsule ? getCoverContent(capsule) : null;
 
   const handleAction = (key: CoverActionKey) => {
     if (key === 'detail') navigate(capsuleDetailPath(capsuleId));
-    if (key === 'write') navigate(letterPaperPath(capsuleId));
+    if (key === 'write') navigate(letterTypePath(capsuleId));
     if (key === 'letters') setLettersOpen(true);
   };
 

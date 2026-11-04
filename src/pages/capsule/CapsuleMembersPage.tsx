@@ -8,8 +8,13 @@ import InviteSheet from '@/components/capsule/InviteSheet';
 import InfoNote from '@/components/common/InfoNote';
 import MemberGridItem from '@/components/capsule/MemberGridItem';
 import BackHeader from '@/components/layout/BackHeader';
-import { useCapsuleDetail } from '@/hooks/useCapsule';
-import type { CapsuleMember, MemberRole } from '@/types/capsule';
+import {
+  useCapsuleDetail,
+  useCapsuleMembers,
+  useRemoveCapsuleMember,
+} from '@/hooks/useCapsule';
+import { canInviteRole } from '@/utils/capsule';
+import type { CapsuleInviteRole, CapsuleMember } from '@/types/capsule';
 
 interface RoleContent {
   headerTitle: string;
@@ -24,8 +29,8 @@ interface RoleContent {
   removeDescription: string;
 }
 
-const ROLE_CONTENT: Record<MemberRole, RoleContent> = {
-  participant: {
+const ROLE_CONTENT: Record<CapsuleInviteRole, RoleContent> = {
+  PARTICIPANT: {
     headerTitle: '참여자 관리',
     title: '이 타임캡슐의 참여자에요',
     description: [
@@ -38,7 +43,7 @@ const ROLE_CONTENT: Record<MemberRole, RoleContent> = {
     removeTitle: '참여자를 내보낼까요?',
     removeDescription: '참여자가 등록한 모든 편지와 사진이 삭제돼요',
   },
-  receiver: {
+  RECIPIENT: {
     headerTitle: '수신자 관리',
     title: '이 타임캡슐의 수신자에요',
     description: [
@@ -57,23 +62,35 @@ const SHARED_NOTE =
   '수신자로 지정되지 않은 참여자는 자신이 등록한 편지와 사진만 볼 수 있어요';
 
 interface CapsuleMembersPageProps {
-  role: MemberRole;
+  role: CapsuleInviteRole;
 }
 
 /**
  * 참여자 / 수신자 관리.
- * 캡슐이 잠기기 전(writing)에만 내보내기와 초대가 가능하다.
+ * 내보내기·초대 가능 여부는 서버가 canManage 로 알려준다 (방장 + WRITING).
  */
 export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
   const { capsuleId = '' } = useParams();
+  const { data: memberList } = useCapsuleMembers(capsuleId, role);
   const { data: capsule } = useCapsuleDetail(capsuleId);
+  const removeMember = useRemoveCapsuleMember(capsuleId, role);
   const [removing, setRemoving] = useState<CapsuleMember>();
   const [inviteOpen, setInviteOpen] = useState(false);
 
   const content = ROLE_CONTENT[role];
-  const editable = capsule?.status === 'writing';
-  const members =
-    (role === 'participant' ? capsule?.participants : capsule?.receivers) ?? [];
+  const editable = memberList?.canManage ?? false;
+  const canInvite =
+    editable &&
+    Boolean(capsule?.permissions.canInvite) &&
+    canInviteRole(capsule?.capsuleType, role);
+  const members = memberList?.members ?? [];
+
+  const handleConfirmRemove = () => {
+    if (!removing) return;
+    removeMember.mutate(removing.memberId, {
+      onSuccess: () => setRemoving(undefined),
+    });
+  };
 
   return (
     <div className="min-h-[100dvh] bg-surface-gray">
@@ -99,13 +116,15 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
                 <img src={personIcon} alt="" className="size-4 shrink-0" />
                 <span className="flex items-center gap-1">
                   {content.countLabel}
-                  <span className="text-ink-muted">{members.length}명</span>
+                  <span className="text-ink-muted">
+                    {memberList?.count ?? members.length}명
+                  </span>
                 </span>
               </h3>
 
               <ul className="grid w-full grid-cols-4 justify-items-center gap-x-[19px] gap-y-list">
                 {members.map((member) => (
-                  <li key={member.id}>
+                  <li key={member.memberId}>
                     <MemberGridItem
                       member={member}
                       onRemove={
@@ -129,21 +148,19 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
             </InfoNote>
           </div>
 
-          <Button disabled={!editable} onClick={() => setInviteOpen(true)}>
+          <Button disabled={!canInvite} onClick={() => setInviteOpen(true)}>
             {content.inviteLabel}
           </Button>
         </main>
       </div>
 
-      {/* TODO: 초대링크를 서버에서 받아오도록 교체 */}
       <InviteSheet
-        open={inviteOpen}
+        open={inviteOpen && canInvite}
         onClose={() => setInviteOpen(false)}
+        capsuleId={capsuleId}
         role={role}
-        inviteUrl={`https://momento.app/invite/${capsuleId}`}
       />
 
-      {/* TODO: 내보내기 API 연결 */}
       <ConfirmDialog
         open={Boolean(removing)}
         title={content.removeTitle}
@@ -151,7 +168,7 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
         cancelLabel="취소"
         confirmLabel="내보내기"
         onCancel={() => setRemoving(undefined)}
-        onConfirm={() => setRemoving(undefined)}
+        onConfirm={handleConfirmRemove}
       />
     </div>
   );
