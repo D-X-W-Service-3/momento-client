@@ -1,5 +1,7 @@
 import type { AnniversaryForm } from '@/types/momento';
+import type { CapsuleCardResponse } from '@/types/capsule';
 import { request } from '@/apis/client';
+import { capsuleDeadlineBadge } from '@/utils/capsuleCards';
 import { validateMemoryImages } from '@/utils/archivePhotos';
 
 export { request } from '@/apis/client';
@@ -46,16 +48,7 @@ export type AnniversaryDetail = {
   remindDaysBefore: number | null;
 };
 export type CalendarData = {
-  capsules: {
-    capsuleId: number;
-    title: string;
-    openAt: string;
-    status: string;
-    openedByMe?: boolean;
-    dDay: number;
-    memberCount: number;
-    letterCount: number;
-  }[];
+  capsules: CapsuleCardResponse[];
   anniversaries: {
     anniversaryId: number;
     title: string;
@@ -172,6 +165,7 @@ export function toCalendarItems(data: CalendarData) {
       type: 'capsule' as const,
       title: item.title,
       date: toKoreanDate(item.openAt),
+      badge: capsuleDeadlineBadge(item),
       dDay: formatDDay(item.dDay),
       status:
         item.status === 'WRITING'

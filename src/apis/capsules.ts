@@ -8,7 +8,7 @@ import type {
   ReceivedInvite,
 } from '@/types/capsule';
 import {
-  capsuleBadge,
+  capsuleDeadlineBadge,
   capsuleCountLabel,
   capsuleDateLabel,
   capsuleStatusParam,
@@ -23,7 +23,7 @@ export async function fetchCapsuleHomeData(): Promise<CapsuleHomeData> {
   const horizontal = (cards: CapsuleOverviewResponse['writing']) =>
     cards.map((card) => ({
       id: String(card.capsuleId),
-      badge: capsuleBadge(card),
+      badge: capsuleDeadlineBadge(card),
       title: card.title,
       openDateText: capsuleDateLabel(card.openAt),
     }));
@@ -31,7 +31,7 @@ export async function fetchCapsuleHomeData(): Promise<CapsuleHomeData> {
     hasPendingRequest: data.hasPendingInvite,
     featuredCapsules: data.upcoming.map((card) => ({
       id: String(card.capsuleId),
-      statusLabel: capsuleBadge(card).label,
+      statusLabel: capsuleDeadlineBadge(card).label,
       dDayText: dDayLabel(card.dDay),
       title: card.title,
       description: card.description ?? '',

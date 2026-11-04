@@ -27,6 +27,7 @@ import {
   canInviteRole,
   capsuleIconSrc,
   capsuleStatusChip,
+  capsuleTypeLabel,
 } from '@/utils/capsule';
 import { formatDotDate } from '@/utils/date';
 
@@ -113,15 +114,13 @@ export default function CapsuleDetailPage() {
             <section className="flex w-full flex-col gap-list">
               <div className="flex w-full items-end justify-between gap-list">
                 <div className="flex min-w-0 flex-col gap-stack">
-                  <div className="flex gap-stack">
+                  <div className="flex flex-wrap items-center gap-stack">
                     <Chip tone={chip.tone} className="font-display">
                       {chip.label}
                     </Chip>
-                    {capsule.capsuleType === 'GROUP' && (
-                      <Chip tone={chip.groupTone} className="font-display">
-                        그룹캡슐
-                      </Chip>
-                    )}
+                    <Chip tone={chip.groupTone} className="font-display">
+                      {capsuleTypeLabel[capsule.capsuleType]}
+                    </Chip>
                   </div>
                   <div className="flex flex-col gap-1">
                     <h1 className="text-title-sm font-semibold text-on-primary">
@@ -175,23 +174,25 @@ export default function CapsuleDetailPage() {
                   )}
               </section>
 
-              <section className="flex flex-col gap-list">
-                <SectionHeader
-                  title="수신자"
-                  count={`${capsule.recipients.count}명`}
-                  onViewAll={() => navigate(capsuleReceiversPath(capsuleId))}
-                />
-                <AvatarGroup
-                  members={capsule.recipients.previews}
-                  totalCount={capsule.recipients.count}
-                />
-                {permissions.canInvite &&
-                  canInviteRole(capsule.capsuleType, 'RECIPIENT') && (
-                    <GhostButton onClick={() => setInviteRole('RECIPIENT')}>
-                      수신자 초대
-                    </GhostButton>
-                  )}
-              </section>
+              {capsule.capsuleType !== 'FRIEND' && (
+                <section className="flex flex-col gap-list">
+                  <SectionHeader
+                    title="수신자"
+                    count={`${capsule.recipients.count}명`}
+                    onViewAll={() => navigate(capsuleReceiversPath(capsuleId))}
+                  />
+                  <AvatarGroup
+                    members={capsule.recipients.previews}
+                    totalCount={capsule.recipients.count}
+                  />
+                  {permissions.canInvite &&
+                    canInviteRole(capsule.capsuleType, 'RECIPIENT') && (
+                      <GhostButton onClick={() => setInviteRole('RECIPIENT')}>
+                        수신자 초대
+                      </GhostButton>
+                    )}
+                </section>
+              )}
 
               {permissions.canManage && (
                 <section className="flex flex-col gap-list">

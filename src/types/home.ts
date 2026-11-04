@@ -1,4 +1,4 @@
-import type { CapsuleCardResponse } from '@/types/capsule';
+import type { CapsuleCardResponse, CapsuleChipBadge } from '@/types/capsule';
 export interface HeroCapsuleInfo {
   id: number;
   openAt: string;
@@ -11,7 +11,7 @@ export interface HeroCapsuleInfo {
 }
 export interface HomeCapsuleItem {
   id: number;
-  stateLabel: string;
+  badge: CapsuleChipBadge;
   title: string;
   openDateLabel: string;
   dDayBadge: string;

@@ -24,7 +24,9 @@ export const capsuleDateLabel = (value: string) => {
   const [year, month, day] = value.slice(0, 10).split('-').map(Number);
   return `${year}년 ${month}월 ${day}일 개봉`;
 };
-export const capsuleBadge = (card: CapsuleCardResponse): CapsuleChipBadge => ({
+type CapsuleBadgeSource = Pick<CapsuleCardResponse, 'status' | 'openedByMe'>;
+
+export const capsuleBadge = (card: CapsuleBadgeSource): CapsuleChipBadge => ({
   label:
     card.status === 'WRITING'
       ? '수정 가능'
@@ -40,6 +42,23 @@ export const capsuleBadge = (card: CapsuleCardResponse): CapsuleChipBadge => ({
         ? 'neutral'
         : 'success',
 });
+
+/** 타임캡슐 홈·목록 카드는 개봉 D-day와 별도로 수정 마감 D-day를 보여준다. */
+export const capsuleDeadlineBadge = (
+  card: CapsuleBadgeSource & Pick<CapsuleCardResponse, 'deadlineDDay'>,
+): CapsuleChipBadge => {
+  if (card.status !== 'WRITING') return capsuleBadge(card);
+  const days = card.deadlineDDay;
+  return {
+    label:
+      days == null
+        ? '수정 가능'
+        : days < 0
+          ? '수정마감 종료'
+          : `수정마감 ${dDayLabel(days)}`,
+    tone: 'warning',
+  };
+};
 export const capsuleCountLabel = (card: CapsuleCardResponse) =>
   `${card.memberCount}명 | 편지 ${card.letterCount}`;
 export function toCapsuleListItem(card: CapsuleCardResponse): CapsuleListItem {
@@ -58,7 +77,7 @@ export function toCapsuleListItem(card: CapsuleCardResponse): CapsuleListItem {
         : card.status === 'LOCKED'
           ? 'translucent'
           : 'white',
-    badges: [capsuleBadge(card)],
+    badges: [capsuleDeadlineBadge(card)],
     title: card.title,
     description: card.description ?? '',
     dDayText: dDayLabel(card.dDay),

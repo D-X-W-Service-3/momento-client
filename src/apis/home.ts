@@ -1,7 +1,7 @@
 import { api } from '@/apis/client';
 import type { HomeDashboardData, HomeResponse } from '@/types/home';
 import {
-  capsuleBadge,
+  capsuleDeadlineBadge,
   capsuleCountLabel,
   capsuleDateLabel,
   dDayLabel,
@@ -13,13 +13,15 @@ export function remainingUntil(openAt: string, now = Date.now()) {
     0,
     Math.floor((serverDate(openAt).getTime() - now) / 1000),
   );
-  return [
+  const days = Math.floor(seconds / 86400);
+  const time = [
     Math.floor((seconds % 86400) / 3600),
     Math.floor((seconds % 3600) / 60),
     seconds % 60,
   ]
     .map((part) => String(part).padStart(2, '0'))
     .join(':');
+  return days > 0 ? `${days}일 ${time}` : time;
 }
 export async function fetchHomeDashboard(): Promise<HomeDashboardData> {
   const data = await api.get<HomeResponse>('/v1/home');
@@ -40,7 +42,7 @@ export async function fetchHomeDashboard(): Promise<HomeDashboardData> {
       : null,
     featuredCapsules: data.capsules.map((card) => ({
       id: card.capsuleId,
-      stateLabel: capsuleBadge(card).label,
+      badge: capsuleDeadlineBadge(card),
       title: card.title,
       openDateLabel: capsuleDateLabel(card.openAt),
       dDayBadge: dDayLabel(card.dDay),

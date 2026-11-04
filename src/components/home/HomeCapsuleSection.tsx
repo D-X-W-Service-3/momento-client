@@ -43,7 +43,7 @@ export default function HomeCapsuleSection({
         className="bg-surface-white flex min-h-[103px] w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-5 py-[15px]"
       >
         <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <Chip tone="success">{capsule.stateLabel}</Chip>
+          <Chip tone={capsule.badge.tone}>{capsule.badge.label}</Chip>
 
           <div className="flex flex-col gap-1">
             <h3

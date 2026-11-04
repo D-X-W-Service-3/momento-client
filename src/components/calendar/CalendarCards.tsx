@@ -1,14 +1,8 @@
 import { Link } from 'react-router-dom';
 import ArchiveCard from '@/components/archive/ArchiveCard';
+import Chip from '@/components/common/Chip';
 import { capsuleCoverPath } from '@/constants/routes';
 import type { CalendarItem } from '@/types/momento';
-
-const statusLabels = {
-  open: '개봉 가능',
-  opened: '개봉됨',
-  sealed: '봉인됨',
-  writing: '작성 중',
-};
 
 export default function CalendarCard({ item }: { item: CalendarItem }) {
   if (item.type === 'archive') {
@@ -55,11 +49,7 @@ export default function CalendarCard({ item }: { item: CalendarItem }) {
       className="calendar-card capsule-calendar-card"
     >
       <div className="calendar-card-copy">
-        {item.status && (
-          <span className={`status ${item.status}`}>
-            {statusLabels[item.status]}
-          </span>
-        )}
+        {item.badge && <Chip tone={item.badge.tone}>{item.badge.label}</Chip>}
         <div className="calendar-card-text">
           <strong>{item.title}</strong>
           <span>{item.date} 개봉</span>

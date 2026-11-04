@@ -171,32 +171,31 @@ export default function CapsuleFeaturedSection({
               </strong>
             </div>
 
-            <div className="relative z-10 flex w-full flex-col gap-2 text-left">
-              <h3
-                className={`text-text-on-primary ${textStyles['heading-h2']}`}
-              >
-                {capsule.title}
-              </h3>
-
-              <div className="flex w-full items-end justify-between gap-3">
+            <div className="relative z-10 flex w-full items-end justify-between gap-3 text-left">
+              <div className="flex min-w-0 flex-1 flex-col">
+                <h3
+                  className={`text-text-on-primary ${textStyles['heading-h2']}`}
+                >
+                  {capsule.title}
+                </h3>
                 <p
-                  className={`text-text-on-primary/90 line-clamp-2 max-w-[197px] ${textStyles['body-xs']}`}
+                  className={`text-text-on-primary/90 line-clamp-2 ${textStyles['body-xs']}`}
                 >
                   {capsule.description}
                 </p>
+              </div>
 
-                <div className="flex shrink-0 flex-col items-end">
-                  <span
-                    className={`text-text-on-primary/90 ${textStyles['body-xs']}`}
-                  >
-                    {capsule.countText}
-                  </span>
-                  <span
-                    className={`text-text-on-primary/90 ${textStyles['body-xs']}`}
-                  >
-                    {capsule.openDateText}
-                  </span>
-                </div>
+              <div className="flex shrink-0 flex-col items-end">
+                <span
+                  className={`text-text-on-primary/90 ${textStyles['body-xs']}`}
+                >
+                  {capsule.countText}
+                </span>
+                <span
+                  className={`text-text-on-primary/90 ${textStyles['body-xs']}`}
+                >
+                  {capsule.openDateText}
+                </span>
               </div>
             </div>
           </article>
