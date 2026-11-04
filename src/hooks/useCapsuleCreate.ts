@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createCapsule } from '@/apis/capsules';
+import { invalidateCapsuleQueries } from '@/utils/queryInvalidation';
 
 import { capsuleCoverPath } from '@/constants/routes';
 import {
@@ -54,9 +57,19 @@ const CAPSULE_HOME_PATH = '/capsules';
 type CreatePhase = 'editing' | 'finishing' | 'completed';
 
 function getStartOfToday(): Date {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const part = (type: string) =>
+    Number(parts.find((entry) => entry.type === type)?.value);
+  return new Date(part('year'), part('month') - 1, part('day'));
 }
+
+const dateOnly = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 function addDays(base: Date, days: number): Date {
   return new Date(base.getFullYear(), base.getMonth(), base.getDate() + days);
@@ -64,6 +77,16 @@ function addDays(base: Date, days: number): Date {
 
 export function useCapsuleCreate() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [createdCapsuleId, setCreatedCapsuleId] = useState('');
+  const submitting = useRef(false);
+  const creation = useMutation({
+    mutationFn: createCapsule,
+    retry: false,
+    onError: () => {
+      submitting.current = false;
+    },
+  });
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlStep = parseStepParam(searchParams.get('step'));
@@ -83,7 +106,6 @@ export function useCapsuleCreate() {
     description: '',
     capsuleType: 'solo',
     visibility: 'all_participants',
-    inviteLink: 'www.naver.com/314564',
     editDeadline: '',
     openDate: '',
   });
@@ -96,8 +118,8 @@ export function useCapsuleCreate() {
   const parsedOpenDate = parseKoreanDate(form.openDate);
 
   const minOpenDate = parsedEditDeadline
-    ? addDays(parsedEditDeadline, 1)
-    : addDays(today, 1);
+    ? addDays(parsedEditDeadline, 2)
+    : addDays(today, 2);
 
   const datePickerMinDate = dateSheet === 'openDate' ? minOpenDate : today;
 
@@ -105,7 +127,7 @@ export function useCapsuleCreate() {
     parsedEditDeadline &&
     parsedOpenDate &&
     parsedEditDeadline >= today &&
-    parsedOpenDate >= addDays(parsedEditDeadline, 1),
+    parsedOpenDate >= addDays(parsedEditDeadline, 2),
   );
 
   const isNextEnabled =
@@ -186,22 +208,6 @@ export function useCapsuleCreate() {
     setForm((prev) => ({ ...prev, visibility }));
   };
 
-  const handleCopyInviteLink = () => {
-    void navigator.clipboard?.writeText(form.inviteLink);
-  };
-
-  const handleShareInviteLink = () => {
-    setInviteSheetOpen(false);
-    if (navigator.share) {
-      void navigator.share({
-        title: form.name || 'Momento 타임캡슐 초대',
-        url: `https://${form.inviteLink}`,
-      });
-      return;
-    }
-    void navigator.clipboard?.writeText(form.inviteLink);
-  };
-
   const handleOpenDateSheet = (target: 'editDeadline' | 'openDate') => {
     setDateSheet(target);
   };
@@ -218,7 +224,7 @@ export function useCapsuleCreate() {
       setForm((prev) => {
         const currentOpen = parseKoreanDate(prev.openDate);
         const shouldResetOpenDate = Boolean(
-          nextDeadline && currentOpen && currentOpen < addDays(nextDeadline, 1),
+          nextDeadline && currentOpen && currentOpen < addDays(nextDeadline, 2),
         );
         return {
           ...prev,
@@ -245,7 +251,13 @@ export function useCapsuleCreate() {
   };
 
   const handleNext = () => {
-    if (!isNextEnabled) return;
+    if (
+      !isNextEnabled ||
+      submitting.current ||
+      creation.isPending ||
+      createdCapsuleId
+    )
+      return;
 
     if (step === 'info') {
       setStep('type');
@@ -267,12 +279,40 @@ export function useCapsuleCreate() {
     }
 
     if (step === 'dates') {
-      // TODO: 캡슐 생성 API 연결 후 성공 콜백에서 호출
-      finishCreate();
+      if (!parsedEditDeadline || !parsedOpenDate) return;
+      submitting.current = true;
+      creation.mutate(
+        {
+          iconType: 'ICE_CREAM',
+          title: form.name.trim(),
+          description: form.description.trim(),
+          capsuleType:
+            form.capsuleType === 'solo'
+              ? 'SELF'
+              : form.capsuleType === 'friend'
+                ? 'FRIEND'
+                : 'GROUP',
+          visibilityType:
+            form.capsuleType !== 'group' ||
+            form.visibility === 'all_participants'
+              ? 'ALL_MEMBERS'
+              : 'RECIPIENT_AND_AUTHOR',
+          letterDeadlineDate: dateOnly(parsedEditDeadline),
+          openDate: dateOnly(parsedOpenDate),
+        },
+        {
+          onSuccess: (result) => {
+            setCreatedCapsuleId(String(result.capsuleId));
+            void invalidateCapsuleQueries(queryClient);
+            finishCreate();
+          },
+        },
+      );
     }
   };
 
   const handleBack = () => {
+    if (creation.isPending) return;
     setDateSheet(null);
     setInviteSheetOpen(false);
     // 완료 화면에서도 진입 전 페이지로 돌아간다 (생성 단계는 이미 되감겨 있음).
@@ -291,11 +331,15 @@ export function useCapsuleCreate() {
   };
 
   const handleGoCapsules = () => {
-    navigate(capsuleCoverPath('1'), { replace: true });
+    if (createdCapsuleId)
+      navigate(capsuleCoverPath(createdCapsuleId), { replace: true });
   };
 
   return {
     step,
+    createdCapsuleId,
+    isCreating: creation.isPending,
+    error: creation.error,
     form,
     activeSegments,
     totalSegments: 4,
@@ -311,8 +355,6 @@ export function useCapsuleCreate() {
     handleDescriptionChange,
     handleSelectCapsuleType,
     handleSelectVisibility,
-    handleCopyInviteLink,
-    handleShareInviteLink,
     handleOpenDateSheet,
     handleCloseDateSheet,
     handleSelectDate,

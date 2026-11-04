@@ -89,13 +89,15 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    // 로컬 개발 시 백엔드로 프록시. 배포는 호스팅의 rewrites 를 사용.
-    // 백엔드가 HTTP 라 HTTPS 페이지에서 직접 호출하면 혼합 콘텐츠로 막힌다.
+    // 로컬 개발은 동일 출처의 /api 를 HTTPS 백엔드로 전달한다.
     proxy: {
       '/api': {
-        target: 'http://13.125.44.162:8080',
+        target: 'https://api.getmomento.site',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => proxyReq.removeHeader('origin'));
+        },
       },
     },
   },

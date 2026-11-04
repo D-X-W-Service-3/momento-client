@@ -1,17 +1,20 @@
 interface ToggleSwitchProps {
   checked: boolean;
+  disabled?: boolean;
   onToggle: () => void;
   label: string;
 }
 
 export default function ToggleSwitch({
   checked,
+  disabled,
   onToggle,
   label,
 }: ToggleSwitchProps) {
   return (
     <button
       type="button"
+      disabled={disabled}
       role="switch"
       aria-checked={checked}
       aria-label={label}

@@ -3,11 +3,25 @@ import type { NotificationItem } from '@/types/notification';
 
 interface NotificationCardProps {
   item: NotificationItem;
+  onClick?: () => void;
 }
 
-export default function NotificationCard({ item }: NotificationCardProps) {
+export default function NotificationCard({
+  item,
+  onClick,
+}: NotificationCardProps) {
   return (
-    <article className="bg-surface-white flex min-h-[75px] w-full items-center gap-3 rounded-xl px-5 py-[15px]">
+    <button
+      type="button"
+      onClick={onClick}
+      className="bg-surface-white flex min-h-[75px] w-full items-center gap-3 rounded-xl px-5 py-[15px] text-left"
+    >
+      {!item.isRead && (
+        <span
+          className="bg-primary h-1.5 w-1.5 shrink-0 rounded-full"
+          aria-label="읽지 않음"
+        />
+      )}
       <div
         className="bg-surface-white rounded-icon h-[45px] w-[45px] shrink-0 border border-gray-300"
         aria-hidden="true"
@@ -29,6 +43,6 @@ export default function NotificationCard({ item }: NotificationCardProps) {
           {item.dateLabel}
         </span>
       </div>
-    </article>
+    </button>
   );
 }

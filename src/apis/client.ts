@@ -63,7 +63,13 @@ export async function request<T>(
   });
 
   const raw = await response.text();
-  if (response.status === 401 && auth && redirectOnUnauthorized) {
+  if (
+    response.status === 401 &&
+    auth &&
+    redirectOnUnauthorized &&
+    token === getAccessToken()
+  ) {
+    // 로그아웃·재로그인 뒤 도착한 이전 세션의 응답은 새 토큰을 지우지 않는다.
     handleUnauthorized();
   }
   let parsed: Partial<CommonResponse<T>> = {};

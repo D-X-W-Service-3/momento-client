@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import capsuleDeleteIcon from '@/assets/icons/capsule-delete-on-dark.svg';
 import capsuleEditIcon from '@/assets/icons/capsule-edit-on-dark.svg';
@@ -38,10 +38,13 @@ const ADMIN_ACTIONS = [
 export default function CapsuleDetailPage() {
   const { capsuleId = '' } = useParams();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const { data: capsule } = useCapsuleDetail(capsuleId);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [lettersOpen, setLettersOpen] = useState(false);
+  const [lettersOpen, setLettersOpen] = useState(
+    () => params.get('view') === 'my-letters',
+  );
   const [deletingLetterId, setDeletingLetterId] = useState<string>();
   const [inviteRole, setInviteRole] = useState<CapsuleInviteRole>();
 

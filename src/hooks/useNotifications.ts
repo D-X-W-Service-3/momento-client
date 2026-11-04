@@ -1,23 +1,113 @@
-import { useQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+  type InfiniteData,
+} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { fetchNotifications, markNotificationRead } from '@/apis/notifications';
+import { capsuleCoverPath, capsuleDetailPath } from '@/constants/routes';
+import type {
+  NotificationItem,
+  NotificationPageResponse,
+} from '@/types/notification';
 
-import { fetchNotifications } from '@/apis/notifications';
-
+export function notificationDestination(
+  item: Pick<NotificationItem, 'type' | 'referenceId'>,
+) {
+  if (item.referenceId == null) return null;
+  if (item.type === 'LETTER_DEADLINE')
+    return `${capsuleDetailPath(String(item.referenceId))}?view=my-letters`;
+  if (item.type === 'MEMORY_REMINDER') return `/archives/${item.referenceId}`;
+  if (item.type === 'ANNIVERSARY_REMINDER')
+    return `/anniversaries/${item.referenceId}/edit`;
+  if (
+    [
+      'CAPSULE_OPENED',
+      'CAPSULE_D_DAY',
+      'LETTER_DEADLINE',
+      'NEW_MEMBER',
+      'LETTER_MILESTONE',
+      'IMAGE_GENERATED',
+    ].includes(item.type)
+  )
+    return capsuleCoverPath(String(item.referenceId));
+  return null;
+}
 export function useNotifications() {
   const navigate = useNavigate();
-
-  const query = useQuery({
+  const client = useQueryClient();
+  const query = useInfiniteQuery({
     queryKey: ['notifications'],
-    queryFn: fetchNotifications,
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam }) => fetchNotifications(pageParam),
+    getNextPageParam: (page) =>
+      page.hasNext && page.nextCursor ? page.nextCursor : undefined,
   });
-
-  const handleBack = () => {
-    navigate(-1);
-  };
-
+  const read = useMutation({
+    mutationFn: markNotificationRead,
+    onSuccess: (_data, id) => {
+      client.setQueryData<InfiniteData<NotificationPageResponse>>(
+        ['notifications'],
+        (data) => {
+          if (!data) return data;
+          const wasUnread = data.pages.some((page) =>
+            page.notifications.some(
+              (item) => String(item.notificationId) === id && !item.isRead,
+            ),
+          );
+          return {
+            ...data,
+            pages: data.pages.map((page) => ({
+              ...page,
+              unreadCount: Math.max(0, page.unreadCount - (wasUnread ? 1 : 0)),
+              notifications: page.notifications.map((item) =>
+                String(item.notificationId) === id
+                  ? { ...item, isRead: true }
+                  : item,
+              ),
+            })),
+          };
+        },
+      );
+      void client.invalidateQueries({ queryKey: ['homeDashboard'] });
+    },
+  });
+  const seen = new Set<number>();
+  const notifications: NotificationItem[] = (
+    query.data?.pages.flatMap((page) => page.notifications) ?? []
+  )
+    .filter((item) => {
+      if (seen.has(item.notificationId)) return false;
+      seen.add(item.notificationId);
+      return true;
+    })
+    .map((item) => ({
+      id: String(item.notificationId),
+      title: item.title,
+      description: item.content,
+      dateLabel: item.createdAt.slice(0, 10).replace(/-/g, '.'),
+      isRead: item.isRead,
+      type: item.type,
+      referenceId: item.referenceId,
+    }));
   return {
-    notifications: query.data ?? [],
+    notifications,
     isLoading: query.isLoading,
-    handleBack,
+    error: query.error ?? read.error,
+    retry: query.refetch,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    loadMore: () => query.fetchNextPage(),
+    handleBack: () => navigate(-1),
+    handleSelect: (item: NotificationItem) => {
+      if (read.isPending) return;
+      const go = () => {
+        const path = notificationDestination(item);
+        if (path) navigate(path);
+      };
+      if (item.isRead) go();
+      else read.mutate(item.id, { onSuccess: go });
+    },
   };
 }

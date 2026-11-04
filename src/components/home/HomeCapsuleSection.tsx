@@ -5,34 +5,38 @@ import type { HomeCapsuleItem } from '@/types/home';
 
 interface HomeCapsuleSectionProps {
   capsule: HomeCapsuleItem;
+  showHeading?: boolean;
   onViewAll?: () => void;
   onSelectCapsule?: (id: string) => void;
 }
 
 export default function HomeCapsuleSection({
   capsule,
+  showHeading = true,
   onViewAll,
   onSelectCapsule,
 }: HomeCapsuleSectionProps) {
   return (
     <section className="flex w-full flex-col gap-3">
-      <div className="flex h-6 w-full items-center justify-between">
-        <h2 className={`text-text-primary ${textStyles['header-title']}`}>
-          타임캡슐
-        </h2>
-        <button
-          type="button"
-          onClick={onViewAll}
-          className="flex cursor-pointer items-center gap-[5px]"
-        >
-          <span
-            className={`text-text-secondary ${textStyles['body-medium-semi-tight']}`}
+      {showHeading && (
+        <div className="flex h-6 w-full items-center justify-between">
+          <h2 className={`text-text-primary ${textStyles['header-title']}`}>
+            타임캡슐
+          </h2>
+          <button
+            type="button"
+            onClick={onViewAll}
+            className="flex cursor-pointer items-center gap-[5px]"
           >
-            전체보기
-          </span>
-          <ChevronRightSmIcon className="h-[10px] w-[6px]" />
-        </button>
-      </div>
+            <span
+              className={`text-text-secondary ${textStyles['body-medium-semi-tight']}`}
+            >
+              전체보기
+            </span>
+            <ChevronRightSmIcon className="h-[10px] w-[6px]" />
+          </button>
+        </div>
+      )}
 
       <article
         onClick={() => onSelectCapsule?.(String(capsule.id))}

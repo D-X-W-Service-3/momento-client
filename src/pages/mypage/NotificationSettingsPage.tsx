@@ -1,12 +1,20 @@
 import BackHeader from '@/components/layout/BackHeader';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import MobileLayout from '@/components/layout/MobileLayout';
 import NotificationSettingRow from '@/components/mypage/NotificationSettingRow';
 import { useNotificationSettings } from '@/hooks/useNotificationSettings';
 import { textStyles } from '@/styles/tokens';
 
 export default function NotificationSettingsPage() {
-  const { notificationSettings, handleBack, handleToggle } =
-    useNotificationSettings();
+  const {
+    notificationSettings,
+    handleBack,
+    handleToggle,
+    isLoading,
+    error,
+    retry,
+    isSaving,
+  } = useNotificationSettings();
 
   return (
     <MobileLayout variant="gray">
@@ -17,6 +25,7 @@ export default function NotificationSettingsPage() {
       />
 
       <main className="flex flex-1 flex-col gap-3 p-5">
+        <QueryFeedback loading={isLoading} error={error} onRetry={retry} />
         <h2
           className={`text-text-notif-title ${textStyles['heading-h3-tight']}`}
         >
@@ -28,6 +37,7 @@ export default function NotificationSettingsPage() {
             <NotificationSettingRow
               key={item.key}
               item={item}
+              disabled={isSaving}
               onToggle={handleToggle}
             />
           ))}

@@ -40,6 +40,11 @@ export default function CapsuleHorizontalSection({
         </button>
       </div>
 
+      {items.length === 0 && (
+        <p className="text-text-muted text-body-sm py-3">
+          아직 해당하는 캡슐이 없어요.
+        </p>
+      )}
       <div
         ref={containerRef}
         {...dragProps}

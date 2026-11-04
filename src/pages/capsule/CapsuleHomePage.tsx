@@ -1,5 +1,7 @@
 import capsuleHomeMascotImg from '@/assets/images/capsule-home-mascot.png';
 import CapsuleFab from '@/components/capsule/CapsuleFab';
+import ReceivedInvitesSheet from '@/components/capsule/ReceivedInvitesSheet';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import CapsuleFeaturedSection from '@/components/capsule/CapsuleFeaturedSection';
 import CapsuleHorizontalSection from '@/components/capsule/CapsuleHorizontalSection';
 import CapsuleRequestBanner from '@/components/capsule/CapsuleRequestBanner';
@@ -12,6 +14,12 @@ import { textStyles } from '@/styles/tokens';
 export default function CapsuleHomePage() {
   const {
     data,
+    isLoading,
+    error,
+    retry,
+    invitesOpen,
+    openInvites,
+    closeInvites,
     activeSlide,
     editableCapsules,
     lockedCapsules,
@@ -51,7 +59,7 @@ export default function CapsuleHomePage() {
           <div className="relative z-20 -mt-[30px] flex w-full flex-col gap-3">
             <CapsuleSearchBar readOnly onClick={handleSearchClick} />
             {data?.hasPendingRequest && (
-              <CapsuleRequestBanner onClick={handleNotifications} />
+              <CapsuleRequestBanner onClick={openInvites} />
             )}
           </div>
         </section>
@@ -61,34 +69,40 @@ export default function CapsuleHomePage() {
             capsules={data.featuredCapsules}
             activeSlide={activeSlide}
             onSelectSlide={handleSelectSlide}
-            onViewAll={() => handleViewList('all')}
+            onViewAll={() => handleViewList()}
             onSelectCapsule={handleSelectCapsule}
           />
         )}
 
-        <CapsuleHorizontalSection
-          title="수정할 수 있어요"
-          items={editableCapsules}
-          onViewAll={() => handleViewList('editable')}
-          onSelectCapsule={handleSelectCapsule}
-        />
+        <QueryFeedback loading={isLoading} error={error} onRetry={retry} />
+        {data && (
+          <>
+            <CapsuleHorizontalSection
+              title="수정할 수 있어요"
+              items={editableCapsules}
+              onViewAll={() => handleViewList('editable')}
+              onSelectCapsule={handleSelectCapsule}
+            />
 
-        <CapsuleHorizontalSection
-          title="캡슐이 잠겨있어요"
-          items={lockedCapsules}
-          onViewAll={() => handleViewList('locked')}
-          onSelectCapsule={handleSelectCapsule}
-        />
+            <CapsuleHorizontalSection
+              title="캡슐이 잠겨있어요"
+              items={lockedCapsules}
+              onViewAll={() => handleViewList('locked')}
+              onSelectCapsule={handleSelectCapsule}
+            />
 
-        <CapsuleHorizontalSection
-          title="추억이 열렸어요"
-          items={openedCapsules}
-          onViewAll={() => handleViewList('opened')}
-          onSelectCapsule={handleSelectCapsule}
-        />
+            <CapsuleHorizontalSection
+              title="추억이 열렸어요"
+              items={openedCapsules}
+              onViewAll={() => handleViewList('opened')}
+              onSelectCapsule={handleSelectCapsule}
+            />
+          </>
+        )}
       </div>
 
       <CapsuleFab />
+      <ReceivedInvitesSheet open={invitesOpen} onClose={closeInvites} />
     </MobileLayout>
   );
 }

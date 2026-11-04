@@ -1,188 +1,85 @@
-import type { CapsuleHomeData, CapsuleListData } from '@/types/capsule';
-
-export const mockCapsuleHomeData: CapsuleHomeData = {
-  hasPendingRequest: true,
-  featuredCapsules: [
-    {
-      id: 'featured-1',
-      statusLabel: '지금 열 수 있어요',
-      dDayText: 'D-DAY',
-      title: '2024 우리, 다시 만나는 날',
-      description:
-        '1년 동안 서로에게 응원과 사랑을 보냈던 우리의 소중한 타임캡슐',
-      countText: '편지 3',
-      openDateText: '2027. 12. 12 개봉',
-    },
-    {
-      id: 'featured-2',
-      statusLabel: '지금 열 수 있어요',
-      dDayText: 'D-1',
-      title: '스무 살의 나에게 보내는 편지',
-      description: '설레는 마음으로 적어 내려갔던 우리의 첫 번째 타임캡슐',
-      countText: '편지 5',
-      openDateText: '2027. 12. 13 개봉',
-    },
-    {
-      id: 'featured-3',
-      statusLabel: '곧 열려요',
-      dDayText: 'D-3',
-      title: '제주도 가족 여행의 기록',
-      description: '푸른 바다 앞에서 약속했던 우리의 다짐을 담은 타임캡슐',
-      countText: '편지 4',
-      openDateText: '2027. 12. 15 개봉',
-    },
-    {
-      id: 'featured-4',
-      statusLabel: '곧 열려요',
-      dDayText: 'D-7',
-      title: '2025 연말 모임 타임캡슐',
-      description: '함께 웃고 떠들던 따뜻한 겨울밤의 추억을 담은 타임캡슐',
-      countText: '편지 6',
-      openDateText: '2027. 12. 19 개봉',
-    },
-  ],
-  editableCapsules: [
-    {
-      id: 'edit-1',
-      badge: { label: '수정마감 D-12', tone: 'warning' },
-      title: '2024 우리, 다시 만나는 날',
-      openDateText: '2027.04.15 공개',
-    },
-    {
-      id: 'edit-2',
-      badge: { label: '수정마감 D-12', tone: 'warning' },
-      title: '2024 우리, 다시 만나는 날',
-      openDateText: '2027.04.15 공개',
-    },
-    {
-      id: 'edit-3',
-      badge: { label: '수정마감 D-5', tone: 'warning' },
-      title: '바니바니 바니바니 당근 당근',
-      openDateText: '2027.06.20 공개',
-    },
-  ],
-  lockedCapsules: [
-    {
-      id: 'lock-1',
-      badge: { label: 'D-12', tone: 'info' },
-      title: '2024 우리, 다시 만나는 날',
-      openDateText: '2027.04.15 공개',
-    },
-    {
-      id: 'lock-2',
-      badge: { label: 'D-12', tone: 'info' },
-      title: '2024 우리, 다시 만나는 날',
-      openDateText: '2027.04.15 공개',
-    },
-    {
-      id: 'lock-3',
-      badge: { label: 'D-30', tone: 'info' },
-      title: '우리들의 여름방학 이야기',
-      openDateText: '2027.08.01 공개',
-    },
-  ],
-  openedCapsules: [
-    {
-      id: 'open-1',
-      badge: { label: 'D+12', tone: 'neutral' },
-      title: '2024 우리, 다시 만나는 날',
-      openDateText: '2027.04.15 공개',
-    },
-    {
-      id: 'open-2',
-      badge: { label: 'D+12', tone: 'neutral' },
-      title: '2024 우리, 다시 만나는 날',
-      openDateText: '2027.04.15 공개',
-    },
-    {
-      id: 'open-3',
-      badge: { label: 'D+30', tone: 'neutral' },
-      title: '바니바니 바니바니 당근 당근',
-      openDateText: '2027.03.10 공개',
-    },
-  ],
-};
-
-export const mockCapsuleListData: CapsuleListData = {
-  filters: [
-    { key: 'all', label: '전체', count: 32 },
-    { key: 'openable', label: '개봉가능', count: 8 },
-    { key: 'editable', label: '수정 가능', count: 24 },
-    { key: 'locked', label: '잠긴 캡슐', count: 24 },
-    { key: 'opened', label: '열린 캡슐', count: 1 },
-  ],
-  items: [
-    {
-      id: 'list-2026-1',
-      year: 2026,
-      filterCategory: 'openable',
-      variant: 'gradient',
-      badges: [{ label: '개봉 가능', tone: 'success' }],
-      title: '2024 우리, 다시 만나는 날',
-      description:
-        '1년 동안 서로에게 응원과 사랑을 보냈던 우리의 소중한 타임캡슐',
-      dDayText: 'D-DAY',
-      dateText: '2027. 12. 12 개봉',
-      countText: '5명 | 편지 3',
-    },
-    {
-      id: 'list-2026-2',
-      year: 2026,
-      filterCategory: 'editable',
-      variant: 'translucent',
-      badges: [{ label: '수정마감 D-12', tone: 'warning' }],
-      title: '바니바니 바니바니 당근 당근',
-      description: '제주도에서의 추억을 담아 만든 타임캡슐 🥕',
-      dateText: '3일 후 봉인 예정',
-      countText: '5명 | 편지 3',
-    },
-    {
-      id: 'list-2027-1',
-      year: 2027,
-      filterCategory: 'locked',
-      variant: 'white',
-      badges: [
-        { label: '봉인됨', tone: 'info' },
-        { label: 'D-30', tone: 'info' },
-      ],
-      title: '2024 우리, 다시 만나는 날',
-      description:
-        '1년 동안 서로에게 응원과 사랑을 보냈던 우리의 소중한 타임캡슐',
-      dateText: '2027. 12. 12 개봉',
-      countText: '5명 | 편지 3',
-    },
-    {
-      id: 'list-2027-2',
-      year: 2027,
-      filterCategory: 'editable',
-      variant: 'translucent',
-      badges: [{ label: '수정마감 D-12', tone: 'warning' }],
-      title: '바니바니 바니바니 당근 당근',
-      description: '제주도에서의 추억을 담아 만든 타임캡슐 🥕',
-      dateText: '3일 후 봉인 예정',
-      countText: '5명 | 편지 3',
-    },
-    {
-      id: 'list-2027-3',
-      year: 2027,
-      filterCategory: 'opened',
-      variant: 'translucent',
-      badges: [
-        { label: '개봉됨', tone: 'neutral' },
-        { label: 'D+30', tone: 'neutral' },
-      ],
-      title: '바니바니 바니바니 당근 당근',
-      description: '제주도에서의 추억을 담아 만든 타임캡슐 🥕',
-      dateText: '2027. 12. 12 개봉',
-      countText: '5명 | 편지 3',
-    },
-  ],
-};
+import { api } from '@/apis/client';
+import type {
+  CapsuleFilterKey,
+  CapsuleHomeData,
+  CapsuleListData,
+  CapsuleListResponse,
+  CapsuleOverviewResponse,
+  ReceivedInvite,
+} from '@/types/capsule';
+import {
+  capsuleBadge,
+  capsuleCountLabel,
+  capsuleDateLabel,
+  capsuleStatusParam,
+  dDayLabel,
+  toCapsuleListItem,
+} from '@/utils/capsuleCards';
 
 export async function fetchCapsuleHomeData(): Promise<CapsuleHomeData> {
-  return mockCapsuleHomeData;
+  const data = await api.get<CapsuleOverviewResponse>(
+    '/v1/time-capsules/overview',
+  );
+  const horizontal = (cards: CapsuleOverviewResponse['writing']) =>
+    cards.map((card) => ({
+      id: String(card.capsuleId),
+      badge: capsuleBadge(card),
+      title: card.title,
+      openDateText: capsuleDateLabel(card.openAt),
+    }));
+  return {
+    hasPendingRequest: data.hasPendingInvite,
+    featuredCapsules: data.upcoming.map((card) => ({
+      id: String(card.capsuleId),
+      statusLabel: capsuleBadge(card).label,
+      dDayText: dDayLabel(card.dDay),
+      title: card.title,
+      description: card.description ?? '',
+      countText: capsuleCountLabel(card),
+      openDateText: capsuleDateLabel(card.openAt),
+    })),
+    editableCapsules: horizontal(data.writing),
+    lockedCapsules: horizontal(data.locked),
+    openedCapsules: horizontal(data.opened),
+  };
 }
 
-export async function fetchCapsuleListData(): Promise<CapsuleListData> {
-  return mockCapsuleListData;
+export async function fetchCapsuleListData(
+  filter: CapsuleFilterKey,
+  keyword: string,
+  cursor?: string,
+): Promise<CapsuleListData> {
+  const params = new URLSearchParams({
+    status: capsuleStatusParam[filter],
+    size: '20',
+  });
+  if (keyword) params.set('keyword', keyword);
+  if (cursor) params.set('cursor', cursor);
+  const data = await api.get<CapsuleListResponse>(
+    `/v1/time-capsules?${params}`,
+  );
+  return {
+    filters: [
+      { key: 'editable', label: '수정 가능', count: data.counts.writing },
+      { key: 'locked', label: '잠긴 캡슐', count: data.counts.locked },
+      { key: 'opened', label: '열린 캡슐', count: data.counts.opened },
+    ],
+    items: data.capsules.map(toCapsuleListItem),
+    nextCursor: data.nextCursor,
+    hasNext: data.hasNext,
+  };
 }
+
+export const fetchReceivedInvites = () =>
+  api.get<{ invites: ReceivedInvite[] }>('/v1/invites/received');
+export interface CreateCapsuleRequest {
+  iconType: string;
+  title: string;
+  description: string;
+  capsuleType: 'SELF' | 'FRIEND' | 'GROUP';
+  visibilityType: 'RECIPIENT_AND_AUTHOR' | 'ALL_MEMBERS';
+  letterDeadlineDate: string;
+  openDate: string;
+}
+export const createCapsule = (body: CreateCapsuleRequest) =>
+  api.post<{ capsuleId: number }>('/v1/time-capsules', body);

@@ -1,7 +1,6 @@
 import type { ChipTone } from '@/components/common/Chip';
 
-export type CapsuleFilterKey =
-  'all' | 'openable' | 'editable' | 'locked' | 'opened';
+export type CapsuleFilterKey = 'editable' | 'locked' | 'opened';
 
 export interface CapsuleChipBadge {
   label: string;
@@ -28,7 +27,7 @@ export interface CapsuleHorizontalItem {
 export interface CapsuleListItem {
   id: string;
   year: number;
-  filterCategory: Exclude<CapsuleFilterKey, 'all'>;
+  filterCategory: CapsuleFilterKey;
   variant: 'gradient' | 'white' | 'translucent';
   badges: CapsuleChipBadge[];
   title: string;
@@ -55,6 +54,46 @@ export interface CapsuleHomeData {
 export interface CapsuleListData {
   filters: CapsuleFilterChipOption[];
   items: CapsuleListItem[];
+  nextCursor: string | null;
+  hasNext: boolean;
+}
+
+export interface CapsuleCardResponse {
+  capsuleId: number;
+  iconType: string;
+  title: string;
+  description: string | null;
+  status: CapsuleStatusType;
+  openedByMe: boolean;
+  openAt: string;
+  dDay: number;
+  deadlineDDay: number | null;
+  memberCount: number;
+  letterCount: number;
+}
+
+export interface CapsuleOverviewResponse {
+  hasPendingInvite: boolean;
+  upcoming: CapsuleCardResponse[];
+  writing: CapsuleCardResponse[];
+  locked: CapsuleCardResponse[];
+  opened: CapsuleCardResponse[];
+}
+
+export interface CapsuleListResponse {
+  counts: { all: number; opened: number; writing: number; locked: number };
+  capsules: CapsuleCardResponse[];
+  nextCursor: string | null;
+  hasNext: boolean;
+}
+
+export interface ReceivedInvite {
+  inviteToken: string;
+  targetRole: CapsuleInviteRole;
+  inviterNickname: string;
+  capsuleId: number;
+  capsuleTitle: string;
+  openAt: string;
 }
 
 export type CapsuleCreateType = 'solo' | 'friend' | 'group';
@@ -70,7 +109,6 @@ export interface CapsuleCreateForm {
   description: string;
   capsuleType: CapsuleCreateType;
   visibility: CapsuleVisibilityType;
-  inviteLink: string;
   editDeadline: string;
   openDate: string;
 }

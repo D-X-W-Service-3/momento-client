@@ -24,7 +24,7 @@ export default function CapsuleDateStep({
           언제 추억을 열어볼까요?
         </h2>
         <p className={`text-text-secondary ${textStyles['body-xs']}`}>
-          캡슐이 잠기고 다시 열리는 날짜를 정해주세요
+          개봉일은 편지 수정 마감일에서 최소 2일 뒤로 정해주세요
         </p>
       </div>
 
@@ -75,7 +75,7 @@ export default function CapsuleDateStep({
               캡슐 잠금
             </strong>
             <span className={`text-text-secondary ${textStyles['body-xs']}`}>
-              편지 수정 마감일 부터 개봉일까지
+              편지 수정 마감일 다음 날부터 개봉일까지
               <br />
               캡슐을 열어볼 수 없어요
             </span>

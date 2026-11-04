@@ -1,5 +1,6 @@
 import capsuleListMascotImg from '@/assets/images/capsule-list-mascot.png';
 import CapsuleFab from '@/components/capsule/CapsuleFab';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import CapsuleFilterChips from '@/components/capsule/CapsuleFilterChips';
 import CapsuleListCard from '@/components/capsule/CapsuleListCard';
 import CapsuleSearchBar from '@/components/capsule/CapsuleSearchBar';
@@ -16,6 +17,12 @@ export default function CapsuleListPage() {
     searchInputRef,
     shouldFocusSearch,
     groupedByYear,
+    isLoading,
+    error,
+    retry,
+    hasNextPage,
+    isFetchingNextPage,
+    loadMore,
     handleFilterChange,
     handleSearchChange,
     handleNotifications,
@@ -63,6 +70,17 @@ export default function CapsuleListPage() {
         </section>
 
         <div className="flex w-full flex-col gap-5">
+          <QueryFeedback
+            loading={isLoading}
+            error={error}
+            onRetry={retry}
+            empty={groupedByYear.length === 0}
+            emptyMessage={
+              searchQuery.trim()
+                ? '검색 결과가 없어요.'
+                : '이 상태의 캡슐이 아직 없어요.'
+            }
+          />
           {groupedByYear.map((group) => (
             <section key={group.year} className="flex w-full flex-col gap-4">
               <h2 className={`text-text-primary ${textStyles['header-title']}`}>
@@ -80,6 +98,16 @@ export default function CapsuleListPage() {
               </div>
             </section>
           ))}
+          {hasNextPage && (
+            <button
+              type="button"
+              disabled={isFetchingNextPage}
+              onClick={() => void loadMore()}
+              className="text-primary rounded-lg border p-3 disabled:opacity-50"
+            >
+              {isFetchingNextPage ? '불러오는 중…' : '더 보기'}
+            </button>
+          )}
         </div>
       </div>
 

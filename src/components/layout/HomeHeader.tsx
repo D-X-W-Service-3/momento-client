@@ -7,11 +7,13 @@ import { textStyles } from '@/styles/tokens';
 interface HomeHeaderProps {
   onClickBell?: () => void;
   onClickProfile?: () => void;
+  hasUnreadNotification?: boolean;
 }
 
 export default function HomeHeader({
   onClickBell,
   onClickProfile,
+  hasUnreadNotification = false,
 }: HomeHeaderProps) {
   const navigate = useNavigate();
 
@@ -32,10 +34,13 @@ export default function HomeHeader({
         <button
           type="button"
           onClick={handleBell}
-          aria-label="알림"
-          className="flex cursor-pointer items-center justify-center"
+          aria-label={hasUnreadNotification ? '읽지 않은 알림 있음' : '알림'}
+          className="relative flex cursor-pointer items-center justify-center"
         >
           <HomeBellIcon className="h-[18px] w-[17px]" />
+          {hasUnreadNotification && (
+            <span className="bg-danger absolute -top-1 -right-1 h-1.5 w-1.5 rounded-full" />
+          )}
         </button>
         <button
           type="button"

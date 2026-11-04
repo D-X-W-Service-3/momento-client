@@ -9,6 +9,7 @@ import type { CapsuleFilterKey } from '@/types/capsule';
 export function useCapsuleHome() {
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
+  const [invitesOpen, setInvitesOpen] = useState(false);
 
   const query = useQuery({
     queryKey: ['capsuleHome'],
@@ -24,7 +25,7 @@ export function useCapsuleHome() {
   };
 
   const handleViewList = (filter?: CapsuleFilterKey) => {
-    if (filter && filter !== 'all') {
+    if (filter) {
       navigate(`/capsules/list?filter=${filter}`);
       return;
     }
@@ -41,8 +42,16 @@ export function useCapsuleHome() {
 
   return {
     data: query.data,
-    activeSlide,
-    totalSlides: 4,
+    activeSlide: Math.min(
+      activeSlide,
+      Math.max(0, (query.data?.featuredCapsules.length ?? 0) - 1),
+    ),
+    isLoading: query.isLoading,
+    error: query.error,
+    retry: query.refetch,
+    invitesOpen,
+    openInvites: () => setInvitesOpen(true),
+    closeInvites: () => setInvitesOpen(false),
     editableCapsules: query.data?.editableCapsules ?? [],
     lockedCapsules: query.data?.lockedCapsules ?? [],
     openedCapsules: query.data?.openedCapsules ?? [],

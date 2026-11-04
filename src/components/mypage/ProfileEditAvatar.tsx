@@ -3,6 +3,7 @@ import type { ChangeEvent, RefObject } from 'react';
 import CameraSolidIcon from '@/assets/icons/camera-solid.svg?react';
 import defaultAvatarImg from '@/assets/images/default-avatar.png';
 import { toSecureImageUrl } from '@/utils/image';
+import { MEMORY_IMAGE_ACCEPT } from '@/utils/archivePhotos';
 
 interface ProfileEditAvatarProps {
   avatarUrl: string | null;
@@ -40,7 +41,7 @@ export default function ProfileEditAvatar({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept={MEMORY_IMAGE_ACCEPT}
         onChange={onAvatarChange}
         className="hidden"
       />

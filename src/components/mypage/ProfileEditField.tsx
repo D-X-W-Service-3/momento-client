@@ -7,7 +7,7 @@ interface ProfileEditFieldProps {
   label: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  type?: 'text' | 'email' | 'tel';
+  type?: 'text' | 'email' | 'tel' | 'date';
   maxLength?: number;
   helperText?: string;
   wrapperClassName?: string;

@@ -1,34 +1,55 @@
-import type { HomeDashboardData } from '@/types/home';
+import { api } from '@/apis/client';
+import type { HomeDashboardData, HomeResponse } from '@/types/home';
+import {
+  capsuleBadge,
+  capsuleCountLabel,
+  capsuleDateLabel,
+  dDayLabel,
+  serverDate,
+} from '@/utils/capsuleCards';
 
-const MOCK_HOME_DASHBOARD: HomeDashboardData = {
-  heroCapsule: {
-    tag: '가장 먼저 열리는 캡슐',
-    title: '스무 살의 나에게',
-    dDay: 'D-365',
-    releaseDate: '2026.03.01 공개',
-    remainingTime: '03:55:13',
-    remainingSuffix: '이후 열어 볼 수 있어요',
-  },
-  featuredCapsule: {
-    id: 1,
-    stateLabel: '개봉 가능',
-    title: '새로운 시작의 아침',
-    openDateLabel: '2027년 4월 15일 개봉',
-    dDayBadge: 'D-DAY',
-    meta: '5명 | 편지 3',
-  },
-  attendanceDays: [
-    { day: '월', checked: false },
-    { day: '화', checked: false },
-    { day: '수', checked: false },
-    { day: '목', checked: true },
-    { day: '금', checked: true },
-    { day: '토', checked: true },
-    { day: '일', checked: true },
-  ],
-  streakCount: 4,
-};
-
+export function remainingUntil(openAt: string, now = Date.now()) {
+  const seconds = Math.max(
+    0,
+    Math.floor((serverDate(openAt).getTime() - now) / 1000),
+  );
+  return [
+    Math.floor((seconds % 86400) / 3600),
+    Math.floor((seconds % 3600) / 60),
+    seconds % 60,
+  ]
+    .map((part) => String(part).padStart(2, '0'))
+    .join(':');
+}
 export async function fetchHomeDashboard(): Promise<HomeDashboardData> {
-  return Promise.resolve(MOCK_HOME_DASHBOARD);
+  const data = await api.get<HomeResponse>('/v1/home');
+  const upcoming = data.upcomingCapsule;
+  return {
+    hasUnreadNotification: data.hasUnreadNotification,
+    heroCapsule: upcoming
+      ? {
+          id: upcoming.capsuleId,
+          openAt: upcoming.openAt,
+          tag: '가장 먼저 열리는 캡슐',
+          title: upcoming.title,
+          dDay: dDayLabel(upcoming.dDay),
+          releaseDate: capsuleDateLabel(upcoming.openAt),
+          remainingTime: remainingUntil(upcoming.openAt),
+          remainingSuffix: '이후 열어 볼 수 있어요',
+        }
+      : null,
+    featuredCapsules: data.capsules.map((card) => ({
+      id: card.capsuleId,
+      stateLabel: capsuleBadge(card).label,
+      title: card.title,
+      openDateLabel: capsuleDateLabel(card.openAt),
+      dDayBadge: dDayLabel(card.dDay),
+      meta: capsuleCountLabel(card),
+    })),
+    attendanceDays: data.weeklyVisit.days.map((day, index) => ({
+      day: ['월', '화', '수', '목', '금', '토', '일'][index],
+      checked: day.visited,
+    })),
+    streakCount: data.weeklyVisit.streak,
+  };
 }
