@@ -54,7 +54,8 @@ export default function CapsuleCreatePage() {
         <InviteSheet
           open={inviteSheetOpen}
           onClose={handleCloseInviteSheet}
-          role="participant"
+          capsuleId=""
+          role="PARTICIPANT"
           inviteUrl={form.inviteLink}
         />
       </MobileLayout>

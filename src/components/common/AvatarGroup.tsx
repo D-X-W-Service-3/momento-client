@@ -1,7 +1,9 @@
-import type { CapsuleMember } from '@/types/capsule';
+import defaultAvatar from '@/assets/images/default-avatar.png';
+import type { CapsuleMemberPreview } from '@/types/capsule';
+import { toSecureImageUrl } from '@/utils/image';
 
 interface AvatarGroupProps {
-  members: CapsuleMember[];
+  members: CapsuleMemberPreview[];
   /** 전체 인원. members 보다 많으면 마지막에 +N 으로 표시한다. */
   totalCount: number;
   /** 아바타를 최대 몇 개까지 보여줄지 */
@@ -19,10 +21,10 @@ export default function AvatarGroup({
   return (
     <ul className="flex w-full items-center gap-stack">
       {visible.map((member) => (
-        <li key={member.id} className="shrink-0">
+        <li key={member.userId} className="shrink-0">
           <img
-            src={member.avatarUrl}
-            alt={member.name}
+            src={toSecureImageUrl(member.profileImageUrl) ?? defaultAvatar}
+            alt={member.nickname}
             className="size-10 rounded-full object-cover"
           />
         </li>

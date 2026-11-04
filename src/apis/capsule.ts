@@ -1,94 +1,78 @@
-import dayjs from 'dayjs';
-
 import capsuleHero from '@/assets/images/capsule/capsule-hero.webp';
-import avatar1 from '@/assets/images/mock/avatar-1.webp';
-import avatar2 from '@/assets/images/mock/avatar-2.webp';
-import avatar3 from '@/assets/images/mock/avatar-3.webp';
-import avatar4 from '@/assets/images/mock/avatar-4.webp';
-import type { CapsuleStatus } from '@/types/calendar';
+import { api } from '@/apis/client';
 import type {
-  CapsuleCover,
   CapsuleDetail,
   CapsuleIconOption,
-  CapsuleMember,
+  CapsuleInvite,
+  CapsuleInvitePreview,
+  CapsuleInviteRole,
+  CapsuleMemberList,
+  CapsuleRole,
 } from '@/types/capsule';
-import { toDateKey } from '@/utils/date';
 
-// TODO: 백엔드 API 확정 후 axios 호출로 교체.
-// 그 전까지는 id 로 상태를 바꿔 세 가지 커버를 모두 확인할 수 있게 한다.
-const MOCK_STATUS_BY_ID: Record<string, CapsuleStatus> = {
-  sealed: 'sealed',
-  openable: 'openable',
-  'featured-1': 'openable',
-  'featured-2': 'openable',
-  'featured-3': 'sealed',
-  'featured-4': 'sealed',
-  'edit-1': 'writing',
-  'edit-2': 'writing',
-  'edit-3': 'writing',
-  'lock-1': 'sealed',
-  'lock-2': 'sealed',
-  'lock-3': 'sealed',
-  'open-1': 'openable',
-  'open-2': 'openable',
-  'open-3': 'openable',
-  'list-2026-1': 'openable',
-  'list-2026-2': 'writing',
-  'list-2027-1': 'sealed',
-  'list-2027-2': 'writing',
-  'list-2027-3': 'openable',
-};
+export const getCapsuleDetail = (capsuleId: string) =>
+  api.get<CapsuleDetail>(`/v1/time-capsules/${capsuleId}`);
 
-const MOCK_AVATARS = [avatar1, avatar2, avatar3, avatar4];
-const MOCK_NAMES = [
-  '상미',
-  '민지',
-  '지호',
-  '민수',
-  '현우',
-  '유빈',
-  '세영',
-  '도윤',
-  '하린',
-  '준서',
-  '예은',
-  '시우',
-];
+export const getCapsuleMembers = (capsuleId: string, role: CapsuleRole) =>
+  api.get<CapsuleMemberList>(
+    `/v1/time-capsules/${capsuleId}/members?role=${role}`,
+  );
 
-const createMockMembers = (count: number): CapsuleMember[] =>
-  Array.from({ length: count }, (_, index) => ({
-    id: String(index + 1),
-    name: MOCK_NAMES[index % MOCK_NAMES.length],
-    avatarUrl: MOCK_AVATARS[index % MOCK_AVATARS.length],
-    isOwner: index === 0,
-  }));
+export const removeCapsuleMember = (capsuleId: string, memberId: number) =>
+  api.delete<void>(`/v1/time-capsules/${capsuleId}/members/${memberId}`);
 
-const MOCK_PARTICIPANTS = createMockMembers(8);
-const MOCK_RECEIVERS = createMockMembers(12);
+export interface CapsuleUpdateRequest {
+  /** 비울 수 없다 */
+  iconType: string;
+  /** 비울 수 없고 20자 이하 */
+  title: string;
+  /** 45자 이하. 빈 문자열을 보내면 지워진다. */
+  description: string;
+}
 
-const createMockCover = (id: string): CapsuleCover => ({
-  id,
-  title: '2024 우리, 다시 만나는 날',
-  status: MOCK_STATUS_BY_ID[id] ?? 'writing',
-  openDate: toDateKey(dayjs().add(136, 'day')),
-});
+export const updateCapsule = (capsuleId: string, body: CapsuleUpdateRequest) =>
+  api.patch<void>(`/v1/time-capsules/${capsuleId}`, body);
 
-export const getCapsuleCover = async (id: string): Promise<CapsuleCover> =>
-  createMockCover(id);
+export const deleteCapsule = (capsuleId: string) =>
+  api.delete<void>(`/v1/time-capsules/${capsuleId}`);
 
-export const getCapsuleDetail = async (id: string): Promise<CapsuleDetail> => ({
-  ...createMockCover(id),
-  description: '1년 동안 서로에게 응원과 사랑을 보냈던\n우리의 소중한 타임캡슐',
-  isGroup: true,
-  coverImageUrl: capsuleHero,
-  memberCount: 5,
-  letterCount: 13,
-  participants: MOCK_PARTICIPANTS,
-  participantCount: MOCK_PARTICIPANTS.length,
-  receivers: MOCK_RECEIVERS,
-  receiverCount: MOCK_RECEIVERS.length,
-  isHost: true,
-});
+/** 개봉 화면을 확인했다고 서버에 알린다. */
+export const openCapsule = (capsuleId: string) =>
+  api.post<void>(`/v1/time-capsules/${capsuleId}/open`);
+
+/* ------------------------------------------------------------------
+ * 초대
+ * ---------------------------------------------------------------- */
+
+export const createInviteLink = (capsuleId: string, role: CapsuleInviteRole) =>
+  api.post<CapsuleInvite>(`/v1/time-capsules/${capsuleId}/invites`, {
+    targetRole: role,
+  });
+
+export const regenerateInviteLink = (
+  capsuleId: string,
+  role: CapsuleInviteRole,
+) =>
+  api.post<CapsuleInvite>(`/v1/time-capsules/${capsuleId}/invites/regenerate`, {
+    targetRole: role,
+  });
+
+/** 서버는 토큰만 주므로 공유할 주소는 프론트에서 만든다. */
+export const inviteUrlOf = (inviteToken: string) =>
+  `${window.location.origin}/invites/${inviteToken}`;
+
+export const getInvitePreview = (inviteToken: string) =>
+  api.get<CapsuleInvitePreview>(`/v1/invites/${inviteToken}`);
+
+export const acceptInvite = (inviteToken: string) =>
+  api.post<void>(`/v1/invites/${inviteToken}/accept`);
+
+export const rejectInvite = (inviteToken: string) =>
+  api.post<void>(`/v1/invites/${inviteToken}/reject`);
+
+/* ------------------------------------------------------------------
+ * 아이콘 목록은 아직 서버 엔드포인트가 없다. iconType 은 문자열로 받는다.
+ * ---------------------------------------------------------------- */
 
 // TODO: 아이콘 세트가 나오면 교체. 지금은 같은 이미지를 Figma 의 점 개수(5개)만큼 둔다.
 export const MOCK_CAPSULE_ICONS: CapsuleIconOption[] = Array.from(
