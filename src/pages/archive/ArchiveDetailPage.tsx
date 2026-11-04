@@ -8,17 +8,14 @@ import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import PhotoCount from '@/components/archive/PhotoCount';
 import { BackHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
-import {
-  deleteMemory,
-  getMemory,
-  shareMemory,
-  toKoreanDate,
-} from '@/apis/momento';
+import { getMemory, shareMemory, toKoreanDate } from '@/apis/momento';
+import { useDeleteMemory } from '@/hooks/useMomentoMutations';
 import type { Archive } from '@/types/momento';
 
 export default function ArchiveDetailPage() {
   const { archiveId } = useParams();
   const navigate = useNavigate();
+  const deleteMemory = useDeleteMemory(archiveId ?? '');
   const { data, error: loadError } = useQuery({
     queryKey: ['memory', archiveId],
     queryFn: () => getMemory(Number(archiveId)),
@@ -38,6 +35,28 @@ export default function ArchiveDetailPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [sharing, setSharing] = useState(false);
+  const [shareMessage, setShareMessage] = useState('');
+
+  const share = async () => {
+    if (!data?.isMine || sharing) return;
+    setSharing(true);
+    setError('');
+    setShareMessage('');
+    try {
+      const { shareToken } = await shareMemory(data.memoryId);
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/archives/shared?token=${shareToken}`,
+      );
+      setShareMessage('공유 링크를 복사했어요.');
+      setMenuOpen(false);
+    } catch (reason) {
+      setError((reason as Error).message);
+      setMenuOpen(false);
+    } finally {
+      setSharing(false);
+    }
+  };
 
   if (!archive)
     return (
@@ -75,13 +94,15 @@ export default function ArchiveDetailPage() {
           >
             <img src="/assets/archive/detail-back.svg" alt="" />
           </button>
-          <button
-            type="button"
-            aria-label="더보기"
-            onClick={() => setMenuOpen(true)}
-          >
-            <img src="/assets/archive/detail-more.svg" alt="" />
-          </button>
+          {isMine && (
+            <button
+              type="button"
+              aria-label="더보기"
+              onClick={() => setMenuOpen(true)}
+            >
+              <img src="/assets/archive/detail-more.svg" alt="" />
+            </button>
+          )}
         </header>
         <section className="detail-copy">
           <div className="detail-meta">
@@ -114,20 +135,16 @@ export default function ArchiveDetailPage() {
               <img src="/assets/archive/action-edit.svg" alt="" /> 수정하기
             </button>
           )}
-          <button
-            type="button"
-            onClick={() =>
-              void shareMemory(archive.id)
-                .then(({ shareToken }) =>
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}/archives/shared?token=${shareToken}`,
-                  ),
-                )
-                .catch((reason: Error) => setError(reason.message))
-            }
-          >
-            <img src="/assets/archive/action-share.svg" alt="" /> 공유하기
-          </button>
+          {isMine && (
+            <button
+              type="button"
+              disabled={sharing}
+              onClick={() => void share()}
+            >
+              <img src="/assets/archive/action-share.svg" alt="" />
+              {sharing ? '공유 링크를 만드는 중이에요' : '공유하기'}
+            </button>
+          )}
           {isMine && (
             <button
               type="button"
@@ -142,6 +159,7 @@ export default function ArchiveDetailPage() {
           )}
         </div>
       </BottomSheet>
+      {shareMessage && <p role="status">{shareMessage}</p>}
       {error && (
         <p className="field-error" role="alert">
           {error}
@@ -154,7 +172,9 @@ export default function ArchiveDetailPage() {
         confirmLabel="삭제"
         onCancel={() => setDeleteOpen(false)}
         onConfirm={() => {
-          void deleteMemory(archive.id)
+          if (deleteMemory.isPending) return;
+          void deleteMemory
+            .mutateAsync()
             .then(() => navigate('/archives'))
             .catch((reason: Error) => setError(reason.message));
         }}
@@ -165,10 +185,14 @@ export default function ArchiveDetailPage() {
           index={selectedImage}
           onChange={setSelectedImage}
           onClose={() => setSelectedImage(null)}
-          onMore={() => {
-            setSelectedImage(null);
-            setMenuOpen(true);
-          }}
+          onMore={
+            isMine
+              ? () => {
+                  setSelectedImage(null);
+                  setMenuOpen(true);
+                }
+              : undefined
+          }
         />
       )}
     </MobileLayout>

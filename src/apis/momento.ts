@@ -1,7 +1,8 @@
 import type { AnniversaryForm } from '@/types/momento';
+import { validateMemoryImages } from '@/utils/archivePhotos';
 
 const baseUrl =
-  import.meta.env.VITE_API_BASE_URL ??
+  import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.DEV ? '/api' : 'https://api.getmomento.site');
 
 export async function request<T>(
@@ -87,10 +88,16 @@ export type CalendarData = {
     openAt: string;
     status: string;
     openedByMe?: boolean;
+    dDay: number;
     memberCount: number;
     letterCount: number;
   }[];
-  anniversaries: { anniversaryId: number; title: string; date: string }[];
+  anniversaries: {
+    anniversaryId: number;
+    title: string;
+    date: string;
+    dDay: number;
+  }[];
   memories: MemorySummary[];
 };
 
@@ -106,6 +113,7 @@ export const deleteMemory = (id: number) =>
   request<void>(`/v1/memories/${id}`, { method: 'DELETE' });
 export async function uploadMemoryImages(files: File[]): Promise<string[]> {
   if (!files.length) return [];
+  validateMemoryImages(files);
   const data = await request<{
     uploads: { imageKey: string; uploadUrl: string }[];
   }>('/v1/images/presigned-urls', {
@@ -118,6 +126,9 @@ export async function uploadMemoryImages(files: File[]): Promise<string[]> {
       })),
     }),
   });
+  if (data.uploads.length !== files.length) {
+    throw new Error('사진 업로드 정보를 확인할 수 없어요. 다시 시도해 주세요.');
+  }
   await Promise.all(
     data.uploads.map(async (upload, index) => {
       const response = await fetch(upload.uploadUrl, {
@@ -130,25 +141,18 @@ export async function uploadMemoryImages(files: File[]): Promise<string[]> {
   );
   return data.uploads.map((upload) => upload.imageKey);
 }
-export const createMemory = (value: {
+export type MemoryInput = {
   title: string;
   content: string;
   memoryDate: string;
   imageKeys: string[];
-}) =>
+};
+export const createMemory = (value: MemoryInput) =>
   request<unknown>('/v1/memories', {
     method: 'POST',
     body: JSON.stringify(value),
   });
-export const updateMemory = (
-  id: number,
-  value: {
-    title: string;
-    content: string;
-    memoryDate: string;
-    imageKeys: string[];
-  },
-) =>
+export const updateMemory = (id: number, value: MemoryInput) =>
   request<void>(`/v1/memories/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(value),
@@ -162,7 +166,7 @@ export type ReceivedMemory = {
   title: string;
   content: string;
   memoryDate: string;
-  authorNickname: string;
+  senderNickname: string;
   images: { imageUrl: string }[];
 };
 export const getReceivedMemories = () =>
@@ -196,12 +200,15 @@ export const searchCalendar = (
     `/v1/calendar/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}${year ? `&year=${year}` : ''}`,
   );
 export function toCalendarItems(data: CalendarData) {
+  const formatDDay = (days: number) =>
+    days === 0 ? 'D-DAY' : days > 0 ? `D-${days}` : `D+${-days}`;
   return [
     ...data.capsules.map((item) => ({
       id: item.capsuleId,
       type: 'capsule' as const,
       title: item.title,
       date: toKoreanDate(item.openAt),
+      dDay: formatDDay(item.dDay),
       status:
         item.status === 'WRITING'
           ? ('writing' as const)
@@ -217,6 +224,7 @@ export function toCalendarItems(data: CalendarData) {
       type: 'anniversary' as const,
       title: item.title,
       date: toKoreanDate(item.date),
+      dDay: formatDDay(item.dDay),
     })),
     ...data.memories.map((item) => ({
       id: item.memoryId,

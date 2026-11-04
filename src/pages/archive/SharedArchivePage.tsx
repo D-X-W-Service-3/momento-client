@@ -1,55 +1,43 @@
-import { useEffect, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import ConfirmDialog from '@/components/common/ConfirmDialog';
-import {
-  dismissReceivedMemory,
-  getReceivedMemories,
-  receiveMemory,
-  saveReceivedMemory,
-  toKoreanDate,
-} from '@/apis/momento';
+import { getReceivedMemories, toKoreanDate } from '@/apis/momento';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import PhotoCount from '@/components/archive/PhotoCount';
 import MobileLayout from '@/components/layout/MobileLayout';
+import { BackHeader } from '@/components/layout/Headers';
+import { useFinishReceivedMemory } from '@/hooks/useMomentoMutations';
+import { useReceiveSharedMemory } from '@/hooks/useReceiveSharedMemory';
 
 export default function SharedArchivePage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const queryClient = useQueryClient();
+  const finishMemory = useFinishReceivedMemory();
   const [index, setIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState('');
   const token = params.get('token');
+  const receiveError = useReceiveSharedMemory(token);
   const receivedQuery = useQuery({
     queryKey: ['received-memories'],
     queryFn: getReceivedMemories,
     enabled: !token,
     retry: false,
   });
-  useEffect(() => {
-    if (!token) return;
-    void receiveMemory(token)
-      .then(() => {
-        navigate('/archives/shared', { replace: true });
-        void queryClient.invalidateQueries({ queryKey: ['received-memories'] });
-      })
-      .catch((reason: Error) => setError(reason.message));
-  }, [token, navigate, queryClient]);
-  const items = receivedQuery.data?.memories ?? [];
+  const items = token ? [] : (receivedQuery.data?.memories ?? []);
   const item = items[index];
   const images = item?.images?.map((image) => image.imageUrl) ?? [];
   const finish = async (action: 'save' | 'dismiss') => {
-    if (!item) return;
+    if (!item || finishMemory.isPending) return;
+    setError('');
     try {
-      if (action === 'save') await saveReceivedMemory(item.receivedMemoryId);
-      else await dismissReceivedMemory(item.receivedMemoryId);
+      await finishMemory.mutateAsync({ id: item.receivedMemoryId, action });
       const next = items.filter(
         (entry) => entry.receivedMemoryId !== item.receivedMemoryId,
       );
-      await queryClient.invalidateQueries({ queryKey: ['received-memories'] });
       setIndex(0);
       if (!next.length) navigate('/archives');
     } catch (reason) {
@@ -58,18 +46,44 @@ export default function SharedArchivePage() {
   };
   return (
     <MobileLayout>
+      {!item && (
+        <BackHeader
+          title="공유받은 아카이브"
+          onBack={() => navigate('/archives')}
+        />
+      )}
+      {receiveError && (
+        <p className="field-error" role="alert">
+          {receiveError}
+        </p>
+      )}
       {error && (
         <p className="field-error" role="alert">
           {error}
         </p>
       )}
-      {receivedQuery.error && (
+      {!token && receivedQuery.error && (
         <p className="field-error" role="alert">
           {receivedQuery.error.message}
         </p>
       )}
       {!item ? (
-        <p className="empty-state">공유받은 아카이브가 없어요.</p>
+        <div className="empty-state">
+          <p>
+            {receiveError || (!token && receivedQuery.error)
+              ? '공유받은 아카이브를 불러올 수 없어요.'
+              : token || receivedQuery.isPending
+                ? '공유받은 아카이브를 불러오는 중이에요.'
+                : '공유받은 아카이브가 없어요.'}
+          </p>
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={() => navigate('/archives')}
+          >
+            아카이브로 돌아가기
+          </button>
+        </div>
       ) : (
         <article className="archive-detail shared-detail">
           <div className="detail-cover-wrap">
@@ -100,7 +114,7 @@ export default function SharedArchivePage() {
               <div className="shared-detail-top">
                 <div className="detail-meta">
                   <span>{toKoreanDate(item.memoryDate)}</span>
-                  <span>{item.authorNickname}</span>
+                  <span>{item.senderNickname}</span>
                 </div>
                 <h1>{item.title}</h1>
                 <p>{item.content}</p>
@@ -124,6 +138,7 @@ export default function SharedArchivePage() {
               <button
                 type="button"
                 className="button-secondary"
+                disabled={finishMemory.isPending}
                 onClick={() => void finish('dismiss')}
               >
                 닫기
@@ -131,6 +146,7 @@ export default function SharedArchivePage() {
               <button
                 type="button"
                 className="button-primary"
+                disabled={finishMemory.isPending}
                 onClick={() => setConfirmOpen(true)}
               >
                 아카이브 저장하기

@@ -6,19 +6,19 @@ import AnniversaryForm from '@/components/anniversary/AnniversaryForm';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import { BackHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
+import { getAnniversary, toKoreanDate } from '@/apis/momento';
 import {
-  createAnniversary,
-  deleteAnniversary,
-  getAnniversary,
-  toKoreanDate,
-  updateAnniversary,
-} from '@/apis/momento';
+  useDeleteAnniversary,
+  useSaveAnniversary,
+} from '@/hooks/useMomentoMutations';
 import type { AnniversaryForm as AnniversaryFormType } from '@/types/momento';
 
 export default function AnniversaryFormPage() {
   const { anniversaryId } = useParams();
   const navigate = useNavigate();
   const editing = Boolean(anniversaryId);
+  const saveAnniversary = useSaveAnniversary(anniversaryId);
+  const deleteAnniversary = useDeleteAnniversary(anniversaryId ?? '');
   const [error, setError] = useState('');
   const detailQuery = useQuery({
     queryKey: ['anniversary', anniversaryId],
@@ -64,18 +64,22 @@ export default function AnniversaryFormPage() {
             mode={editing ? 'edit' : 'create'}
             initialValue={existing}
             onSubmit={(value) => {
-              void (
-                editing
-                  ? updateAnniversary(Number(anniversaryId), value)
-                  : createAnniversary(value)
-              )
+              if (saveAnniversary.isPending || deleteAnniversary.isPending)
+                return;
+              setError('');
+              void saveAnniversary
+                .mutateAsync(value)
                 .then(() =>
                   navigate(`/calendar?date=${encodeURIComponent(value.date)}`),
                 )
                 .catch((reason: Error) => setError(reason.message));
             }}
             onDelete={() => {
-              void deleteAnniversary(Number(anniversaryId))
+              if (saveAnniversary.isPending || deleteAnniversary.isPending)
+                return;
+              setError('');
+              void deleteAnniversary
+                .mutateAsync()
                 .then(() => navigate('/calendar'))
                 .catch((reason: Error) => setError(reason.message));
             }}
