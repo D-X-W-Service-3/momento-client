@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import Button from '@/components/common/Button';
-import PageDots from '@/components/common/PageDots';
+import PaginationDots from '@/components/common/PaginationDots';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { textStyles } from '@/styles/tokens';
@@ -53,10 +53,12 @@ export default function OnboardingPage() {
         </AnimatePresence>
 
         <div className="flex w-full justify-center pt-9">
-          <PageDots
-            total={totalSteps}
-            current={currentIndex}
+          <PaginationDots
+            count={totalSteps}
+            activeIndex={currentIndex}
             onSelect={handleSelectStep}
+            size="md"
+            ariaLabel="온보딩 단계"
           />
         </div>
       </div>

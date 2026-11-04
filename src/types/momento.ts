@@ -14,7 +14,7 @@ export type CalendarItem = {
   type: 'capsule' | 'anniversary' | 'archive';
   title: string;
   date: string;
-  status?: 'open' | 'sealed' | 'writing';
+  status?: 'open' | 'sealed' | 'writing' | 'opened';
   dDay?: string;
   meta?: string;
   image?: string;

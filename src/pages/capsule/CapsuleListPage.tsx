@@ -19,6 +19,7 @@ export default function CapsuleListPage() {
     handleFilterChange,
     handleSearchChange,
     handleNotifications,
+    handleSelectCapsule,
   } = useCapsuleList();
 
   return (
@@ -70,7 +71,11 @@ export default function CapsuleListPage() {
 
               <div className="flex w-full flex-col gap-4">
                 {group.items.map((item) => (
-                  <CapsuleListCard key={item.id} item={item} />
+                  <CapsuleListCard
+                    key={item.id}
+                    item={item}
+                    onClick={() => handleSelectCapsule(item.id)}
+                  />
                 ))}
               </div>
             </section>

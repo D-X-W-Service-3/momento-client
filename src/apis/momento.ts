@@ -1,6 +1,8 @@
 import type { AnniversaryForm } from '@/types/momento';
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL ?? '/api';
+const baseUrl =
+  import.meta.env.VITE_API_BASE_URL ??
+  (import.meta.env.DEV ? '/api' : 'https://api.getmomento.site');
 
 export async function request<T>(
   path: string,
@@ -84,6 +86,7 @@ export type CalendarData = {
     title: string;
     openAt: string;
     status: string;
+    openedByMe?: boolean;
     memberCount: number;
     letterCount: number;
   }[];
@@ -200,9 +203,13 @@ export function toCalendarItems(data: CalendarData) {
       title: item.title,
       date: toKoreanDate(item.openAt),
       status:
-        ({ WRITING: 'writing', LOCKED: 'sealed', OPENED: 'open' } as const)[
-          item.status as 'WRITING' | 'LOCKED' | 'OPENED'
-        ] ?? 'sealed',
+        item.status === 'WRITING'
+          ? ('writing' as const)
+          : item.status === 'LOCKED'
+            ? ('sealed' as const)
+            : item.status === 'OPENED' && item.openedByMe
+              ? ('opened' as const)
+              : ('open' as const),
       meta: `${item.memberCount}명 | 편지 ${item.letterCount}`,
     })),
     ...data.anniversaries.map((item) => ({

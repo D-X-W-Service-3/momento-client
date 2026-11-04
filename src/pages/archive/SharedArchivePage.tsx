@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 import {
   dismissReceivedMemory,
   getReceivedMemories,
@@ -18,6 +20,7 @@ export default function SharedArchivePage() {
   const queryClient = useQueryClient();
   const [index, setIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState('');
   const token = params.get('token');
   const receivedQuery = useQuery({
@@ -128,7 +131,7 @@ export default function SharedArchivePage() {
               <button
                 type="button"
                 className="button-primary"
-                onClick={() => void finish('save')}
+                onClick={() => setConfirmOpen(true)}
               >
                 아카이브 저장하기
               </button>
@@ -136,6 +139,18 @@ export default function SharedArchivePage() {
           </section>
         </article>
       )}
+      <ConfirmDialog
+        open={confirmOpen}
+        title="아카이브를 저장할까요?"
+        cancelLabel="저장 안 함"
+        confirmLabel="저장하기"
+        confirmTone="primary"
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          void finish('save');
+        }}
+      />
       {selectedImage !== null && (
         <ArchiveImageViewer
           images={images}
