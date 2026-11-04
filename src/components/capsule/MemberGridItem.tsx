@@ -1,5 +1,7 @@
 import removeIcon from '@/assets/icons/remove-participant.svg';
+import defaultAvatar from '@/assets/images/default-avatar.png';
 import type { CapsuleMember } from '@/types/capsule';
+import { toSecureImageUrl } from '@/utils/image';
 
 interface MemberGridItemProps {
   member: CapsuleMember;
@@ -15,7 +17,7 @@ export default function MemberGridItem({
     <div className="flex flex-col items-center justify-center gap-stack">
       <div className="relative size-16">
         <img
-          src={member.avatarUrl}
+          src={toSecureImageUrl(member.profileImageUrl) ?? defaultAvatar}
           alt=""
           className="size-full rounded-full border border-surface object-cover"
         />
@@ -23,7 +25,7 @@ export default function MemberGridItem({
           <button
             type="button"
             onClick={onRemove}
-            aria-label={`${member.name} 내보내기`}
+            aria-label={`${member.nickname} 내보내기`}
             className="absolute top-0 right-0 size-4"
           >
             {/* 아이콘 SVG 가 그림자까지 포함해 32px 라 바깥으로 넘겨 그린다 */}
@@ -36,7 +38,7 @@ export default function MemberGridItem({
         )}
       </div>
       <p className="font-display text-meta whitespace-nowrap text-ink">
-        {member.name}
+        {member.nickname}
         {member.isOwner && (
           <span className="text-label font-medium text-ink-muted">
             (관리자)

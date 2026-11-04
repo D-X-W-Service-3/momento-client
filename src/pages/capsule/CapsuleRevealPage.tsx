@@ -3,11 +3,20 @@ import { useNavigate, useParams } from 'react-router-dom';
 import revealBg from '@/assets/images/capsule/reveal-bg.webp';
 import Button from '@/components/common/Button';
 import { ROUTES, capsuleCoverPath } from '@/constants/routes';
+import { useOpenCapsule } from '@/hooks/useCapsule';
 
 /** 개봉일이 된 캡슐을 열기 전에 보여주는 인트로 화면 */
 export default function CapsuleRevealPage() {
   const { capsuleId = '' } = useParams();
   const navigate = useNavigate();
+  const openCapsule = useOpenCapsule(capsuleId);
+
+  // 개봉을 확인했다고 서버에 알린 뒤 캡슐로 들어간다.
+  // 실패해도 화면은 막지 않는다 (다음 진입에서 다시 시도된다).
+  const goCapsule = () =>
+    openCapsule.mutate(undefined, {
+      onSettled: () => navigate(capsuleCoverPath(capsuleId)),
+    });
 
   return (
     // 배경 이미지는 모바일 폭(max-w-md) 안에만 깔고,
@@ -30,7 +39,8 @@ export default function CapsuleRevealPage() {
           <Button
             variant="plain"
             className="bg-surface text-black/85"
-            onClick={() => navigate(capsuleCoverPath(capsuleId))}
+            onClick={goCapsule}
+            disabled={openCapsule.isPending}
           >
             타임캡슐 확인하기
           </Button>
