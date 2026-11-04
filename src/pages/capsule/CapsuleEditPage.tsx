@@ -14,6 +14,7 @@ import {
 } from '@/hooks/useCapsule';
 import {
   CAPSULE_DESCRIPTION_MAX_LENGTH,
+  CAPSULE_DESCRIPTION_MIN_LENGTH,
   CAPSULE_NAME_MAX_LENGTH,
 } from '@/types/capsule';
 
@@ -27,6 +28,7 @@ export default function CapsuleEditPage() {
   const [iconIndex, setIconIndex] = useState(0);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [hasEditedName, setHasEditedName] = useState(false);
 
   // 수정 화면이라 서버 값으로 한 번 채워준다.
   useEffect(() => {
@@ -37,7 +39,30 @@ export default function CapsuleEditPage() {
     if (index !== undefined && index >= 0) setIconIndex(index);
   }, [capsule, icons]);
 
+  const nameError =
+    hasEditedName && !name.trim() ? '캡슐 이름을 입력해주세요.' : undefined;
+
+  const hasValidInfo =
+    name.trim().length > 0 &&
+    name.trim().length <= CAPSULE_NAME_MAX_LENGTH &&
+    description.trim().length >= CAPSULE_DESCRIPTION_MIN_LENGTH &&
+    description.length <= CAPSULE_DESCRIPTION_MAX_LENGTH;
+
+  const handleNameChange = (next: string) => {
+    if (next.length <= CAPSULE_NAME_MAX_LENGTH) {
+      setHasEditedName(true);
+      setName(next);
+    }
+  };
+
+  const handleDescriptionChange = (next: string) => {
+    if (next.length <= CAPSULE_DESCRIPTION_MAX_LENGTH) {
+      setDescription(next);
+    }
+  };
+
   const handleSubmit = () => {
+    if (!hasValidInfo || updateCapsule.isPending) return;
     const iconType = icons?.[iconIndex]?.id ?? capsule?.iconType;
     if (!iconType) return;
     updateCapsule.mutate(
@@ -63,18 +88,23 @@ export default function CapsuleEditPage() {
             )}
 
             <TextField
-              label="캡슐 이름"
+              label="캡슐 이름 (필수)"
               placeholder="캡슐 이름을 입력해주세요"
               value={name}
-              onChange={setName}
+              onChange={handleNameChange}
               maxLength={CAPSULE_NAME_MAX_LENGTH}
+              required
+              helperText={nameError}
+              isError={Boolean(nameError)}
             />
 
             <TextArea
               label="캡슐 설명"
-              placeholder="캡슐 설명을 작성해 주세요."
+              placeholder="캡슐 설명을 5자 이상 작성해 주세요."
+              required
+              minLength={CAPSULE_DESCRIPTION_MIN_LENGTH}
               value={description}
-              onChange={setDescription}
+              onChange={handleDescriptionChange}
               maxLength={CAPSULE_DESCRIPTION_MAX_LENGTH}
             />
 
@@ -88,7 +118,7 @@ export default function CapsuleEditPage() {
           </div>
 
           <Button
-            disabled={!name.trim() || updateCapsule.isPending}
+            disabled={!hasValidInfo || updateCapsule.isPending}
             onClick={handleSubmit}
           >
             수정하기

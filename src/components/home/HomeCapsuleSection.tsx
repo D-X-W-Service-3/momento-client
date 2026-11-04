@@ -17,7 +17,7 @@ export default function HomeCapsuleSection({
   onSelectCapsule,
 }: HomeCapsuleSectionProps) {
   return (
-    <section className="flex w-full flex-col gap-3">
+    <section className="flex w-full flex-col gap-2">
       {showHeading && (
         <div className="flex h-6 w-full items-center justify-between">
           <h2 className={`text-text-primary ${textStyles['header-title']}`}>

@@ -60,6 +60,7 @@ const ROLE_CONTENT: Record<CapsuleInviteRole, RoleContent> = {
 
 const SHARED_NOTE =
   '수신자로 지정되지 않은 참여자는 자신이 등록한 편지와 사진만 볼 수 있어요';
+const RECIPIENT_EXCLUSION_NOTE = '캡슐의 참여자는 수신자로 지정할 수 없어요';
 
 interface CapsuleMembersPageProps {
   role: CapsuleInviteRole;
@@ -84,6 +85,10 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
     Boolean(capsule?.permissions.canInvite) &&
     canInviteRole(capsule?.capsuleType, role);
   const members = memberList?.members ?? [];
+  const showSharedNote =
+    role === 'RECIPIENT' ||
+    (capsule?.capsuleType === 'GROUP' &&
+      capsule?.visibilityType !== 'ALL_MEMBERS');
 
   const handleConfirmRemove = () => {
     if (!removing) return;
@@ -122,20 +127,22 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
                 </span>
               </h3>
 
-              <ul className="grid w-full grid-cols-4 justify-items-center gap-x-[19px] gap-y-list">
-                {members.map((member) => (
-                  <li key={member.memberId}>
-                    <MemberGridItem
-                      member={member}
-                      onRemove={
-                        editable && !member.isOwner
-                          ? () => setRemoving(member)
-                          : undefined
-                      }
-                    />
-                  </li>
-                ))}
-              </ul>
+              {members.length > 0 && (
+                <ul className="grid w-full grid-cols-4 justify-items-center gap-x-[19px] gap-y-list">
+                  {members.map((member) => (
+                    <li key={member.memberId}>
+                      <MemberGridItem
+                        member={member}
+                        onRemove={
+                          editable && !member.isOwner
+                            ? () => setRemoving(member)
+                            : undefined
+                        }
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
 
             <InfoNote>
@@ -144,7 +151,8 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
                 <br />
                 {content.lockNote[1]}
               </p>
-              <p>{SHARED_NOTE}</p>
+              {showSharedNote && <p>{SHARED_NOTE}</p>}
+              {role === 'RECIPIENT' && <p>{RECIPIENT_EXCLUSION_NOTE}</p>}
             </InfoNote>
           </div>
 

@@ -43,15 +43,19 @@ export default function HomePage() {
             <CapsuleCreateBanner onClick={handleCreateCapsule} />
           </section>
 
-          {dashboard.featuredCapsules.map((capsule, index) => (
-            <HomeCapsuleSection
-              key={capsule.id}
-              capsule={capsule}
-              showHeading={index === 0}
-              onViewAll={handleViewAllCapsules}
-              onSelectCapsule={handleSelectCapsule}
-            />
-          ))}
+          {dashboard.featuredCapsules.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {dashboard.featuredCapsules.map((capsule, index) => (
+                <HomeCapsuleSection
+                  key={capsule.id}
+                  capsule={capsule}
+                  showHeading={index === 0}
+                  onViewAll={handleViewAllCapsules}
+                  onSelectCapsule={handleSelectCapsule}
+                />
+              ))}
+            </div>
+          )}
           <AttendanceStreakCard
             days={dashboard.attendanceDays}
             streakCount={dashboard.streakCount}

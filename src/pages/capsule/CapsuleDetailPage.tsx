@@ -174,25 +174,28 @@ export default function CapsuleDetailPage() {
                   )}
               </section>
 
-              {capsule.capsuleType !== 'FRIEND' && (
-                <section className="flex flex-col gap-list">
-                  <SectionHeader
-                    title="수신자"
-                    count={`${capsule.recipients.count}명`}
-                    onViewAll={() => navigate(capsuleReceiversPath(capsuleId))}
-                  />
-                  <AvatarGroup
-                    members={capsule.recipients.previews}
-                    totalCount={capsule.recipients.count}
-                  />
-                  {permissions.canInvite &&
-                    canInviteRole(capsule.capsuleType, 'RECIPIENT') && (
-                      <GhostButton onClick={() => setInviteRole('RECIPIENT')}>
-                        수신자 초대
-                      </GhostButton>
-                    )}
-                </section>
-              )}
+              {capsule.capsuleType !== 'FRIEND' &&
+                capsule.visibilityType !== 'ALL_MEMBERS' && (
+                  <section className="flex flex-col gap-list">
+                    <SectionHeader
+                      title="수신자"
+                      count={`${capsule.recipients.count}명`}
+                      onViewAll={() =>
+                        navigate(capsuleReceiversPath(capsuleId))
+                      }
+                    />
+                    <AvatarGroup
+                      members={capsule.recipients.previews}
+                      totalCount={capsule.recipients.count}
+                    />
+                    {permissions.canInvite &&
+                      canInviteRole(capsule.capsuleType, 'RECIPIENT') && (
+                        <GhostButton onClick={() => setInviteRole('RECIPIENT')}>
+                          수신자 초대
+                        </GhostButton>
+                      )}
+                  </section>
+                )}
 
               {permissions.canManage && (
                 <section className="flex flex-col gap-list">
