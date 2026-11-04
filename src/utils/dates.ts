@@ -1,5 +1,7 @@
 export function parseKoreanDate(value: string): Date | null {
-  const match = value.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+  const match = value.match(
+    /(\d{4})(?:년\s*|-)(\d{1,2})(?:월\s*|-)(\d{1,2})(?:일)?/,
+  );
   if (!match) return null;
   const date = new Date(
     Number(match[1]),

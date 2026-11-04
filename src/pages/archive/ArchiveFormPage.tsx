@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import BottomSheet from '@/components/common/BottomSheet';
@@ -6,64 +7,107 @@ import DatePicker from '@/components/common/DatePicker';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import { BackHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
-import { useMomentoStore } from '@/stores/useMomentoStore';
-
-async function preparePhoto(file: File): Promise<string> {
-  const bitmap = await createImageBitmap(file);
-  const ratio = Math.min(1, 900 / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.round(bitmap.width * ratio);
-  canvas.height = Math.round(bitmap.height * ratio);
-  canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  return canvas.toDataURL('image/jpeg', 0.75);
-}
+import {
+  getMemory,
+  toIsoDate,
+  toKoreanDate,
+  uploadMemoryImages,
+} from '@/apis/momento';
+import { useSaveMemory } from '@/hooks/useMomentoMutations';
+import {
+  MEMORY_IMAGE_ACCEPT,
+  MAX_MEMORY_PHOTOS,
+  prepareArchivePhotos,
+  resolveArchiveImageKeys,
+  type ArchivePhoto,
+} from '@/utils/archivePhotos';
 
 export default function ArchiveFormPage() {
   const { archiveId } = useParams();
   const navigate = useNavigate();
-  const archives = useMomentoStore((state) => state.archives);
-  const addArchive = useMomentoStore((state) => state.addArchive);
-  const updateArchive = useMomentoStore((state) => state.updateArchive);
-  const existing = archives.find((archive) => archive.id === Number(archiveId));
-  const editing = Boolean(existing);
-  const [name, setName] = useState(existing?.title.replace('\n', ' ') ?? '');
-  const [date, setDate] = useState(existing?.date ?? '');
-  const [content, setContent] = useState(existing?.content ?? '');
+  const editing = Boolean(archiveId);
+  const [name, setName] = useState('');
+  const [date, setDate] = useState('');
+  const [content, setContent] = useState('');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const saveMemory = useSaveMemory(archiveId);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
-  const [photos, setPhotos] = useState(existing?.images ?? []);
+  const [photos, setPhotos] = useState<ArchivePhoto[]>([]);
+  const memoryQuery = useQuery({
+    queryKey: ['memory', archiveId],
+    queryFn: () => getMemory(Number(archiveId)),
+    enabled: editing,
+    retry: false,
+  });
+  useEffect(() => {
+    const item = memoryQuery.data;
+    if (item) {
+      setName(item.title);
+      setDate(toKoreanDate(item.memoryDate));
+      setContent(item.content);
+      setPhotos(
+        item.images.map((image) => ({
+          id: image.imageKey,
+          previewUrl: image.imageUrl,
+          imageKey: image.imageKey,
+        })),
+      );
+    }
+  }, [memoryQuery.data]);
+  const displayError = error || memoryQuery.error?.message;
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const save = () => {
-    if (!photos.length || !name.trim() || !date) {
+  const save = async () => {
+    if (saving || preparing) return;
+    if (!name.trim() || !date) {
       setShowErrors(true);
       return;
     }
-    const value = {
-      title: name.trim(),
-      date,
-      author: existing?.author ?? '나',
-      content: content.trim(),
-      images: photos,
-    };
-    if (existing) {
-      updateArchive(existing.id, value);
-      navigate(`/archives/${existing.id}`);
-    } else {
-      const id = addArchive(value);
-      navigate(`/archives/${id}`);
+    setSaving(true);
+    setError('');
+    try {
+      const files = photos.flatMap((photo) => (photo.file ? [photo.file] : []));
+      const uploaded = await uploadMemoryImages(files);
+      const value = {
+        title: name.trim(),
+        content: content.trim(),
+        memoryDate: toIsoDate(date),
+        imageKeys: resolveArchiveImageKeys(photos, uploaded),
+      };
+      await saveMemory.mutateAsync(value);
+      if (archiveId) {
+        navigate(`/archives/${archiveId}`);
+      } else {
+        navigate('/archives');
+      }
+    } catch (reason) {
+      setError((reason as Error).message);
+    } finally {
+      setSaving(false);
     }
   };
 
   const addPhotos = async (files: FileList | null) => {
-    if (!files) return;
-    const available = Math.max(0, 8 - photos.length);
+    if (!files?.length || preparing || saving) return;
+    const available = Math.max(0, MAX_MEMORY_PHOTOS - photos.length);
     const selected = Array.from(files).slice(0, available);
-    const prepared = await Promise.all(selected.map(preparePhoto));
-    setPhotos((current) => [...current, ...prepared].slice(0, 8));
-    if (fileInput.current) fileInput.current.value = '';
+    setPreparing(true);
+    setError('');
+    try {
+      const prepared = await prepareArchivePhotos(selected);
+      setPhotos((current) =>
+        [...current, ...prepared].slice(0, MAX_MEMORY_PHOTOS),
+      );
+    } catch (reason) {
+      setError((reason as Error).message);
+    } finally {
+      setPreparing(false);
+      if (fileInput.current) fileInput.current.value = '';
+    }
   };
 
   return (
@@ -73,7 +117,7 @@ export default function ArchiveFormPage() {
         className="form-page"
         onSubmit={(event) => {
           event.preventDefault();
-          save();
+          void save();
         }}
       >
         {!editing && (
@@ -87,15 +131,26 @@ export default function ArchiveFormPage() {
             ref={fileInput}
             className="visually-hidden"
             type="file"
-            accept="image/*"
+            accept={MEMORY_IMAGE_ACCEPT}
+            disabled={saving || preparing}
             multiple
             onChange={(event) => void addPhotos(event.target.files)}
           />
           <div className="form-section-title">
             <strong>
-              사진 <span>{photos.length}/8</span>
+              사진{' '}
+              <span>
+                {photos.length}/{MAX_MEMORY_PHOTOS}
+              </span>
             </strong>
-            <button type="button" onClick={() => setPhotos([])}>
+            <button
+              type="button"
+              disabled={saving || preparing}
+              onClick={() => {
+                setPhotos([]);
+                setSelectedImage(null);
+              }}
+            >
               <img src="/assets/archive/delete-all.svg" alt="" /> 전체삭제
             </button>
           </div>
@@ -104,7 +159,9 @@ export default function ArchiveFormPage() {
               type="button"
               className="photo-add"
               onClick={() => fileInput.current?.click()}
-              disabled={photos.length >= 8}
+              disabled={
+                saving || preparing || photos.length >= MAX_MEMORY_PHOTOS
+              }
             >
               <span className="visually-hidden">사진 선택</span>
             </button>
@@ -112,11 +169,12 @@ export default function ArchiveFormPage() {
               <button
                 type="button"
                 className="photo-thumb"
-                key={`${photo}-${index}`}
+                key={photo.id}
+                disabled={saving || preparing}
                 title="사진 자세히 보기"
                 onClick={() => setSelectedImage(index)}
               >
-                <img src={photo} alt={`${index + 1}번째 사진`} />
+                <img src={photo.previewUrl} alt={`${index + 1}번째 사진`} />
                 {index === 0 && <span className="cover-badge">대표</span>}
               </button>
             ))}
@@ -125,7 +183,7 @@ export default function ArchiveFormPage() {
             type="button"
             className="photo-add-wide"
             onClick={() => fileInput.current?.click()}
-            disabled={photos.length >= 8}
+            disabled={saving || preparing || photos.length >= MAX_MEMORY_PHOTOS}
           >
             사진 추가
           </button>
@@ -137,11 +195,6 @@ export default function ArchiveFormPage() {
               상세 이미지 화면에서 삭제, 대표사진을 변경해보세요
             </span>
           </p>
-          {showErrors && !photos.length && (
-            <small className="field-error">
-              사진을 한 장 이상 추가해 주세요.
-            </small>
-          )}
         </section>
         <label className="input-group">
           <span>아카이브 이름</span>
@@ -187,7 +240,16 @@ export default function ArchiveFormPage() {
             <small>{content.length}/45</small>
           </div>
         </label>
-        <button className="button-primary submit-button" type="submit">
+        {displayError && (
+          <p className="field-error" role="alert">
+            {displayError}
+          </p>
+        )}
+        <button
+          className="button-primary submit-button"
+          type="submit"
+          disabled={saving || preparing || (editing && memoryQuery.isPending)}
+        >
           {editing ? '수정하기' : '저장하기'}
         </button>
       </form>
@@ -203,7 +265,7 @@ export default function ArchiveFormPage() {
       </BottomSheet>
       {selectedImage !== null && photos[selectedImage] && (
         <ArchiveImageViewer
-          images={photos}
+          images={photos.map((photo) => photo.previewUrl)}
           index={selectedImage}
           onChange={setSelectedImage}
           onClose={() => setSelectedImage(null)}

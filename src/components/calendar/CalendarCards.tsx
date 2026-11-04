@@ -5,6 +5,7 @@ import type { CalendarItem } from '@/types/momento';
 
 const statusLabels = {
   open: '개봉 가능',
+  opened: '개봉됨',
   sealed: '봉인됨',
   writing: '작성 중',
 };
@@ -62,15 +63,8 @@ export default function CalendarCard({ item }: { item: CalendarItem }) {
         </div>
       </Link>
     );
-  const capsuleRouteId =
-    item.status === 'open'
-      ? 'openable'
-      : item.status === 'sealed'
-        ? 'sealed'
-        : String(item.id);
-
   return (
-    <Link to={capsuleCoverPath(capsuleRouteId)} className="calendar-card">
+    <Link to={capsuleCoverPath(String(item.id))} className="calendar-card">
       {contents}
     </Link>
   );

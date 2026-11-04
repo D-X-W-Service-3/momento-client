@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import BottomSheet from '@/components/common/BottomSheet';
@@ -7,23 +8,63 @@ import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import PhotoCount from '@/components/archive/PhotoCount';
 import { BackHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
-import { useMomentoStore } from '@/stores/useMomentoStore';
+import { getMemory, shareMemory, toKoreanDate } from '@/apis/momento';
+import { useDeleteMemory } from '@/hooks/useMomentoMutations';
+import type { Archive } from '@/types/momento';
 
 export default function ArchiveDetailPage() {
   const { archiveId } = useParams();
   const navigate = useNavigate();
-  const archives = useMomentoStore((state) => state.archives);
-  const deleteArchive = useMomentoStore((state) => state.deleteArchive);
-  const archive = archives.find((item) => item.id === Number(archiveId));
+  const deleteMemory = useDeleteMemory(archiveId ?? '');
+  const { data, error: loadError } = useQuery({
+    queryKey: ['memory', archiveId],
+    queryFn: () => getMemory(Number(archiveId)),
+    retry: false,
+  });
+  const archive: Archive | undefined = data && {
+    id: data.memoryId,
+    title: data.title,
+    date: toKoreanDate(data.memoryDate),
+    year: Number(data.memoryDate.slice(0, 4)),
+    author: data.authorNickname,
+    content: data.content,
+    images: data.images.map((image) => image.imageUrl),
+  };
+  const isMine = data?.isMine ?? false;
+  const [error, setError] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [sharing, setSharing] = useState(false);
+  const [shareMessage, setShareMessage] = useState('');
+
+  const share = async () => {
+    if (!data?.isMine || sharing) return;
+    setSharing(true);
+    setError('');
+    setShareMessage('');
+    try {
+      const { shareToken } = await shareMemory(data.memoryId);
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/archives/shared?token=${shareToken}`,
+      );
+      setShareMessage('공유 링크를 복사했어요.');
+      setMenuOpen(false);
+    } catch (reason) {
+      setError((reason as Error).message);
+      setMenuOpen(false);
+    } finally {
+      setSharing(false);
+    }
+  };
 
   if (!archive)
     return (
       <MobileLayout>
         <BackHeader title="아카이브" />
-        <p className="empty-state">아카이브를 찾을 수 없어요.</p>
+        <p className="empty-state">
+          {loadError?.message || '아카이브를 불러오는 중이에요.'}
+        </p>
       </MobileLayout>
     );
 
@@ -31,14 +72,16 @@ export default function ArchiveDetailPage() {
     <MobileLayout>
       <article className="archive-detail">
         <div className="detail-cover-wrap">
-          <button
-            type="button"
-            className="detail-cover-trigger"
-            aria-label="대표 사진 확대"
-            onClick={() => setSelectedImage(0)}
-          >
-            <img className="detail-cover" src={archive.images[0]} alt="" />
-          </button>
+          {archive.images[0] && (
+            <button
+              type="button"
+              className="detail-cover-trigger"
+              aria-label="대표 사진 확대"
+              onClick={() => setSelectedImage(0)}
+            >
+              <img className="detail-cover" src={archive.images[0]} alt="" />
+            </button>
+          )}
           <span className="detail-cover-counter">
             1 / {archive.images.length}
           </span>
@@ -51,13 +94,15 @@ export default function ArchiveDetailPage() {
           >
             <img src="/assets/archive/detail-back.svg" alt="" />
           </button>
-          <button
-            type="button"
-            aria-label="더보기"
-            onClick={() => setMenuOpen(true)}
-          >
-            <img src="/assets/archive/detail-more.svg" alt="" />
-          </button>
+          {isMine && (
+            <button
+              type="button"
+              aria-label="더보기"
+              onClick={() => setMenuOpen(true)}
+            >
+              <img src="/assets/archive/detail-more.svg" alt="" />
+            </button>
+          )}
         </header>
         <section className="detail-copy">
           <div className="detail-meta">
@@ -82,32 +127,44 @@ export default function ArchiveDetailPage() {
       </article>
       <BottomSheet open={menuOpen} onClose={() => setMenuOpen(false)}>
         <div className="sheet-menu">
-          <button
-            type="button"
-            onClick={() => navigate(`/archives/${archive.id}/edit`)}
-          >
-            <img src="/assets/archive/action-edit.svg" alt="" /> 수정하기
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              void navigator.clipboard?.writeText(window.location.href)
-            }
-          >
-            <img src="/assets/archive/action-share.svg" alt="" /> 공유하기
-          </button>
-          <button
-            type="button"
-            className="danger"
-            onClick={() => {
-              setMenuOpen(false);
-              setDeleteOpen(true);
-            }}
-          >
-            <img src="/assets/archive/action-delete.svg" alt="" /> 삭제하기
-          </button>
+          {isMine && (
+            <button
+              type="button"
+              onClick={() => navigate(`/archives/${archive.id}/edit`)}
+            >
+              <img src="/assets/archive/action-edit.svg" alt="" /> 수정하기
+            </button>
+          )}
+          {isMine && (
+            <button
+              type="button"
+              disabled={sharing}
+              onClick={() => void share()}
+            >
+              <img src="/assets/archive/action-share.svg" alt="" />
+              {sharing ? '공유 링크를 만드는 중이에요' : '공유하기'}
+            </button>
+          )}
+          {isMine && (
+            <button
+              type="button"
+              className="danger"
+              onClick={() => {
+                setMenuOpen(false);
+                setDeleteOpen(true);
+              }}
+            >
+              <img src="/assets/archive/action-delete.svg" alt="" /> 삭제하기
+            </button>
+          )}
         </div>
       </BottomSheet>
+      {shareMessage && <p role="status">{shareMessage}</p>}
+      {error && (
+        <p className="field-error" role="alert">
+          {error}
+        </p>
+      )}
       <ConfirmDialog
         open={deleteOpen}
         title="아카이브를 삭제할까요?"
@@ -115,8 +172,11 @@ export default function ArchiveDetailPage() {
         confirmLabel="삭제"
         onCancel={() => setDeleteOpen(false)}
         onConfirm={() => {
-          deleteArchive(archive.id);
-          navigate('/archives');
+          if (deleteMemory.isPending) return;
+          void deleteMemory
+            .mutateAsync()
+            .then(() => navigate('/archives'))
+            .catch((reason: Error) => setError(reason.message));
         }}
       />
       {selectedImage !== null && (
@@ -125,10 +185,14 @@ export default function ArchiveDetailPage() {
           index={selectedImage}
           onChange={setSelectedImage}
           onClose={() => setSelectedImage(null)}
-          onMore={() => {
-            setSelectedImage(null);
-            setMenuOpen(true);
-          }}
+          onMore={
+            isMine
+              ? () => {
+                  setSelectedImage(null);
+                  setMenuOpen(true);
+                }
+              : undefined
+          }
         />
       )}
     </MobileLayout>

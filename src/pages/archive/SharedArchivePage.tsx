@@ -1,105 +1,160 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import { getReceivedMemories, toKoreanDate } from '@/apis/momento';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import PhotoCount from '@/components/archive/PhotoCount';
 import MobileLayout from '@/components/layout/MobileLayout';
-import { useMomentoStore } from '@/stores/useMomentoStore';
+import { BackHeader } from '@/components/layout/Headers';
+import { useFinishReceivedMemory } from '@/hooks/useMomentoMutations';
+import { useReceiveSharedMemory } from '@/hooks/useReceiveSharedMemory';
 
 export default function SharedArchivePage() {
   const navigate = useNavigate();
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [params] = useSearchParams();
+  const finishMemory = useFinishReceivedMemory();
+  const [index, setIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const saveShared = useMomentoStore((state) => state.saveShared);
-  const sharedSaved = useMomentoStore((state) => state.sharedSaved);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [error, setError] = useState('');
+  const token = params.get('token');
+  const receiveError = useReceiveSharedMemory(token);
+  const receivedQuery = useQuery({
+    queryKey: ['received-memories'],
+    queryFn: getReceivedMemories,
+    enabled: !token,
+    retry: false,
+  });
+  const items = token ? [] : (receivedQuery.data?.memories ?? []);
+  const item = items[index];
+  const images = item?.images?.map((image) => image.imageUrl) ?? [];
+  const finish = async (action: 'save' | 'dismiss') => {
+    if (!item || finishMemory.isPending) return;
+    setError('');
+    try {
+      await finishMemory.mutateAsync({ id: item.receivedMemoryId, action });
+      const next = items.filter(
+        (entry) => entry.receivedMemoryId !== item.receivedMemoryId,
+      );
+      setIndex(0);
+      if (!next.length) navigate('/archives');
+    } catch (reason) {
+      setError((reason as Error).message);
+    }
+  };
   return (
     <MobileLayout>
-      <article className="archive-detail shared-detail">
-        <div className="detail-cover-wrap">
+      {!item && (
+        <BackHeader
+          title="공유받은 아카이브"
+          onBack={() => navigate('/archives')}
+        />
+      )}
+      {receiveError && (
+        <p className="field-error" role="alert">
+          {receiveError}
+        </p>
+      )}
+      {error && (
+        <p className="field-error" role="alert">
+          {error}
+        </p>
+      )}
+      {!token && receivedQuery.error && (
+        <p className="field-error" role="alert">
+          {receivedQuery.error.message}
+        </p>
+      )}
+      {!item ? (
+        <div className="empty-state">
+          <p>
+            {receiveError || (!token && receivedQuery.error)
+              ? '공유받은 아카이브를 불러올 수 없어요.'
+              : token || receivedQuery.isPending
+                ? '공유받은 아카이브를 불러오는 중이에요.'
+                : '공유받은 아카이브가 없어요.'}
+          </p>
           <button
             type="button"
-            className="detail-cover-trigger"
-            aria-label="대표 사진 확대"
-            onClick={() => setSelectedImage(0)}
+            className="button-secondary"
+            onClick={() => navigate('/archives')}
           >
-            <img
-              className="detail-cover"
-              src="/assets/archive/detail-1.jpg"
-              alt=""
-            />
+            아카이브로 돌아가기
           </button>
-          <span className="detail-cover-counter">
-            1 / {sharedImages.length}
-          </span>
         </div>
-        <header className="archive-detail-header">
-          <button
-            type="button"
-            aria-label="뒤로 가기"
-            onClick={() => navigate(-1)}
-          >
-            <img src="/assets/archive/detail-back.svg" alt="" />
-          </button>
-          <button
-            type="button"
-            aria-label="공유하기"
-            onClick={() =>
-              void navigator.clipboard?.writeText(window.location.href)
-            }
-          >
-            <img src="/assets/archive/detail-more.svg" alt="" />
-          </button>
-        </header>
-        <section className="detail-copy">
-          <div className="shared-detail-main">
-            <div className="shared-detail-top">
-              <div className="shared-detail-heading">
+      ) : (
+        <article className="archive-detail shared-detail">
+          <div className="detail-cover-wrap">
+            {images[0] && (
+              <button
+                type="button"
+                className="detail-cover-trigger"
+                onClick={() => setSelectedImage(0)}
+              >
+                <img className="detail-cover" src={images[0]} alt="대표 사진" />
+              </button>
+            )}
+            <span className="detail-cover-counter">
+              {index + 1} / {items.length}
+            </span>
+          </div>
+          <header className="archive-detail-header">
+            <button
+              type="button"
+              onClick={() => navigate('/archives')}
+              aria-label="뒤로 가기"
+            >
+              <img src="/assets/archive/detail-back.svg" alt="" />
+            </button>
+          </header>
+          <section className="detail-copy">
+            <div className="shared-detail-main">
+              <div className="shared-detail-top">
                 <div className="detail-meta">
-                  <span>2027년 3월 1일</span>
-                  <span>유빈</span>
+                  <span>{toKoreanDate(item.memoryDate)}</span>
+                  <span>{item.senderNickname}</span>
                 </div>
-                <h1>2024 우리, 다시 만나는 날</h1>
+                <h1>{item.title}</h1>
+                <p>{item.content}</p>
               </div>
-              <p>
-                오늘 친구들과 함께 카페에서 오랜만에 만나서 정말 즐거운 시간을
-                보냈어. 웃음이 끊이지 않고, 서로의 근황도 나누면서 행복한
-                하루였어.
-              </p>
-            </div>
-            <div className="shared-detail-photos">
-              <PhotoCount count={sharedImages.length} />
-              <div className="thumbnail-row">
-                {archiveImagesForShared.map((image, index) => (
-                  <button
-                    type="button"
-                    key={image}
-                    onClick={() => setSelectedImage(index + 1)}
-                  >
-                    <img src={image} alt={`${index + 2}번째 추억`} />
-                  </button>
-                ))}
+              <div className="shared-detail-photos">
+                <PhotoCount count={images.length} />
+                <div className="thumbnail-row">
+                  {images.map((image, imageIndex) => (
+                    <button
+                      type="button"
+                      key={imageIndex}
+                      onClick={() => setSelectedImage(imageIndex)}
+                    >
+                      <img src={image} alt={`${imageIndex + 1}번째 추억`} />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="shared-actions">
-            <button
-              type="button"
-              className="button-secondary"
-              onClick={() => navigate(-1)}
-            >
-              닫기
-            </button>
-            <button
-              type="button"
-              className="button-primary"
-              onClick={() => setConfirmOpen(true)}
-            >
-              {sharedSaved ? '저장 완료' : '아카이브 저장하기'}
-            </button>
-          </div>
-        </section>
-      </article>
+            <div className="shared-actions">
+              <button
+                type="button"
+                className="button-secondary"
+                disabled={finishMemory.isPending}
+                onClick={() => void finish('dismiss')}
+              >
+                닫기
+              </button>
+              <button
+                type="button"
+                className="button-primary"
+                disabled={finishMemory.isPending}
+                onClick={() => setConfirmOpen(true)}
+              >
+                아카이브 저장하기
+              </button>
+            </div>
+          </section>
+        </article>
+      )}
       <ConfirmDialog
         open={confirmOpen}
         title="아카이브를 저장할까요?"
@@ -108,13 +163,13 @@ export default function SharedArchivePage() {
         confirmTone="primary"
         onCancel={() => setConfirmOpen(false)}
         onConfirm={() => {
-          saveShared();
-          navigate('/archives');
+          setConfirmOpen(false);
+          void finish('save');
         }}
       />
       {selectedImage !== null && (
         <ArchiveImageViewer
-          images={sharedImages}
+          images={images}
           index={selectedImage}
           onChange={setSelectedImage}
           onClose={() => setSelectedImage(null)}
@@ -123,14 +178,3 @@ export default function SharedArchivePage() {
     </MobileLayout>
   );
 }
-
-const archiveImagesForShared = [
-  '/assets/archive/memory-04.jpg',
-  '/assets/archive/memory-03.jpg',
-  '/assets/archive/memory-06.jpg',
-  '/assets/archive/memory-01.jpg',
-];
-const sharedImages = [
-  '/assets/archive/detail-1.jpg',
-  ...archiveImagesForShared,
-];

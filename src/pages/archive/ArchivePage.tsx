@@ -1,24 +1,33 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 
 import ArchiveCard from '@/components/archive/ArchiveCard';
 import { PlusIcon, SearchIcon } from '@/components/common/Icons';
 import { BrandHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
-import { useMomentoStore } from '@/stores/useMomentoStore';
+import { getMemories, toKoreanDate } from '@/apis/momento';
 import type { Archive } from '@/types/momento';
 
 export default function ArchivePage() {
-  const archives = useMomentoStore((state) => state.archives);
   const [query, setQuery] = useState('');
-  const filtered = useMemo(
-    () =>
-      archives.filter((archive) =>
-        `${archive.title} ${archive.content}`.includes(query),
-      ),
-    [archives, query],
-  );
-  const grouped = filtered.reduce<Record<string, Archive[]>>(
+  const { data, error } = useQuery({
+    queryKey: ['memories', query],
+    queryFn: () => getMemories(query),
+    retry: false,
+  });
+  const hasReceived = data?.hasReceivedMemory ?? false;
+  const archives: Archive[] = (data?.memories ?? []).map((item) => ({
+    id: item.memoryId,
+    title: item.title,
+    date: toKoreanDate(item.memoryDate),
+    year: Number(item.memoryDate.slice(0, 4)),
+    author: item.authorNickname,
+    content: '',
+    images: item.thumbnailUrl ? [item.thumbnailUrl] : [],
+    imageCount: item.imageCount,
+  }));
+  const grouped = archives.reduce<Record<string, Archive[]>>(
     (result, archive) => {
       const year = String(archive.year);
       result[year] = [...(result[year] ?? []), archive];
@@ -53,13 +62,20 @@ export default function ArchivePage() {
           />
           <SearchIcon />
         </label>
-        <Link to="/archives/shared" className="shared-banner">
-          <span>
-            <small>공유받은 아카이브가 있어요</small>
-            <strong>지금 확인하기</strong>
-          </span>
-          <span>›</span>
-        </Link>
+        {error && (
+          <p className="field-error" role="alert">
+            {error.message}
+          </p>
+        )}
+        {hasReceived && (
+          <Link to="/archives/shared" className="shared-banner">
+            <span>
+              <small>공유받은 아카이브가 있어요</small>
+              <strong>지금 확인하기</strong>
+            </span>
+            <span>›</span>
+          </Link>
+        )}
         {Object.entries(grouped).map(([year, yearArchives]) => (
           <section className="archive-year" key={year}>
             <h2>{year}년</h2>

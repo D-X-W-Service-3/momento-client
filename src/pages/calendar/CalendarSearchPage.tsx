@@ -1,39 +1,47 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import BottomSheet from '@/components/common/BottomSheet';
 import { SearchIcon } from '@/components/common/Icons';
 import CalendarCard from '@/components/calendar/CalendarCards';
 import { BackHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
-import { useCalendarItems } from '@/hooks/useCalendarItems';
-import { parseKoreanDate } from '@/utils/dates';
+import { searchCalendar, toCalendarItems } from '@/apis/momento';
+import type { CalendarItem } from '@/types/momento';
 
 export default function CalendarSearchPage() {
-  const calendarItems = useCalendarItems();
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [sortOpen, setSortOpen] = useState(false);
   const [periodOpen, setPeriodOpen] = useState(false);
   const [sort, setSort] = useState<'최신순' | '오래된순'>('최신순');
   const [period, setPeriod] = useState('전체 기간');
-  const results = useMemo(() => {
-    const matched = calendarItems.filter(
-      (item) =>
-        item.title.toLowerCase().includes(query.toLowerCase()) &&
-        (period === '전체 기간' ||
-          parseKoreanDate(item.date)?.getFullYear() ===
-            Number.parseInt(period, 10)),
-    );
-    return [...matched].sort(
-      (a, b) =>
-        ((parseKoreanDate(b.date)?.getTime() ?? 0) -
-          (parseKoreanDate(a.date)?.getTime() ?? 0)) *
-        (sort === '최신순' ? 1 : -1),
-    );
-  }, [calendarItems, query, sort, period]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 250);
+    return () => window.clearTimeout(timer);
+  }, [query]);
+  const { data, error } = useQuery({
+    queryKey: ['calendar-search', debouncedQuery, period, sort],
+    queryFn: () =>
+      searchCalendar(
+        debouncedQuery,
+        period === '전체 기간' ? undefined : Number.parseInt(period, 10),
+        sort === '최신순' ? 'LATEST' : 'OLDEST',
+      ),
+    enabled: Boolean(debouncedQuery),
+    retry: false,
+  });
+  const results: CalendarItem[] =
+    debouncedQuery && data ? toCalendarItems(data) : [];
   return (
     <MobileLayout>
       <BackHeader title="검색" />
       <section className="search-page">
+        {error && (
+          <p className="field-error" role="alert">
+            {error.message}
+          </p>
+        )}
         <label className="search-field">
           <input
             autoFocus
