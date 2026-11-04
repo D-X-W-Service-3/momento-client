@@ -70,6 +70,7 @@ export function resolveArchiveImageKeys(
   photos: ArchivePhoto[],
   uploadedKeys: string[],
 ): string[] {
+  if (photos.length === 0) throw new Error('사진을 등록해주세요');
   if (uploadedKeys.length !== photos.filter((photo) => photo.file).length) {
     throw new Error('사진 업로드 정보를 확인할 수 없어요. 다시 시도해 주세요.');
   }

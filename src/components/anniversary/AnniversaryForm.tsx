@@ -32,7 +32,15 @@ export default function AnniversaryForm({
   const [value, setValue] = useState(initialValue);
   const [sheet, setSheet] = useState<'date' | 'time' | 'reminder' | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [showErrors, setShowErrors] = useState(false);
+  const [touched, setTouched] = useState({ name: false, date: false });
+  const touch = (field: 'name' | 'date') =>
+    setTouched((current) => ({ ...current, [field]: true }));
+  const nameError = touched.name && !value.name.trim();
+  const dateError = touched.date && !value.date;
+  const closeDateSheet = () => {
+    touch('date');
+    setSheet(null);
+  };
   const update = <K extends keyof AnniversaryFormType>(
     key: K,
     next: AnniversaryFormType[K],
@@ -41,11 +49,12 @@ export default function AnniversaryForm({
     <>
       <form
         className="anniversary-form"
+        noValidate
         onSubmit={(event) => {
           event.preventDefault();
           if (value.name.trim() && value.date)
             onSubmit({ ...value, name: value.name.trim() });
-          else setShowErrors(true);
+          else setTouched({ name: true, date: true });
         }}
       >
         {mode === 'create' && (
@@ -61,14 +70,25 @@ export default function AnniversaryForm({
               <input
                 required
                 value={value.name}
-                onChange={(event) => update('name', event.target.value)}
+                onChange={(event) => {
+                  update('name', event.target.value);
+                  touch('name');
+                }}
+                onBlur={() => touch('name')}
+                aria-invalid={nameError || undefined}
+                aria-describedby={
+                  nameError ? 'anniversary-name-help' : undefined
+                }
                 placeholder="예) 우리 100일, 엄마 생신"
               />
             </div>
-            <small>기념일 이름을 선택해주세요</small>
-            {showErrors && !value.name.trim() && (
-              <small className="field-error">
-                기념일 이름을 입력해 주세요.
+            {nameError && (
+              <small
+                className="field-error"
+                id="anniversary-name-help"
+                role="alert"
+              >
+                기념일 이름을 입력해주세요
               </small>
             )}
           </label>
@@ -81,12 +101,19 @@ export default function AnniversaryForm({
               className="input-button"
               data-filled={Boolean(value.date)}
               onClick={() => setSheet('date')}
+              aria-label="기념일 날짜 선택"
+              aria-invalid={dateError || undefined}
+              aria-describedby={dateError ? 'anniversary-date-help' : undefined}
             >
               {value.date || '날짜를 선택해주세요'}
               <img src="/assets/anniversary/date.svg" alt="" />
             </button>
-            {showErrors && !value.date && (
-              <small className="field-error">
+            {dateError && (
+              <small
+                className="field-error"
+                id="anniversary-date-help"
+                role="alert"
+              >
                 기념일 날짜를 선택해 주세요.
               </small>
             )}
@@ -154,7 +181,7 @@ export default function AnniversaryForm({
               <span className="row-icon">
                 <img src="/assets/anniversary/clock.svg" alt="" />
               </span>
-              <strong>알림 받기</strong>
+              <strong>알림 시간</strong>
               <small className="row-value">
                 {value.notificationTime}
                 <img src="/assets/anniversary/chevron.svg" alt="" />
@@ -195,13 +222,13 @@ export default function AnniversaryForm({
           </div>
         )}
       </form>
-      <BottomSheet open={sheet === 'date'} onClose={() => setSheet(null)}>
+      <BottomSheet open={sheet === 'date'} onClose={closeDateSheet}>
         <DatePicker
           value={value.date}
-          onCancel={() => setSheet(null)}
+          onCancel={closeDateSheet}
           onSelect={(date) => {
             update('date', date);
-            setSheet(null);
+            closeDateSheet();
           }}
         />
       </BottomSheet>

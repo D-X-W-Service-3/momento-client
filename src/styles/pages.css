@@ -428,6 +428,22 @@
     width: 20px;
     height: 20px;
   }
+  .archive-form-page .photo-add {
+    display: grid;
+    padding: 0;
+    place-items: center;
+    cursor: pointer;
+  }
+  .archive-form-page .photo-add svg {
+    flex: none;
+  }
+  .archive-form-page .submit-button[aria-disabled='true'] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .archive-form-page .submit-button:disabled {
+    cursor: wait;
+  }
   .archive-form-page .photo-strip {
     margin-right: -20px;
     padding-right: 20px;
