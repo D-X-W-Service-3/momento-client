@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import CalendarPeriodGrid from '@/components/common/CalendarPeriodGrid';
+
 import { textStyles } from '@/styles/tokens';
 import { formatKoreanDate, monthCells, parseKoreanDate } from '@/utils/dates';
 
@@ -228,55 +230,22 @@ export default function DatePicker({
         </div>
 
         {mode === 'year' && (
-          <div className="grid min-h-[256px] grid-cols-4 grid-rows-3 gap-2 py-2">
-            {yearOptions.map((optionYear) => {
-              const disabled = isDisabledYear(optionYear);
-              const isSelected = optionYear === year && !disabled;
-              return (
-                <button
-                  key={optionYear}
-                  type="button"
-                  disabled={disabled}
-                  onClick={() => handleSelectYear(optionYear)}
-                  className={`flex items-center justify-center rounded-lg transition-colors ${
-                    isSelected
-                      ? 'bg-primary text-text-on-primary cursor-pointer'
-                      : disabled
-                        ? 'text-text-primary/25 cursor-not-allowed'
-                        : 'bg-surface-gray text-text-primary cursor-pointer'
-                  } ${textStyles['body-medium']}`}
-                >
-                  {optionYear}년
-                </button>
-              );
-            })}
-          </div>
+          <CalendarPeriodGrid
+            options={yearOptions}
+            selected={year}
+            suffix="년"
+            isDisabled={isDisabledYear}
+            onSelect={handleSelectYear}
+          />
         )}
-
         {mode === 'month' && (
-          <div className="grid min-h-[256px] grid-cols-4 grid-rows-3 gap-2 py-2">
-            {monthOptions.map((optionMonth) => {
-              const disabled = isDisabledMonth(year, optionMonth);
-              const isSelected = optionMonth === month && !disabled;
-              return (
-                <button
-                  key={optionMonth}
-                  type="button"
-                  disabled={disabled}
-                  onClick={() => handleSelectMonth(optionMonth)}
-                  className={`flex items-center justify-center rounded-lg transition-colors ${
-                    isSelected
-                      ? 'bg-primary text-text-on-primary cursor-pointer'
-                      : disabled
-                        ? 'text-text-primary/25 cursor-not-allowed'
-                        : 'bg-surface-gray text-text-primary cursor-pointer'
-                  } ${textStyles['body-medium']}`}
-                >
-                  {optionMonth}월
-                </button>
-              );
-            })}
-          </div>
+          <CalendarPeriodGrid
+            options={monthOptions}
+            selected={month}
+            suffix="월"
+            isDisabled={(option) => isDisabledMonth(year, option)}
+            onSelect={handleSelectMonth}
+          />
         )}
 
         {mode === 'day' && (

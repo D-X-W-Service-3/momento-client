@@ -8,6 +8,7 @@ import { CAPSULE_DESCRIPTION_MIN_LENGTH } from '@/types/capsule';
 interface CapsuleInfoStepProps {
   iconIndex: number;
   name: string;
+  nameError?: string;
   description: string;
   maxNameLength: number;
   maxDescriptionLength: number;
@@ -19,6 +20,7 @@ interface CapsuleInfoStepProps {
 export default function CapsuleInfoStep({
   iconIndex,
   name,
+  nameError,
   description,
   maxNameLength,
   maxDescriptionLength,
@@ -48,11 +50,14 @@ export default function CapsuleInfoStep({
         />
 
         <TextField
-          label="캡슐 이름"
+          label="캡슐 이름 (필수)"
           placeholder="캡슐 이름을 입력해주세요"
           value={name}
           onChange={onNameChange}
           maxLength={maxNameLength}
+          required
+          helperText={nameError}
+          isError={Boolean(nameError)}
         />
 
         <TextArea

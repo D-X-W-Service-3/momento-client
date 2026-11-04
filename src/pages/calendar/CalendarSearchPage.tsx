@@ -38,11 +38,18 @@ export default function CalendarSearchPage() {
   const hasQuery = Boolean(query.trim());
   const loading = hasQuery && (query.trim() !== debouncedQuery || isPending);
   const chevron = (
-    <img
-      src="/assets/calendar/month-chevron.svg"
-      alt=""
-      className="h-[6.375px] w-[10.75px] shrink-0 rotate-180"
-    />
+    <svg
+      viewBox="0 0 10.75 6.375"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="h-[5px] w-2 shrink-0 rotate-180"
+    >
+      <path d="M1 5.375L5.375 1L9.75 5.375" />
+    </svg>
   );
   return (
     <MobileLayout className="calendar-page calendar-search-page">

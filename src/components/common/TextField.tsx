@@ -10,6 +10,7 @@ interface TextFieldProps {
   maxLength?: number;
   helperText?: string;
   isError?: boolean;
+  required?: boolean;
   variant?: 'filled' | 'outlined';
   className?: string;
 }
@@ -23,6 +24,7 @@ export default function TextField({
   maxLength,
   helperText,
   isError = false,
+  required = false,
   variant = 'filled',
   className = '',
 }: TextFieldProps) {
@@ -52,6 +54,9 @@ export default function TextField({
           type="text"
           value={value}
           maxLength={maxLength}
+          required={required}
+          aria-invalid={isError || undefined}
+          aria-describedby={helperText ? `${id}-help` : undefined}
           placeholder={placeholder}
           onChange={(event) => onChange(event.target.value)}
           className="min-w-0 flex-1 bg-transparent font-display text-field-value text-ink placeholder:text-field-hint focus:outline-none"
@@ -62,6 +67,7 @@ export default function TextField({
       </div>
       {helperText && (
         <p
+          id={`${id}-help`}
           className={`text-meta ${
             isError ? 'text-status-error' : 'text-primary-dark'
           }`}

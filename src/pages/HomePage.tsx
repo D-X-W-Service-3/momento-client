@@ -40,10 +40,7 @@ export default function HomePage() {
                   : handleCreateCapsule()
               }
             />
-            {(dashboard.heroCapsule ||
-              dashboard.featuredCapsules.length > 0) && (
-              <CapsuleCreateBanner onClick={handleCreateCapsule} />
-            )}
+            <CapsuleCreateBanner onClick={handleCreateCapsule} />
           </section>
 
           {dashboard.featuredCapsules.map((capsule, index) => (

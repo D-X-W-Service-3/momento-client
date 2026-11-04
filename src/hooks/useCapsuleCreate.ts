@@ -101,6 +101,7 @@ export function useCapsuleCreate() {
     'editDeadline' | 'openDate' | null
   >(null);
   const [inviteSheetOpen, setInviteSheetOpen] = useState(false);
+  const [hasEditedName, setHasEditedName] = useState(false);
   const [form, setForm] = useState<CapsuleCreateForm>({
     iconIndex: 0,
     name: '',
@@ -191,6 +192,7 @@ export function useCapsuleCreate() {
 
   const handleNameChange = (next: string) => {
     if (next.length <= CAPSULE_NAME_MAX_LENGTH) {
+      if (next.length > 0) setHasEditedName(true);
       setForm((prev) => ({ ...prev, name: next }));
     }
   };
@@ -342,6 +344,10 @@ export function useCapsuleCreate() {
     isCreating: creation.isPending,
     error: creation.error,
     form,
+    nameError:
+      hasEditedName && !form.name.trim()
+        ? '캡슐 이름을 입력해주세요.'
+        : undefined,
     activeSegments,
     totalSegments: 4,
     totalIcons: TOTAL_ICONS,
