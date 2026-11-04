@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import AvatarGroup from '@/components/common/AvatarGroup';
 import Button from '@/components/common/Button';
@@ -8,12 +8,7 @@ import CapsuleInfoBlock from '@/components/capsule/CapsuleInfoBlock';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import SectionHeader from '@/components/common/SectionHeader';
 import BackHeader from '@/components/layout/BackHeader';
-import {
-  capsuleDetailPath,
-  capsuleParticipantsPath,
-  capsuleReceiversPath,
-  ROUTES,
-} from '@/constants/routes';
+import { capsuleDetailPath, ROUTES } from '@/constants/routes';
 import {
   useAcceptInvite,
   useInvitePreview,
@@ -40,6 +35,9 @@ export default function CapsuleInviteDetailPage() {
 
   const { capsule, targetRole } = preview;
   const capsuleId = String(capsule.capsuleId);
+  if (preview.alreadyJoined) {
+    return <Navigate to={capsuleDetailPath(capsuleId)} replace />;
+  }
   const statusChip = capsuleStatusChip(capsule.status);
 
   const accept = () =>
@@ -78,7 +76,6 @@ export default function CapsuleInviteDetailPage() {
                 <SectionHeader
                   title="참여자"
                   count={`${capsule.participants.count}명`}
-                  onViewAll={() => navigate(capsuleParticipantsPath(capsuleId))}
                 />
                 <AvatarGroup
                   members={capsule.participants.previews}
@@ -90,7 +87,6 @@ export default function CapsuleInviteDetailPage() {
                 <SectionHeader
                   title="수신자"
                   count={`${capsule.recipients.count}명`}
-                  onViewAll={() => navigate(capsuleReceiversPath(capsuleId))}
                 />
                 <AvatarGroup
                   members={capsule.recipients.previews}

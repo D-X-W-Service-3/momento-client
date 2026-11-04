@@ -23,7 +23,11 @@ import {
 import { useCapsuleDetail, useDeleteCapsule } from '@/hooks/useCapsule';
 import { useDeleteLetter, useMyLetters } from '@/hooks/useLetter';
 import type { CapsuleInviteRole } from '@/types/capsule';
-import { capsuleIconSrc, capsuleStatusChip } from '@/utils/capsule';
+import {
+  canInviteRole,
+  capsuleIconSrc,
+  capsuleStatusChip,
+} from '@/utils/capsule';
 import { formatDotDate } from '@/utils/date';
 
 const ADMIN_ACTIONS = [
@@ -54,7 +58,13 @@ export default function CapsuleDetailPage() {
   const hasMyLetters = (myLetters ?? []).length > 0;
 
   const handleConfirmDeleteLetter = () => {
-    if (!deletingLetterId) return;
+    if (!deletingLetterId || deleteLetter.isPending) return;
+    if (
+      !myLetters?.find((letter) => letter.id === deletingLetterId)?.canDelete
+    ) {
+      setDeletingLetterId(undefined);
+      return;
+    }
     deleteLetter.mutate(deletingLetterId, {
       onSuccess: () => {
         setDeletingLetterId(undefined);
@@ -154,11 +164,12 @@ export default function CapsuleDetailPage() {
                   members={capsule.participants.previews}
                   totalCount={capsule.participants.count}
                 />
-                {permissions.canInvite && (
-                  <GhostButton onClick={() => setInviteRole('PARTICIPANT')}>
-                    참여자 초대
-                  </GhostButton>
-                )}
+                {permissions.canInvite &&
+                  canInviteRole(capsule.capsuleType, 'PARTICIPANT') && (
+                    <GhostButton onClick={() => setInviteRole('PARTICIPANT')}>
+                      참여자 초대
+                    </GhostButton>
+                  )}
               </section>
 
               <section className="flex flex-col gap-list">
@@ -171,11 +182,12 @@ export default function CapsuleDetailPage() {
                   members={capsule.recipients.previews}
                   totalCount={capsule.recipients.count}
                 />
-                {permissions.canInvite && (
-                  <GhostButton onClick={() => setInviteRole('RECIPIENT')}>
-                    수신자 초대
-                  </GhostButton>
-                )}
+                {permissions.canInvite &&
+                  canInviteRole(capsule.capsuleType, 'RECIPIENT') && (
+                    <GhostButton onClick={() => setInviteRole('RECIPIENT')}>
+                      수신자 초대
+                    </GhostButton>
+                  )}
               </section>
 
               {permissions.canManage && (
@@ -223,14 +235,18 @@ export default function CapsuleDetailPage() {
       <ConfirmDialog
         open={lettersOpen && myLetters !== undefined && !hasMyLetters}
         title="내가 작성한 편지가 없어요"
-        description="새로운 편지를 작성할까요?"
+        description={
+          permissions?.canWriteLetter
+            ? '새로운 편지를 작성할까요?'
+            : '이 캡슐에는 편지를 작성할 수 없어요.'
+        }
         cancelLabel="닫기"
-        confirmLabel="작성하러 가기"
+        confirmLabel={permissions?.canWriteLetter ? '작성하러 가기' : '확인'}
         confirmTone="primary"
         onCancel={() => setLettersOpen(false)}
         onConfirm={() => {
           setLettersOpen(false);
-          navigate(letterTypePath(capsuleId));
+          if (permissions?.canWriteLetter) navigate(letterTypePath(capsuleId));
         }}
       />
 

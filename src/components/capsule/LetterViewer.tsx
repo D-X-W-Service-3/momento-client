@@ -69,7 +69,7 @@ export default function LetterViewer({
         className="flex w-full max-w-[353px] items-center justify-between"
         onClick={(event) => event.stopPropagation()}
       >
-        {onDelete ? (
+        {onDelete && letter.canDelete ? (
           <button
             type="button"
             aria-label="편지 삭제"

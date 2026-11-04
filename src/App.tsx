@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ApiError } from '@/apis/client';
 import { ROUTES } from '@/constants/routes';
 import RequireAuth from '@/routes/RequireAuth';
+import RequireLetterWriting from '@/routes/RequireLetterWriting';
 import CapsuleCoverPage from '@/pages/capsule/CapsuleCoverPage';
 import CapsuleDetailPage from '@/pages/capsule/CapsuleDetailPage';
 import CapsuleEditPage from '@/pages/capsule/CapsuleEditPage';
@@ -110,9 +111,36 @@ export default function App() {
             </RequireAuth>
           }
         />
-        <Route path={ROUTES.LETTER_TYPE} element={<LetterTypeSelectPage />} />
-        <Route path={ROUTES.LETTER_PAPER} element={<LetterPaperSelectPage />} />
-        <Route path={ROUTES.LETTER_WRITE} element={<LetterCreatePage />} />
+        <Route
+          path={ROUTES.LETTER_TYPE}
+          element={
+            <RequireAuth>
+              <RequireLetterWriting>
+                <LetterTypeSelectPage />
+              </RequireLetterWriting>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={ROUTES.LETTER_PAPER}
+          element={
+            <RequireAuth>
+              <RequireLetterWriting>
+                <LetterPaperSelectPage />
+              </RequireLetterWriting>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={ROUTES.LETTER_WRITE}
+          element={
+            <RequireAuth>
+              <RequireLetterWriting>
+                <LetterCreatePage />
+              </RequireLetterWriting>
+            </RequireAuth>
+          }
+        />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

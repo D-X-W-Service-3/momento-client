@@ -2,6 +2,7 @@ import capsuleHero from '@/assets/images/capsule/capsule-hero.webp';
 import type { ChipTone } from '@/components/common/Chip';
 import type {
   CapsuleInviteRole,
+  CapsuleKind,
   CapsuleStatusType,
   CapsuleSummary,
 } from '@/types/capsule';
@@ -38,6 +39,14 @@ export const capsuleStatusChip = (
 
 export const isGroupCapsule = (capsule: Pick<CapsuleSummary, 'capsuleType'>) =>
   capsule.capsuleType === 'GROUP';
+
+/** 서버 초대 API의 유형·역할 조합. 서버 permissions와 함께 확인한다. */
+export const canInviteRole = (
+  capsuleType: CapsuleKind | undefined,
+  role: CapsuleInviteRole,
+) =>
+  capsuleType === 'GROUP' ||
+  (capsuleType === 'FRIEND' && role === 'PARTICIPANT');
 
 /** URL 의 role 세그먼트(participant/receiver) → 서버 enum */
 export const toInviteRole = (segment?: string): CapsuleInviteRole =>

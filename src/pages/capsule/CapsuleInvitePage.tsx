@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import Button from '@/components/common/Button';
 import CapsuleCoverLayout from '@/components/capsule/CapsuleCoverLayout';
@@ -27,16 +26,10 @@ export default function CapsuleInvitePage() {
 
   const capsuleId = preview ? String(preview.capsule.capsuleId) : '';
 
-  // 이미 멤버라면 초대 화면을 보여줄 이유가 없다.
-  useEffect(() => {
-    if (preview?.alreadyJoined) {
-      navigate(capsuleDetailPath(String(preview.capsule.capsuleId)), {
-        replace: true,
-      });
-    }
-  }, [preview, navigate]);
-
   if (!preview) return null;
+  if (preview.alreadyJoined) {
+    return <Navigate to={capsuleDetailPath(capsuleId)} replace />;
+  }
 
   const text = ROLE_TEXT[preview.targetRole];
 

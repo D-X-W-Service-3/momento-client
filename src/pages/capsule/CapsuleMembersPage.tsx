@@ -8,7 +8,12 @@ import InviteSheet from '@/components/capsule/InviteSheet';
 import InfoNote from '@/components/common/InfoNote';
 import MemberGridItem from '@/components/capsule/MemberGridItem';
 import BackHeader from '@/components/layout/BackHeader';
-import { useCapsuleMembers, useRemoveCapsuleMember } from '@/hooks/useCapsule';
+import {
+  useCapsuleDetail,
+  useCapsuleMembers,
+  useRemoveCapsuleMember,
+} from '@/hooks/useCapsule';
+import { canInviteRole } from '@/utils/capsule';
 import type { CapsuleInviteRole, CapsuleMember } from '@/types/capsule';
 
 interface RoleContent {
@@ -67,12 +72,17 @@ interface CapsuleMembersPageProps {
 export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
   const { capsuleId = '' } = useParams();
   const { data: memberList } = useCapsuleMembers(capsuleId, role);
+  const { data: capsule } = useCapsuleDetail(capsuleId);
   const removeMember = useRemoveCapsuleMember(capsuleId, role);
   const [removing, setRemoving] = useState<CapsuleMember>();
   const [inviteOpen, setInviteOpen] = useState(false);
 
   const content = ROLE_CONTENT[role];
   const editable = memberList?.canManage ?? false;
+  const canInvite =
+    editable &&
+    Boolean(capsule?.permissions.canInvite) &&
+    canInviteRole(capsule?.capsuleType, role);
   const members = memberList?.members ?? [];
 
   const handleConfirmRemove = () => {
@@ -138,14 +148,14 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
             </InfoNote>
           </div>
 
-          <Button disabled={!editable} onClick={() => setInviteOpen(true)}>
+          <Button disabled={!canInvite} onClick={() => setInviteOpen(true)}>
             {content.inviteLabel}
           </Button>
         </main>
       </div>
 
       <InviteSheet
-        open={inviteOpen}
+        open={inviteOpen && canInvite}
         onClose={() => setInviteOpen(false)}
         capsuleId={capsuleId}
         role={role}

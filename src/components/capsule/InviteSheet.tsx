@@ -1,10 +1,9 @@
-import { useState } from 'react';
-
 import linkIcon from '@/assets/icons/link.svg';
 import { inviteUrlOf } from '@/apis/capsule';
 import BottomSheet from '@/components/common/BottomSheet';
 import Button from '@/components/common/Button';
 import { useInviteLink } from '@/hooks/useCapsule';
+import { useInviteSharing } from '@/hooks/useInviteSharing';
 import type { CapsuleInviteRole } from '@/types/capsule';
 
 const ROLE_TEXT: Record<
@@ -41,39 +40,22 @@ export default function InviteSheet({
   role,
   inviteUrl: givenInviteUrl,
 }: InviteSheetProps) {
-  const [copied, setCopied] = useState(false);
-  const { data: invite, isPending } = useInviteLink(
-    capsuleId,
-    role,
-    open && !givenInviteUrl,
-  );
+  const {
+    data: invite,
+    isPending,
+    error: inviteError,
+  } = useInviteLink(capsuleId, role, open && !givenInviteUrl);
   const text = ROLE_TEXT[role];
 
   const inviteUrl =
     givenInviteUrl ?? (invite ? inviteUrlOf(invite.inviteToken) : '');
 
-  const copyLink = async () => {
-    if (!inviteUrl) return;
-    try {
-      await navigator.clipboard.writeText(inviteUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // 클립보드를 막아둔 브라우저에서는 조용히 넘어간다.
-    }
-  };
-
-  const share = async () => {
-    if (!inviteUrl) return;
-    onClose();
-    // 공유 시트를 지원하지 않으면 링크 복사로 대신한다.
-    if (!navigator.share) return copyLink();
-    try {
-      await navigator.share({ url: inviteUrl, title: text.title });
-    } catch {
-      // 사용자가 공유를 취소한 경우
-    }
-  };
+  const { copied, error, copyLink, share } = useInviteSharing(
+    open,
+    inviteUrl,
+    text.title,
+    onClose,
+  );
 
   return (
     <BottomSheet open={open} onClose={onClose}>
@@ -112,6 +94,11 @@ export default function InviteSheet({
           <Button onClick={share} disabled={!inviteUrl}>
             {copied ? '링크를 복사했어요' : '공유하기'}
           </Button>
+          {(inviteError || error) && (
+            <p role="alert" className="text-meta text-danger">
+              {inviteError?.message || error}
+            </p>
+          )}
         </div>
       </div>
     </BottomSheet>
