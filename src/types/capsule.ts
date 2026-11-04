@@ -1,4 +1,5 @@
 import type { ChipTone } from '@/components/common/Chip';
+import type { CapsuleStatus } from '@/types/calendar';
 
 export type CapsuleFilterKey =
   'all' | 'openable' | 'editable' | 'locked' | 'opened';
@@ -75,113 +76,42 @@ export interface CapsuleCreateForm {
   openDate: string;
 }
 
-/* ------------------------------------------------------------------
- * 서버 응답 타입 (GET /v1/time-capsules/{capsuleId} 등)
- * 값과 이름은 OpenAPI 스펙을 그대로 따른다.
- * ---------------------------------------------------------------- */
-
-export type CapsuleStatusType = 'WRITING' | 'LOCKED' | 'OPENED';
-export type CapsuleKind = 'SELF' | 'FRIEND' | 'GROUP';
-export type CapsuleVisibility = 'RECIPIENT_AND_AUTHOR' | 'ALL_MEMBERS';
-/** 캡슐 안에서의 역할. 멤버 목록 조회의 role 파라미터로도 쓴다. */
-export type CapsuleRole = 'OWNER' | 'RECIPIENT' | 'PARTICIPANT';
-
-/** 초대·멤버 관리 화면에서 다루는 역할. 방장은 초대 대상이 아니다. */
-export type CapsuleInviteRole = Exclude<CapsuleRole, 'OWNER'>;
-
-/** 상세 화면에서 버튼·섹션 노출을 결정한다. 클라이언트가 추론하지 않는다. */
-export interface CapsulePermissions {
-  canWriteLetter: boolean;
-  canInvite: boolean;
-  canManage: boolean;
-  canDelete: boolean;
-  canViewLetters: boolean;
-}
-
-/** 아바타 미리보기 (최대 5명) */
-export interface CapsuleMemberPreview {
-  userId: number;
-  nickname: string;
-  profileImageUrl: string | null;
-}
-
-export interface CapsuleMemberGroup {
-  count: number;
-  previews: CapsuleMemberPreview[];
-}
-
-export interface CapsuleDetail {
-  capsuleId: number;
-  iconType: string;
+/**
+ * 캡슐 커버(진입) 화면에 필요한 최소 정보.
+ * status 는 캘린더와 같은 값을 쓰고 커버 디자인에 1:1로 대응한다.
+ *   writing  → 수정가능 (편지를 모으는 중)
+ *   sealed   → 잠긴캡슐 (개봉일 전)
+ *   openable → 열린캡슐 (개봉 완료)
+ */
+export interface CapsuleCover {
+  id: string;
   title: string;
-  description: string | null;
-  capsuleType: CapsuleKind;
-  visibilityType: CapsuleVisibility;
-  status: CapsuleStatusType;
-  openedByMe: boolean;
-  /** ISO datetime */
-  letterDeadlineAt: string;
-  openAt: string;
-  /** 개봉일까지 남은 일수. 당일 0, 지나면 음수 */
-  dDay: number;
-  memberCount: number;
-  letterCount: number;
-  myRole: CapsuleRole;
-  participants: CapsuleMemberGroup;
-  recipients: CapsuleMemberGroup;
-  permissions: CapsulePermissions;
+  status: CapsuleStatus;
+  /** 개봉일 (YYYY-MM-DD) */
+  openDate: string;
 }
 
-/** 멤버 관리 화면에서 쓰는 전체 목록 */
 export interface CapsuleMember {
-  /** 내보내기에 쓰는 식별자. userId 와 다르다. */
-  memberId: number;
-  userId: number;
-  nickname: string;
-  profileImageUrl: string | null;
-  isOwner: boolean;
+  id: string;
+  name: string;
+  avatarUrl: string;
+  /** 방장이면 이름 뒤에 (관리자) 를 붙인다 */
+  isOwner?: boolean;
 }
 
-export interface CapsuleMemberList {
-  role: CapsuleRole;
-  count: number;
-  /** 초대·내보내기 가능 여부 (방장이고 WRITING 일 때) */
-  canManage: boolean;
-  members: CapsuleMember[];
-}
-
-/* ------------------------------------------------------------------
- * 초대 (POST /v1/time-capsules/{id}/invites, GET /v1/invites/{token})
- * ---------------------------------------------------------------- */
-
-export interface CapsuleInvite {
-  inviteId: number;
-  targetRole: CapsuleInviteRole;
-  inviteToken: string;
-  /** 만료 일시. 없으면 null */
-  expiresAt: string | null;
-}
-
-/** 초대 미리보기에 실려오는 캡슐 요약. 상세 응답에서 권한만 빠진 형태다. */
-export interface CapsuleSummary {
-  capsuleId: number;
-  iconType: string;
-  title: string;
-  description: string | null;
-  capsuleType: CapsuleKind;
-  status: CapsuleStatusType;
-  openAt: string;
+export interface CapsuleDetail extends CapsuleCover {
+  description: string;
+  /** 그룹캡슐이면 칩을 하나 더 노출한다 */
+  isGroup: boolean;
+  coverImageUrl: string;
   memberCount: number;
   letterCount: number;
-  participants: CapsuleMemberGroup;
-  recipients: CapsuleMemberGroup;
-}
-
-export interface CapsuleInvitePreview {
-  targetRole: CapsuleInviteRole;
-  /** 이미 멤버면 수락 화면 대신 캡슐 상세로 보낸다. */
-  alreadyJoined: boolean;
-  capsule: CapsuleSummary;
+  participants: CapsuleMember[];
+  participantCount: number;
+  receivers: CapsuleMember[];
+  receiverCount: number;
+  /** 방장만 타임캡슐 관리 섹션을 볼 수 있다 */
+  isHost: boolean;
 }
 
 /** 캡슐 대표 아이콘 후보 */
@@ -189,6 +119,9 @@ export interface CapsuleIconOption {
   id: string;
   imageUrl: string;
 }
+
+/** 캡슐 구성원 역할 */
+export type MemberRole = 'participant' | 'receiver';
 
 /** 캡슐 이름/설명 글자수 제한 (생성·수정 공통) */
 export const CAPSULE_NAME_MAX_LENGTH = 20;

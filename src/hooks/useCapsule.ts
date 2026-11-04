@@ -1,44 +1,23 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import {
-  acceptInvite,
-  createInviteLink,
-  deleteCapsule,
+  getCapsuleCover,
   getCapsuleDetail,
   getCapsuleIcons,
-  getCapsuleMembers,
-  getInvitePreview,
   MOCK_CAPSULE_ICONS,
-  openCapsule,
-  regenerateInviteLink,
-  rejectInvite,
-  removeCapsuleMember,
-  updateCapsule,
-  type CapsuleUpdateRequest,
 } from '@/apis/capsule';
-import type { CapsuleInvite, CapsuleInviteRole } from '@/types/capsule';
 
-export const capsuleKeys = {
-  detail: (capsuleId: string) => ['capsule', 'detail', capsuleId] as const,
-  members: (capsuleId: string, role: CapsuleInviteRole) =>
-    ['capsule', 'members', capsuleId, role] as const,
-  invite: (capsuleId: string, role: CapsuleInviteRole) =>
-    ['capsule', 'invite', capsuleId, role] as const,
-  invitePreview: (inviteToken: string) =>
-    ['invite', 'preview', inviteToken] as const,
-};
-
-export const useCapsuleDetail = (capsuleId: string) =>
+export const useCapsuleCover = (capsuleId: string) =>
   useQuery({
-    queryKey: capsuleKeys.detail(capsuleId),
-    queryFn: () => getCapsuleDetail(capsuleId),
+    queryKey: ['capsule', 'cover', capsuleId],
+    queryFn: () => getCapsuleCover(capsuleId),
     enabled: Boolean(capsuleId),
   });
 
-export const useCapsuleMembers = (capsuleId: string, role: CapsuleInviteRole) =>
+export const useCapsuleDetail = (capsuleId: string) =>
   useQuery({
-    queryKey: capsuleKeys.members(capsuleId, role),
-    queryFn: () => getCapsuleMembers(capsuleId, role),
+    queryKey: ['capsule', 'detail', capsuleId],
+    queryFn: () => getCapsuleDetail(capsuleId),
     enabled: Boolean(capsuleId),
   });
 
@@ -49,98 +28,3 @@ export const useCapsuleIcons = () =>
     initialData: MOCK_CAPSULE_ICONS,
     staleTime: Infinity,
   });
-
-export const useUpdateCapsule = (capsuleId: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (body: CapsuleUpdateRequest) => updateCapsule(capsuleId, body),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: capsuleKeys.detail(capsuleId),
-      }),
-  });
-};
-
-export const useDeleteCapsule = (capsuleId: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => deleteCapsule(capsuleId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['capsule'] }),
-  });
-};
-
-export const useRemoveCapsuleMember = (
-  capsuleId: string,
-  role: CapsuleInviteRole,
-) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (memberId: number) => removeCapsuleMember(capsuleId, memberId),
-    onSuccess: () => {
-      // 내보내면 상세의 인원수·미리보기도 함께 바뀐다.
-      queryClient.invalidateQueries({
-        queryKey: capsuleKeys.members(capsuleId, role),
-      });
-      queryClient.invalidateQueries({
-        queryKey: capsuleKeys.detail(capsuleId),
-      });
-    },
-  });
-};
-
-export const useOpenCapsule = (capsuleId: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => openCapsule(capsuleId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: capsuleKeys.detail(capsuleId),
-      }),
-  });
-};
-
-/**
- * 초대 링크. 발급이 POST 지만 같은 역할이면 같은 링크를 돌려주므로
- * 시트가 열릴 때 한 번 받아 캐시해 둔다.
- */
-export const useInviteLink = (
-  capsuleId: string,
-  role: CapsuleInviteRole,
-  enabled: boolean,
-) =>
-  useQuery({
-    queryKey: capsuleKeys.invite(capsuleId, role),
-    queryFn: () => createInviteLink(capsuleId, role),
-    enabled: enabled && Boolean(capsuleId),
-    staleTime: Infinity,
-  });
-
-export const useRegenerateInviteLink = (
-  capsuleId: string,
-  role: CapsuleInviteRole,
-) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => regenerateInviteLink(capsuleId, role),
-    onSuccess: (invite: CapsuleInvite) =>
-      queryClient.setQueryData(capsuleKeys.invite(capsuleId, role), invite),
-  });
-};
-
-export const useInvitePreview = (inviteToken: string) =>
-  useQuery({
-    queryKey: capsuleKeys.invitePreview(inviteToken),
-    queryFn: () => getInvitePreview(inviteToken),
-    enabled: Boolean(inviteToken),
-  });
-
-export const useAcceptInvite = (inviteToken: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => acceptInvite(inviteToken),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['capsule'] }),
-  });
-};
-
-export const useRejectInvite = (inviteToken: string) =>
-  useMutation({ mutationFn: () => rejectInvite(inviteToken) });

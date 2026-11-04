@@ -1,5 +1,5 @@
 import Chip, { type ChipTone } from '@/components/common/Chip';
-import type { CapsuleSummary } from '@/types/capsule';
+import type { CapsuleDetail } from '@/types/capsule';
 import { formatDotDate } from '@/utils/date';
 
 export interface CapsuleInfoChip {
@@ -8,7 +8,7 @@ export interface CapsuleInfoChip {
 }
 
 interface CapsuleInfoBlockProps {
-  capsule: CapsuleSummary;
+  capsule: CapsuleDetail;
   chips: CapsuleInfoChip[];
 }
 
@@ -42,7 +42,7 @@ export default function CapsuleInfoBlock({
           <p>
             {capsule.memberCount}명 | 편지 {capsule.letterCount}
           </p>
-          <p>{formatDotDate(capsule.openAt)} 개봉</p>
+          <p>{formatDotDate(capsule.openDate)} 개봉</p>
         </div>
       </div>
 

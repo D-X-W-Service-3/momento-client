@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import AvatarGroup from '@/components/common/AvatarGroup';
 import Button from '@/components/common/Button';
@@ -8,114 +8,96 @@ import CapsuleInfoBlock from '@/components/capsule/CapsuleInfoBlock';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import SectionHeader from '@/components/common/SectionHeader';
 import BackHeader from '@/components/layout/BackHeader';
-import { capsuleDetailPath, ROUTES } from '@/constants/routes';
 import {
-  useAcceptInvite,
-  useInvitePreview,
-  useRejectInvite,
-} from '@/hooks/useCapsule';
-import type { CapsuleInviteRole } from '@/types/capsule';
-import { capsuleIconSrc, capsuleStatusChip } from '@/utils/capsule';
+  capsuleParticipantsPath,
+  capsuleReceiversPath,
+} from '@/constants/routes';
+import { useCapsuleDetail } from '@/hooks/useCapsule';
+import type { MemberRole } from '@/types/capsule';
 
-const ROLE_CHIP: Record<CapsuleInviteRole, string> = {
-  PARTICIPANT: '참여자로 초대됐어요',
-  RECIPIENT: '수신자로 초대됐어요',
+const ROLE_CHIP: Record<MemberRole, string> = {
+  participant: '참여자로 초대됐어요',
+  receiver: '수신자로 초대됐어요',
 };
 
 /** 초대 수락 전에 캡슐 내용을 확인하는 화면 */
 export default function CapsuleInviteDetailPage() {
-  const { inviteToken = '' } = useParams();
+  const { capsuleId = '', role = 'participant' } = useParams();
   const navigate = useNavigate();
-  const { data: preview } = useInvitePreview(inviteToken);
-  const acceptInvite = useAcceptInvite(inviteToken);
-  const rejectInvite = useRejectInvite(inviteToken);
+  const { data: capsule } = useCapsuleDetail(capsuleId);
   const [rejectOpen, setRejectOpen] = useState(false);
 
-  if (!preview) return null;
-
-  const { capsule, targetRole } = preview;
-  const capsuleId = String(capsule.capsuleId);
-  if (preview.alreadyJoined) {
-    return <Navigate to={capsuleDetailPath(capsuleId)} replace />;
-  }
-  const statusChip = capsuleStatusChip(capsule.status);
-
-  const accept = () =>
-    acceptInvite.mutate(undefined, {
-      onSuccess: () =>
-        navigate(capsuleDetailPath(capsuleId), { replace: true }),
-    });
-
-  const reject = () =>
-    rejectInvite.mutate(undefined, {
-      onSuccess: () => {
-        setRejectOpen(false);
-        navigate(ROUTES.HOME, { replace: true });
-      },
-    });
+  const memberRole: MemberRole =
+    role === 'receiver' ? 'receiver' : 'participant';
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-capsule-bg-from to-capsule-bg-to">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         <BackHeader tone="dark" />
 
-        <main className="flex flex-1 flex-col justify-between px-5 pb-5">
-          <div className="flex flex-col items-center gap-section pt-[45px]">
-            <CapsuleHero src={capsuleIconSrc(capsule.iconType)} size="lg" />
+        {capsule && (
+          <main className="flex flex-1 flex-col justify-between px-5 pb-5">
+            <div className="flex flex-col items-center gap-section pt-[45px]">
+              <CapsuleHero src={capsule.coverImageUrl} size="lg" />
 
-            <CapsuleInfoBlock
-              capsule={capsule}
-              chips={[
-                { label: statusChip.label, tone: statusChip.tone },
-                { label: ROLE_CHIP[targetRole], tone: 'warning' },
-              ]}
-            />
+              <CapsuleInfoBlock
+                capsule={capsule}
+                chips={[
+                  { label: '수정가능', tone: 'warning' },
+                  { label: ROLE_CHIP[memberRole], tone: 'warning' },
+                ]}
+              />
 
-            <div className="flex w-full flex-col gap-section">
-              <section className="flex flex-col gap-list">
-                <SectionHeader
-                  title="참여자"
-                  count={`${capsule.participants.count}명`}
-                />
-                <AvatarGroup
-                  members={capsule.participants.previews}
-                  totalCount={capsule.participants.count}
-                />
-              </section>
+              <div className="flex w-full flex-col gap-section">
+                <section className="flex flex-col gap-list">
+                  <SectionHeader
+                    title="참여자"
+                    count={`${capsule.participantCount}명`}
+                    onViewAll={() =>
+                      navigate(capsuleParticipantsPath(capsuleId))
+                    }
+                  />
+                  <AvatarGroup
+                    members={capsule.participants}
+                    totalCount={capsule.participantCount}
+                  />
+                </section>
 
-              <section className="flex flex-col gap-list">
-                <SectionHeader
-                  title="수신자"
-                  count={`${capsule.recipients.count}명`}
-                />
-                <AvatarGroup
-                  members={capsule.recipients.previews}
-                  totalCount={capsule.recipients.count}
-                />
-              </section>
+                <section className="flex flex-col gap-list">
+                  <SectionHeader
+                    title="수신자"
+                    count={`${capsule.receiverCount}명`}
+                    onViewAll={() => navigate(capsuleReceiversPath(capsuleId))}
+                  />
+                  <AvatarGroup
+                    members={capsule.receivers}
+                    totalCount={capsule.receiverCount}
+                  />
+                </section>
+              </div>
             </div>
-          </div>
 
-          <div className="flex w-full gap-[9px] pt-section">
-            <Button
-              variant="plain"
-              className="border border-border-default bg-surface text-capsule-accent"
-              onClick={() => setRejectOpen(true)}
-            >
-              거절하기
-            </Button>
-            <Button
-              variant="plain"
-              className="bg-capsule-accent text-on-primary"
-              onClick={accept}
-              disabled={acceptInvite.isPending}
-            >
-              수락하기
-            </Button>
-          </div>
-        </main>
+            <div className="flex w-full gap-[9px] pt-section">
+              <Button
+                variant="plain"
+                className="border border-border-default bg-surface text-capsule-accent"
+                onClick={() => setRejectOpen(true)}
+              >
+                거절하기
+              </Button>
+              {/* TODO: 초대 수락 API 연결 */}
+              <Button
+                variant="plain"
+                className="bg-capsule-accent text-on-primary"
+              >
+                수락하기
+              </Button>
+            </div>
+          </main>
+        )}
       </div>
 
+      {/* TODO: 초대 거절 API 연결 */}
       <ConfirmDialog
         open={rejectOpen}
         title="초대를 거절할까요?"
@@ -124,7 +106,7 @@ export default function CapsuleInviteDetailPage() {
         confirmLabel="삭제"
         confirmTone="primary"
         onCancel={() => setRejectOpen(false)}
-        onConfirm={reject}
+        onConfirm={() => setRejectOpen(false)}
       />
     </div>
   );

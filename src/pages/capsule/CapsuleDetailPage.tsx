@@ -6,7 +6,7 @@ import capsuleEditIcon from '@/assets/icons/capsule-edit-on-dark.svg';
 import chevronRightIcon from '@/assets/icons/chevron-right.svg';
 import AvatarGroup from '@/components/common/AvatarGroup';
 import CapsuleHero from '@/components/capsule/CapsuleHero';
-import Chip from '@/components/common/Chip';
+import Chip, { type ChipTone } from '@/components/common/Chip';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import GhostButton from '@/components/common/GhostButton';
 import InviteSheet from '@/components/capsule/InviteSheet';
@@ -17,18 +17,26 @@ import {
   capsuleEditPath,
   capsuleParticipantsPath,
   capsuleReceiversPath,
-  letterTypePath,
-  ROUTES,
+  letterPaperPath,
 } from '@/constants/routes';
-import { useCapsuleDetail, useDeleteCapsule } from '@/hooks/useCapsule';
-import { useDeleteLetter, useMyLetters } from '@/hooks/useLetter';
-import type { CapsuleInviteRole } from '@/types/capsule';
-import {
-  canInviteRole,
-  capsuleIconSrc,
-  capsuleStatusChip,
-} from '@/utils/capsule';
+import { useCapsuleDetail } from '@/hooks/useCapsule';
+import { useMyLetters } from '@/hooks/useLetter';
+import type { CapsuleStatus } from '@/types/calendar';
+import type { MemberRole } from '@/types/capsule';
 import { formatDotDate } from '@/utils/date';
+
+/**
+ * 상태 칩. 목록 카드와 문구가 달라 상세 전용으로 둔다.
+ * openable 은 Figma 에서도 "잠긴캡슐" 을 회색으로 비활성 처리해 두었다.
+ */
+const STATUS_CHIP: Record<
+  CapsuleStatus,
+  { label: string; tone: ChipTone; groupTone: ChipTone }
+> = {
+  writing: { label: '수정가능', tone: 'warning', groupTone: 'warning' },
+  sealed: { label: '잠긴캡슐', tone: 'info', groupTone: 'info' },
+  openable: { label: '잠긴캡슐', tone: 'neutral', groupTone: 'info' },
+};
 
 const ADMIN_ACTIONS = [
   { key: 'edit', icon: capsuleEditIcon, label: '타임캡슐 수정하기' },
@@ -43,43 +51,31 @@ export default function CapsuleDetailPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [lettersOpen, setLettersOpen] = useState(false);
   const [deletingLetterId, setDeletingLetterId] = useState<string>();
-  const [inviteRole, setInviteRole] = useState<CapsuleInviteRole>();
+  const [deletedLetterIds, setDeletedLetterIds] = useState<string[]>([]);
+  const [inviteRole, setInviteRole] = useState<MemberRole>();
 
-  // 편지를 모으는 중(WRITING)일 때만 편지·초대·관리 기능을 노출한다.
+  // 편지를 모으는 중(수정가능)일 때만 편지·초대·관리 기능을 노출한다.
   // 봉인된 뒤에는 참여자/수신자만 보여주고, 내용 블록을 화면 아래에 붙인다.
-  const isEditable = capsule?.status === 'WRITING';
-  const permissions = capsule?.permissions;
-  const chip = capsule && capsuleStatusChip(capsule.status);
-
+  const isEditable = capsule?.status === 'writing';
+  const chip = capsule && STATUS_CHIP[capsule.status];
   const { data: myLetters } = useMyLetters(capsuleId, isEditable);
-  const deleteLetter = useDeleteLetter(capsuleId);
-  const deleteCapsule = useDeleteCapsule(capsuleId);
 
-  const hasMyLetters = (myLetters ?? []).length > 0;
+  const visibleMyLetters = (myLetters ?? []).filter(
+    (letter) => !deletedLetterIds.includes(letter.id),
+  );
+  const hasMyLetters = visibleMyLetters.length > 0;
 
   const handleConfirmDeleteLetter = () => {
-    if (!deletingLetterId || deleteLetter.isPending) return;
+    if (!deletingLetterId) return;
+    // TODO: 편지 삭제 API 연결
+    const nextDeletedIds = [...deletedLetterIds, deletingLetterId];
+    setDeletedLetterIds(nextDeletedIds);
+    setDeletingLetterId(undefined);
     if (
-      !myLetters?.find((letter) => letter.id === deletingLetterId)?.canDelete
+      (myLetters ?? []).every((letter) => nextDeletedIds.includes(letter.id))
     ) {
-      setDeletingLetterId(undefined);
-      return;
+      setLettersOpen(false);
     }
-    deleteLetter.mutate(deletingLetterId, {
-      onSuccess: () => {
-        setDeletingLetterId(undefined);
-        setLettersOpen(false);
-      },
-    });
-  };
-
-  const handleConfirmDeleteCapsule = () => {
-    deleteCapsule.mutate(undefined, {
-      onSuccess: () => {
-        setDeleteOpen(false);
-        navigate(ROUTES.CAPSULE, { replace: true });
-      },
-    });
   };
 
   const handleAdminAction = (key: (typeof ADMIN_ACTIONS)[number]['key']) => {
@@ -87,23 +83,19 @@ export default function CapsuleDetailPage() {
     if (key === 'delete') setDeleteOpen(true);
   };
 
-  const adminActions = ADMIN_ACTIONS.filter(
-    (action) => action.key !== 'delete' || permissions?.canDelete,
-  );
-
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-capsule-bg-from to-capsule-bg-to">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         <BackHeader tone="dark" />
 
-        {capsule && chip && permissions && (
+        {capsule && chip && (
           <main
             className={`flex flex-col items-center p-5 ${
               isEditable ? 'gap-card' : 'mt-auto gap-section'
             }`}
           >
             <CapsuleHero
-              src={capsuleIconSrc(capsule.iconType)}
+              src={capsule.coverImageUrl}
               size={isEditable ? 'md' : 'lg'}
             />
 
@@ -114,7 +106,7 @@ export default function CapsuleDetailPage() {
                     <Chip tone={chip.tone} className="font-display">
                       {chip.label}
                     </Chip>
-                    {capsule.capsuleType === 'GROUP' && (
+                    {capsule.isGroup && (
                       <Chip tone={chip.groupTone} className="font-display">
                         그룹캡슐
                       </Chip>
@@ -134,7 +126,7 @@ export default function CapsuleDetailPage() {
                   <p>
                     {capsule.memberCount}명 | 편지 {capsule.letterCount}
                   </p>
-                  <p>{formatDotDate(capsule.openAt)} 개봉</p>
+                  <p>{formatDotDate(capsule.openDate)} 개봉</p>
                 </div>
               </div>
 
@@ -157,44 +149,42 @@ export default function CapsuleDetailPage() {
               <section className="flex flex-col gap-list">
                 <SectionHeader
                   title="참여자"
-                  count={`${capsule.participants.count}명`}
+                  count={`${capsule.participantCount}명`}
                   onViewAll={() => navigate(capsuleParticipantsPath(capsuleId))}
                 />
                 <AvatarGroup
-                  members={capsule.participants.previews}
-                  totalCount={capsule.participants.count}
+                  members={capsule.participants}
+                  totalCount={capsule.participantCount}
                 />
-                {permissions.canInvite &&
-                  canInviteRole(capsule.capsuleType, 'PARTICIPANT') && (
-                    <GhostButton onClick={() => setInviteRole('PARTICIPANT')}>
-                      참여자 초대
-                    </GhostButton>
-                  )}
+                {isEditable && (
+                  <GhostButton onClick={() => setInviteRole('participant')}>
+                    참여자 초대
+                  </GhostButton>
+                )}
               </section>
 
               <section className="flex flex-col gap-list">
                 <SectionHeader
                   title="수신자"
-                  count={`${capsule.recipients.count}명`}
+                  count={`${capsule.receiverCount}명`}
                   onViewAll={() => navigate(capsuleReceiversPath(capsuleId))}
                 />
                 <AvatarGroup
-                  members={capsule.recipients.previews}
-                  totalCount={capsule.recipients.count}
+                  members={capsule.receivers}
+                  totalCount={capsule.receiverCount}
                 />
-                {permissions.canInvite &&
-                  canInviteRole(capsule.capsuleType, 'RECIPIENT') && (
-                    <GhostButton onClick={() => setInviteRole('RECIPIENT')}>
-                      수신자 초대
-                    </GhostButton>
-                  )}
+                {isEditable && (
+                  <GhostButton onClick={() => setInviteRole('receiver')}>
+                    수신자 초대
+                  </GhostButton>
+                )}
               </section>
 
-              {permissions.canManage && (
+              {isEditable && capsule.isHost && (
                 <section className="flex flex-col gap-list">
                   <SectionHeader title="타임캡슐 관리" note="(방장전용)" />
                   <ul className="flex flex-col divide-y divide-white/10 rounded-xl bg-white/10 px-5 py-1">
-                    {adminActions.map((action) => (
+                    {ADMIN_ACTIONS.map((action) => (
                       <li key={action.key}>
                         <button
                           type="button"
@@ -227,7 +217,7 @@ export default function CapsuleDetailPage() {
 
       <LetterViewer
         open={lettersOpen && hasMyLetters}
-        letters={myLetters ?? []}
+        letters={visibleMyLetters}
         onClose={() => setLettersOpen(false)}
         onDelete={(letterId) => setDeletingLetterId(letterId)}
       />
@@ -235,21 +225,18 @@ export default function CapsuleDetailPage() {
       <ConfirmDialog
         open={lettersOpen && myLetters !== undefined && !hasMyLetters}
         title="내가 작성한 편지가 없어요"
-        description={
-          permissions?.canWriteLetter
-            ? '새로운 편지를 작성할까요?'
-            : '이 캡슐에는 편지를 작성할 수 없어요.'
-        }
+        description="새로운 편지를 작성할까요?"
         cancelLabel="닫기"
-        confirmLabel={permissions?.canWriteLetter ? '작성하러 가기' : '확인'}
+        confirmLabel="작성하러 가기"
         confirmTone="primary"
         onCancel={() => setLettersOpen(false)}
         onConfirm={() => {
           setLettersOpen(false);
-          if (permissions?.canWriteLetter) navigate(letterTypePath(capsuleId));
+          navigate(letterPaperPath(capsuleId));
         }}
       />
 
+      {/* TODO: 편지 삭제 API 연결 */}
       <ConfirmDialog
         open={Boolean(deletingLetterId)}
         title="작성한 편지를 삭제할까요?"
@@ -260,13 +247,15 @@ export default function CapsuleDetailPage() {
         onConfirm={handleConfirmDeleteLetter}
       />
 
+      {/* TODO: 초대링크를 서버에서 받아오도록 교체 */}
       <InviteSheet
         open={Boolean(inviteRole)}
         onClose={() => setInviteRole(undefined)}
-        capsuleId={capsuleId}
-        role={inviteRole ?? 'PARTICIPANT'}
+        role={inviteRole ?? 'participant'}
+        inviteUrl={`https://momento.app/invite/${capsuleId}`}
       />
 
+      {/* TODO: 캡슐 삭제 API 연결 */}
       <ConfirmDialog
         open={deleteOpen}
         title="캡슐을 삭제할까요?"
@@ -274,7 +263,7 @@ export default function CapsuleDetailPage() {
         cancelLabel="취소"
         confirmLabel="삭제"
         onCancel={() => setDeleteOpen(false)}
-        onConfirm={handleConfirmDeleteCapsule}
+        onConfirm={() => setDeleteOpen(false)}
       />
     </div>
   );

@@ -1,7 +1,6 @@
 import { useRef, type ChangeEvent } from 'react';
 
 import CameraIcon from '@/assets/icons/camera.svg?react';
-import { toSecureImageUrl } from '@/utils/image';
 
 interface AvatarUploadProps {
   avatarUrl: string | null;
@@ -36,7 +35,7 @@ export default function AvatarUpload({
         <div className="bg-surface-subtle h-24 w-24 overflow-hidden rounded-full">
           {avatarUrl && (
             <img
-              src={toSecureImageUrl(avatarUrl)}
+              src={avatarUrl}
               alt="프로필 미리보기"
               className="h-full w-full object-cover"
             />

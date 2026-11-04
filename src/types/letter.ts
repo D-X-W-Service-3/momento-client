@@ -1,60 +1,9 @@
-/* ------------------------------------------------------------------
- * 서버 enum (POST /v1/time-capsules/{id}/letters)
- * ---------------------------------------------------------------- */
-
-/** 편지지 화풍. 개봉 시 AI 이미지의 그림체로 쓰인다. */
-export type LetterThemeType =
-  'PASTEL' | 'WATERCOLOR' | 'VINTAGE' | 'ANIME' | 'JOSEON';
-
-/** 편지 용도. 디자인에 선택 UI 가 없어 지금은 GENERAL 로 고정한다. */
-export type LetterType =
-  'BIRTHDAY' | 'COUPLE_ANNIVERSARY' | 'CHRISTMAS' | 'GENERAL';
-
-export const DEFAULT_LETTER_TYPE: LetterType = 'GENERAL';
-
-/** 서버 제한값. Figma 와 다르면 서버를 따른다 (초과 시 400). */
-export const LETTER_TITLE_MAX_LENGTH = 50;
-export const LETTER_CONTENT_MAX_LENGTH = 500;
-
-export interface LetterCreateRequest {
-  title: string;
-  content: string;
-  themeType: LetterThemeType;
-  letterType: LetterType;
+/** 편지지 화풍. 캡슐이 열릴 때 AI 이미지의 배경 스타일로 쓰인다. */
+export interface LetterPaper {
+  id: string;
+  name: string;
+  imageUrl: string;
 }
-
-/* ------------------------------------------------------------------
- * 서버 응답
- * ---------------------------------------------------------------- */
-
-/** GET /v1/time-capsules/{id}/letters/me */
-export interface MyLetterResponse {
-  letterId: number;
-  letterType: LetterType | null;
-  themeType: LetterThemeType | null;
-  title: string | null;
-  content: string;
-  createdAt: string;
-  /** 작성 마감·공개 시각 전이면 true. 삭제 버튼 노출 조건이다. */
-  canDelete: boolean;
-}
-
-/** GET /v1/time-capsules/{id}/letters 의 letters 항목 */
-export interface CapsuleLetterResponse {
-  letterId: number;
-  letterType: LetterType | null;
-  themeType: LetterThemeType | null;
-  title: string | null;
-  content: string;
-  authorNickname: string;
-  createdAt: string;
-  /** AI 연계 보류로 현재 항상 null */
-  imageUrl: string | null;
-}
-
-/* ------------------------------------------------------------------
- * 화면용 뷰모델. 열람 모달(LetterViewer)이 쓰는 형태다.
- * ---------------------------------------------------------------- */
 
 export interface Letter {
   id: string;
@@ -65,14 +14,4 @@ export interface Letter {
   date: string;
   /** 캡슐이 열린 뒤에만 생기는 AI 이미지 */
   imageUrl?: string;
-  /** 삭제 가능 여부. 내가 쓴 편지에만 들어온다. */
-  canDelete?: boolean;
-}
-
-/** 편지지 화풍 선택 카드. themeType 으로 변환해 서버에 보낸다. */
-export interface LetterPaper {
-  id: string;
-  name: string;
-  imageUrl: string;
-  themeType: LetterThemeType;
 }

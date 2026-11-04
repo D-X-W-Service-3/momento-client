@@ -1,7 +1,6 @@
 import defaultAvatarImg from '@/assets/images/default-avatar.png';
 import { textStyles } from '@/styles/tokens';
 import type { MyPageProfile } from '@/types/mypage';
-import { toSecureImageUrl } from '@/utils/image';
 
 interface ProfileSummaryCardProps {
   profile: MyPageProfile;
@@ -17,7 +16,7 @@ export default function ProfileSummaryCard({
       <div className="flex w-full items-center gap-3">
         <div className="border-border-subtle bg-surface-muted relative h-12 w-12 shrink-0 overflow-hidden rounded-full border">
           <img
-            src={toSecureImageUrl(profile.avatarUrl) ?? defaultAvatarImg}
+            src={profile.avatarUrl ?? defaultAvatarImg}
             alt={`${profile.name} 프로필`}
             className="h-full w-full object-cover"
           />

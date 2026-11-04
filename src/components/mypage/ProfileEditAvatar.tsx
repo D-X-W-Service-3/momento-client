@@ -2,7 +2,6 @@ import type { ChangeEvent, RefObject } from 'react';
 
 import CameraSolidIcon from '@/assets/icons/camera-solid.svg?react';
 import defaultAvatarImg from '@/assets/images/default-avatar.png';
-import { toSecureImageUrl } from '@/utils/image';
 
 interface ProfileEditAvatarProps {
   avatarUrl: string | null;
@@ -27,7 +26,7 @@ export default function ProfileEditAvatar({
       >
         <div className="border-border-subtle bg-surface-avatar h-[100px] w-[100px] overflow-hidden rounded-full border">
           <img
-            src={toSecureImageUrl(avatarUrl) ?? defaultAvatarImg}
+            src={avatarUrl ?? defaultAvatarImg}
             alt="프로필 이미지"
             className="h-full w-full object-cover"
           />
