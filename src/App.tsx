@@ -15,6 +15,7 @@ import LetterPaperSelectPage from '@/pages/capsule/LetterPaperSelectPage';
 import LoginPage from '@/pages/LoginPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import NotificationPage from '@/pages/NotificationPage';
+import OAuthCallbackPage from '@/pages/OAuthCallbackPage';
 import OnboardingPage from '@/pages/OnboardingPage';
 import ProfileSetupPage from '@/pages/ProfileSetupPage';
 import AnniversaryFormPage from '@/pages/anniversary/AnniversaryFormPage';
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/oauth/kakao" element={<OAuthCallbackPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/profile-setup" element={<ProfileSetupPage />} />
         <Route path="/notifications" element={<NotificationPage />} />

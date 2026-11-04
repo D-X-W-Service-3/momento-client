@@ -6,7 +6,7 @@ import { useKakaoLogin } from '@/hooks/useKakaoLogin';
 import { textStyles } from '@/styles/tokens';
 
 export default function LoginPage() {
-  const { handleKakaoLogin } = useKakaoLogin();
+  const { handleKakaoLogin, error } = useKakaoLogin();
 
   return (
     <MobileLayout
@@ -30,13 +30,20 @@ export default function LoginPage() {
         />
       </div>
 
-      <Button
-        variant="kakao"
-        leftIcon={<KakaoIcon className="h-[18px] w-[18px]" />}
-        onClick={handleKakaoLogin}
-      >
-        카카오톡으로 로그인하기
-      </Button>
+      <div className="flex w-full flex-col items-center gap-2">
+        {error && (
+          <p className={`text-status-error ${textStyles['body-xs']}`}>
+            {error}
+          </p>
+        )}
+        <Button
+          variant="kakao"
+          leftIcon={<KakaoIcon className="h-[18px] w-[18px]" />}
+          onClick={handleKakaoLogin}
+        >
+          카카오톡으로 로그인하기
+        </Button>
+      </div>
     </MobileLayout>
   );
 }
