@@ -6,6 +6,7 @@ import Button from '@/components/common/Button';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { KAKAO_REDIRECT_URI } from '@/lib/kakao';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { takeRedirect } from '@/utils/auth';
 import { textStyles } from '@/styles/tokens';
 
 /** 카카오 동의 후 ?code= 를 들고 돌아오는 화면. 토큰으로 교환하고 넘긴다. */
@@ -36,7 +37,13 @@ export default function OAuthCallbackPage() {
     loginWithKakaoCode(code, KAKAO_REDIRECT_URI)
       .then(({ accessToken, isNewUser }) => {
         setAccessToken(accessToken);
-        navigate(isNewUser ? '/onboarding' : '/home', { replace: true });
+        // 신규 가입자는 온보딩을 먼저 거친다. 기억해 둔 경로는 그대로 두고
+        // 프로필 설정이 끝난 뒤에 꺼내 쓴다.
+        if (isNewUser) {
+          navigate('/onboarding', { replace: true });
+          return;
+        }
+        navigate(takeRedirect() ?? '/home', { replace: true });
       })
       .catch((cause: Error) => setError(cause.message));
   }, [code, kakaoError, navigate, setAccessToken]);
