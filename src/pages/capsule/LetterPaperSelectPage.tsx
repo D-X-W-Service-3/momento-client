@@ -30,7 +30,7 @@ export default function LetterPaperSelectPage() {
 
   return (
     <div className="min-h-[100dvh] bg-surface-gray">
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col items-center gap-[9px] pt-[env(safe-area-inset-top)] pb-[max(22px,env(safe-area-inset-bottom))]">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col items-center gap-[9px] pt-[env(safe-area-inset-top)] pb-[max(22px,env(safe-area-inset-bottom))]">
         <BackHeader title="편지 작성" />
 
         <div className="flex w-full flex-col gap-1 px-5">

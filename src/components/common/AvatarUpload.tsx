@@ -2,6 +2,7 @@ import { useRef, type ChangeEvent } from 'react';
 
 import CameraIcon from '@/assets/icons/camera.svg?react';
 import { toSecureImageUrl } from '@/utils/image';
+import { MEMORY_IMAGE_ACCEPT } from '@/utils/archivePhotos';
 
 interface AvatarUploadProps {
   avatarUrl: string | null;
@@ -23,6 +24,7 @@ export default function AvatarUpload({
     if (file) {
       onSelectFile(file);
     }
+    e.target.value = '';
   };
 
   return (
@@ -49,7 +51,7 @@ export default function AvatarUpload({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept={MEMORY_IMAGE_ACCEPT}
         onChange={handleFileChange}
         className="hidden"
       />

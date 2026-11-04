@@ -1,8 +1,10 @@
+import ContentState from '@/components/common/ContentState';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import BottomSheet from '@/components/common/BottomSheet';
 import { getReceivedMemories, toKoreanDate } from '@/apis/momento';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import PhotoCount from '@/components/archive/PhotoCount';
@@ -18,6 +20,7 @@ export default function SharedArchivePage() {
   const [index, setIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [error, setError] = useState('');
   const token = params.get('token');
   const receiveError = useReceiveSharedMemory(token);
@@ -45,7 +48,7 @@ export default function SharedArchivePage() {
     }
   };
   return (
-    <MobileLayout>
+    <MobileLayout className="archive-detail-page shared-archive-page">
       {!item && (
         <BackHeader
           title="공유받은 아카이브"
@@ -68,14 +71,28 @@ export default function SharedArchivePage() {
         </p>
       )}
       {!item ? (
-        <div className="empty-state">
-          <p>
-            {receiveError || (!token && receivedQuery.error)
-              ? '공유받은 아카이브를 불러올 수 없어요.'
-              : token || receivedQuery.isPending
-                ? '공유받은 아카이브를 불러오는 중이에요.'
-                : '공유받은 아카이브가 없어요.'}
-          </p>
+        <div className="flex min-h-[calc(100dvh-56px)] flex-col items-center justify-center gap-5 px-5 pb-8">
+          <ContentState
+            title={
+              receiveError || (!token && receivedQuery.error)
+                ? '공유받은 아카이브를 불러올 수 없어요.'
+                : token || receivedQuery.isPending
+                  ? '공유받은 아카이브를 불러오는 중이에요.'
+                  : '공유받은 아카이브가 없어요.'
+            }
+            description={
+              receiveError || receivedQuery.error
+                ? '잠시 후 다시 시도해주세요.'
+                : token || receivedQuery.isPending
+                  ? '잠시만 기다려주세요.'
+                  : '친구가 공유한 추억을 이곳에서 확인할 수 있어요.'
+            }
+            loading={
+              !receiveError &&
+              !receivedQuery.error &&
+              Boolean(token || receivedQuery.isPending)
+            }
+          />
           <button
             type="button"
             className="button-secondary"
@@ -96,9 +113,9 @@ export default function SharedArchivePage() {
                 <img className="detail-cover" src={images[0]} alt="대표 사진" />
               </button>
             )}
-            <span className="detail-cover-counter">
-              {index + 1} / {items.length}
-            </span>
+            {images.length > 0 && (
+              <span className="detail-cover-counter">1 / {images.length}</span>
+            )}
           </div>
           <header className="archive-detail-header">
             <button
@@ -108,15 +125,24 @@ export default function SharedArchivePage() {
             >
               <img src="/assets/archive/detail-back.svg" alt="" />
             </button>
+            <button
+              type="button"
+              aria-label="더보기"
+              onClick={() => setMenuOpen(true)}
+            >
+              <img src="/assets/archive/detail-more.svg" alt="" />
+            </button>
           </header>
           <section className="detail-copy">
             <div className="shared-detail-main">
               <div className="shared-detail-top">
-                <div className="detail-meta">
-                  <span>{toKoreanDate(item.memoryDate)}</span>
-                  <span>{item.senderNickname}</span>
+                <div className="shared-detail-heading">
+                  <div className="detail-meta">
+                    <span>{toKoreanDate(item.memoryDate)}</span>
+                    <span>{item.senderNickname}</span>
+                  </div>
+                  <h1>{item.title}</h1>
                 </div>
-                <h1>{item.title}</h1>
                 <p>{item.content}</p>
               </div>
               <div className="shared-detail-photos">
@@ -155,6 +181,30 @@ export default function SharedArchivePage() {
           </section>
         </article>
       )}
+      <BottomSheet open={menuOpen} onClose={() => setMenuOpen(false)}>
+        <div className="sheet-menu">
+          <button
+            type="button"
+            disabled={finishMemory.isPending}
+            onClick={() => {
+              setMenuOpen(false);
+              setConfirmOpen(true);
+            }}
+          >
+            아카이브 저장하기
+          </button>
+          <button
+            type="button"
+            disabled={finishMemory.isPending}
+            onClick={() => {
+              setMenuOpen(false);
+              void finish('dismiss');
+            }}
+          >
+            닫기
+          </button>
+        </div>
+      </BottomSheet>
       <ConfirmDialog
         open={confirmOpen}
         title="아카이브를 저장할까요?"

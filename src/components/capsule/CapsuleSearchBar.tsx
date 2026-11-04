@@ -22,6 +22,26 @@ export default function CapsuleSearchBar({
   inputRef,
   placeholder = '타임캡슐 제목, 참여자, 설명으로 검색',
 }: CapsuleSearchBarProps) {
+  const containerClass =
+    'bg-surface-white flex h-12 w-full items-center justify-between gap-2 rounded-full px-4 shadow-[0_2px_8px_rgb(0_0_0/0.03)]';
+  if (readOnly)
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={containerClass}
+        aria-label={placeholder}
+      >
+        <span
+          className={`min-w-0 truncate text-text-placeholder ${textStyles['body-medium']}`}
+        >
+          {value || placeholder}
+        </span>
+        <span className="shrink-0 text-text-secondary">
+          <SearchIcon />
+        </span>
+      </button>
+    );
   return (
     <label
       onClick={onClick}
@@ -34,7 +54,7 @@ export default function CapsuleSearchBar({
         type="text"
         value={value}
         onChange={onChange}
-        onFocus={readOnly ? onClick : undefined}
+        aria-label={placeholder}
         readOnly={readOnly}
         autoFocus={autoFocus}
         placeholder={placeholder}

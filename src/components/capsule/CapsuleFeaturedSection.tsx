@@ -1,4 +1,5 @@
 import { type MouseEvent, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 import ChevronRightSmIcon from '@/assets/icons/chevron-right-sm.svg?react';
 import capsuleFeaturedBgImg from '@/assets/images/capsule-featured-bg.png';
@@ -107,6 +108,41 @@ export default function CapsuleFeaturedSection({
         onMouseLeave={handleMouseEnd}
         className="flex w-full cursor-grab snap-x snap-mandatory overflow-x-auto rounded-xl select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
       >
+        {capsules.length === 0 && (
+          <Link
+            to="/capsules/new"
+            className="relative flex h-[343px] w-full shrink-0 flex-col justify-between overflow-hidden rounded-xl p-5 shadow-[0_2px_8px_rgb(26_23_22/0.05)]"
+          >
+            <img
+              src={capsuleFeaturedBgImg}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+            />
+            <span
+              className={`border-surface-white/60 bg-surface-white/15 text-text-on-primary relative z-10 inline-flex h-[30px] w-fit items-center rounded-full border px-3 ${textStyles['body-small-med']}`}
+            >
+              새로운 추억
+            </span>
+            <div className="relative z-10 flex flex-col gap-2 text-left">
+              <h3
+                className={`text-text-on-primary ${textStyles['heading-h2']}`}
+              >
+                새로운 캡슐을
+                <br />
+                만들어보세요
+              </h3>
+              <p className={`text-text-on-primary/90 ${textStyles['body-xs']}`}>
+                오늘의 마음을 담아 미래에 열어보세요.
+              </p>
+              <span
+                className={`text-text-on-primary mt-2 ${textStyles['body-medium-semi']}`}
+              >
+                캡슐 만들기 →
+              </span>
+            </div>
+          </Link>
+        )}
         {capsules.map((capsule) => (
           <article
             key={capsule.id}
@@ -135,60 +171,61 @@ export default function CapsuleFeaturedSection({
               </strong>
             </div>
 
-            <div className="relative z-10 flex w-full flex-col gap-2 text-left">
-              <h3
-                className={`text-text-on-primary ${textStyles['heading-h2']}`}
-              >
-                {capsule.title}
-              </h3>
-
-              <div className="flex w-full items-end justify-between gap-3">
+            <div className="relative z-10 flex w-full items-end justify-between gap-3 text-left">
+              <div className="flex min-w-0 flex-1 flex-col">
+                <h3
+                  className={`text-text-on-primary ${textStyles['heading-h2']}`}
+                >
+                  {capsule.title}
+                </h3>
                 <p
-                  className={`text-text-on-primary/90 line-clamp-2 max-w-[197px] ${textStyles['body-xs']}`}
+                  className={`text-text-on-primary/90 line-clamp-2 ${textStyles['body-xs']}`}
                 >
                   {capsule.description}
                 </p>
+              </div>
 
-                <div className="flex shrink-0 flex-col items-end">
-                  <span
-                    className={`text-text-on-primary/90 ${textStyles['body-xs']}`}
-                  >
-                    {capsule.countText}
-                  </span>
-                  <span
-                    className={`text-text-on-primary/90 ${textStyles['body-xs']}`}
-                  >
-                    {capsule.openDateText}
-                  </span>
-                </div>
+              <div className="flex shrink-0 flex-col items-end">
+                <span
+                  className={`text-text-on-primary/90 ${textStyles['body-xs']}`}
+                >
+                  {capsule.countText}
+                </span>
+                <span
+                  className={`text-text-on-primary/90 ${textStyles['body-xs']}`}
+                >
+                  {capsule.openDateText}
+                </span>
               </div>
             </div>
           </article>
         ))}
       </div>
 
-      <div
-        className="flex items-center gap-2"
-        role="tablist"
-        aria-label="타임캡슐 슬라이드"
-      >
-        {capsules.map((capsule, idx) => {
-          const isActive = idx === activeSlide;
-          return (
-            <button
-              key={capsule.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              aria-label={`${idx + 1}번째 슬라이드`}
-              onClick={() => scrollToSlide(idx)}
-              className={`h-[6px] cursor-pointer rounded-full transition-all ${
-                isActive ? 'bg-primary w-4' : 'bg-border-default w-[6px]'
-              }`}
-            />
-          );
-        })}
-      </div>
+      {capsules.length > 0 && (
+        <div
+          className="flex items-center gap-2"
+          role="tablist"
+          aria-label="타임캡슐 슬라이드"
+        >
+          {capsules.map((capsule, idx) => {
+            const isActive = idx === activeSlide;
+            return (
+              <button
+                key={capsule.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-label={`${idx + 1}번째 슬라이드`}
+                onClick={() => scrollToSlide(idx)}
+                className={`h-[6px] cursor-pointer rounded-full transition-all ${
+                  isActive ? 'bg-primary w-4' : 'bg-border-default w-[6px]'
+                }`}
+              />
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

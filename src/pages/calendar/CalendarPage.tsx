@@ -1,9 +1,14 @@
+import capsuleHomeMascotImg from '@/assets/images/capsule-home-mascot.png';
+import PageIntro from '@/components/layout/PageIntro';
+import CapsuleSearchBar from '@/components/capsule/CapsuleSearchBar';
+import FilterChips from '@/components/common/FilterChips';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import BottomSheet from '@/components/common/BottomSheet';
-import { PlusIcon, SearchIcon } from '@/components/common/Icons';
+import { PlusIcon } from '@/components/common/Icons';
 import CalendarCard from '@/components/calendar/CalendarCards';
 import MonthCalendar from '@/components/calendar/MonthCalendar';
 import { BrandHeader } from '@/components/layout/Headers';
@@ -44,18 +49,12 @@ export default function CalendarPage() {
     ? toCalendarItems(dailyQuery.data)
     : [];
   const monthDays = monthQuery.data?.days ?? [];
-  const counts = monthQuery.data?.counts ?? {
-    all: 0,
-    capsules: 0,
-    memories: 0,
-    anniversaries: 0,
-  };
-  const error = monthQuery.error ?? dailyQuery.error;
+  const counts = monthQuery.data?.counts;
   const filters = [
-    `전체 ${counts.all}`,
-    `캡슐 ${counts.capsules}`,
-    `아카이브 ${counts.memories}`,
-    `기념일 ${counts.anniversaries}`,
+    { key: 0, label: '전체', count: counts?.all ?? 0 },
+    { key: 1, label: '캡슐', count: counts?.capsule ?? 0 },
+    { key: 2, label: '아카이브', count: counts?.memory ?? 0 },
+    { key: 3, label: '기념일', count: counts?.anniversary ?? 0 },
   ];
   const visibleItems = calendarItems.filter(
     (item) =>
@@ -85,44 +84,42 @@ export default function CalendarPage() {
   });
 
   return (
-    <MobileLayout withNav>
+    <MobileLayout withNav className="calendar-page">
       <BrandHeader />
-      <section className="calendar-hero">
-        <div>
-          <h1>캘린더</h1>
-          <p>
-            오늘의
-            <br />
-            추억을 저장해보세요
-          </p>
-        </div>
-        <img className="hero-cloud" src="/assets/archive/list-01.png" alt="" />
-        <div className="hero-mascot">
-          <img src="/assets/archive/list-02.png" alt="" />
-        </div>
-      </section>
       <section className="page-body calendar-body">
-        {error && (
+        <PageIntro
+          title="캘린더"
+          description={
+            <>
+              오늘의
+              <br />
+              추억을 저장해보세요
+            </>
+          }
+          illustration={
+            <img
+              src={capsuleHomeMascotImg}
+              alt="모모 캐릭터"
+              className="h-[168px] w-auto"
+            />
+          }
+        >
+          <CapsuleSearchBar
+            readOnly
+            onClick={() => navigate('/calendar/search')}
+            placeholder="캡슐 및 아카이브, 기념일 검색"
+          />
+          <FilterChips
+            options={filters}
+            selected={selectedFilter}
+            onSelect={setSelectedFilter}
+          />
+        </PageIntro>
+        {monthQuery.error && (
           <p className="field-error" role="alert">
-            {error.message}
+            {monthQuery.error.message}
           </p>
         )}
-        <Link className="search-field calendar-search" to="/calendar/search">
-          <span>캡슐 및 아카이브, 기념일 검색</span>
-          <SearchIcon />
-        </Link>
-        <div className="filter-chips">
-          {filters.map((filter, index) => (
-            <button
-              type="button"
-              key={filter}
-              className={selectedFilter === index ? 'active' : ''}
-              onClick={() => setSelectedFilter(index)}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
         <MonthCalendar
           year={year}
           month={month}
@@ -136,9 +133,14 @@ export default function CalendarPage() {
         />
         <section className="calendar-results">
           <h2>{formatKoreanDate(new Date(year, month - 1, selectedDay))}</h2>
-          {visibleItems.length === 0 && (
-            <p className="empty-state">저장된 추억이 없어요.</p>
-          )}
+          <QueryFeedback
+            loading={dailyQuery.isPending}
+            error={dailyQuery.error}
+            onRetry={dailyQuery.refetch}
+            empty={visibleItems.length === 0}
+            emptyMessage="저장된 추억이 없어요"
+            emptyDescription="이 날짜에 새로운 추억을 남겨보세요."
+          />
           {(['capsule', 'anniversary', 'archive'] as const).map((type) => {
             const typeItems = visibleItems.filter((item) => item.type === type);
             if (!typeItems.length) return null;
@@ -165,7 +167,7 @@ export default function CalendarPage() {
         onClick={() => setMakeOpen(true)}
         aria-label="추가"
       >
-        <PlusIcon />
+        <PlusIcon className="h-6 w-6" />
       </button>
       <BottomSheet open={makeOpen} onClose={() => setMakeOpen(false)}>
         <div className="create-menu">

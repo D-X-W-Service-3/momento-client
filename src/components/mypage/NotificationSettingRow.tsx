@@ -7,11 +7,13 @@ import type {
 
 interface NotificationSettingRowProps {
   item: NotificationSettingItem;
+  disabled?: boolean;
   onToggle: (key: NotificationSettingKey) => void;
 }
 
 export default function NotificationSettingRow({
   item,
+  disabled,
   onToggle,
 }: NotificationSettingRowProps) {
   return (
@@ -29,6 +31,7 @@ export default function NotificationSettingRow({
 
       <ToggleSwitch
         checked={item.enabled}
+        disabled={disabled}
         onToggle={() => onToggle(item.key)}
         label={item.title}
       />

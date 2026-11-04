@@ -1,3 +1,4 @@
+import QueryFeedback from '@/components/common/QueryFeedback';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -16,7 +17,12 @@ export default function ArchiveDetailPage() {
   const { archiveId } = useParams();
   const navigate = useNavigate();
   const deleteMemory = useDeleteMemory(archiveId ?? '');
-  const { data, error: loadError } = useQuery({
+  const {
+    data,
+    error: loadError,
+    isPending,
+    refetch,
+  } = useQuery({
     queryKey: ['memory', archiveId],
     queryFn: () => getMemory(Number(archiveId)),
     retry: false,
@@ -60,16 +66,18 @@ export default function ArchiveDetailPage() {
 
   if (!archive)
     return (
-      <MobileLayout>
+      <MobileLayout className="archive-detail-page">
         <BackHeader title="아카이브" />
-        <p className="empty-state">
-          {loadError?.message || '아카이브를 불러오는 중이에요.'}
-        </p>
+        <QueryFeedback
+          loading={isPending}
+          error={loadError}
+          onRetry={refetch}
+        />
       </MobileLayout>
     );
 
   return (
-    <MobileLayout>
+    <MobileLayout className="archive-detail-page">
       <article className="archive-detail">
         <div className="detail-cover-wrap">
           {archive.images[0] && (
@@ -105,23 +113,29 @@ export default function ArchiveDetailPage() {
           )}
         </header>
         <section className="detail-copy">
-          <div className="detail-meta">
-            <span>{archive.date}</span>
-            <span>{archive.author}</span>
+          <div className="detail-main">
+            <div className="detail-heading">
+              <div className="detail-meta">
+                <span>{archive.date}</span>
+                <span>{archive.author}</span>
+              </div>
+              <h1>{archive.title.replace('\n', ' ')}</h1>
+            </div>
+            <p>{archive.content}</p>
           </div>
-          <h1>{archive.title.replace('\n', ' ')}</h1>
-          <p>{archive.content}</p>
-          <PhotoCount count={archive.images.length} />
-          <div className="thumbnail-row">
-            {archive.images.map((image, index) => (
-              <button
-                type="button"
-                key={image}
-                onClick={() => setSelectedImage(index)}
-              >
-                <img src={image} alt={`${index + 1}번째 추억`} />
-              </button>
-            ))}
+          <div className="detail-photos">
+            <PhotoCount count={archive.images.length} />
+            <div className="thumbnail-row">
+              {archive.images.map((image, index) => (
+                <button
+                  type="button"
+                  key={image}
+                  onClick={() => setSelectedImage(index)}
+                >
+                  <img src={image} alt={`${index + 1}번째 추억`} />
+                </button>
+              ))}
+            </div>
           </div>
         </section>
       </article>

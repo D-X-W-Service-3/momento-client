@@ -18,6 +18,8 @@ export default function AvatarGroup({
   const visible = members.slice(0, max);
   const restCount = totalCount - visible.length;
 
+  if (visible.length === 0 && restCount <= 0) return null;
+
   return (
     <ul className="flex w-full items-center gap-stack">
       {visible.map((member) => (

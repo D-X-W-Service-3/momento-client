@@ -1,0 +1,592 @@
+@layer components {
+  /* 페이지별 디자인 간격. 모든 글꼴은 공통 Pretendard 토큰을 사용한다. */
+  .calendar-page,
+  .archive-page,
+  .archive-form-page,
+  .archive-detail-page,
+  .anniversary-page {
+    font-family: var(--font-display);
+  }
+
+  :is(
+      .calendar-page,
+      .archive-form-page,
+      .archive-detail-page,
+      .anniversary-page
+    )
+    .back-header {
+    padding: 0 13px;
+    font-family: var(--font-sans);
+  }
+  :is(
+      .calendar-page,
+      .archive-form-page,
+      .archive-detail-page,
+      .anniversary-page
+    )
+    .back-header
+    strong {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.17px;
+  }
+  :is(
+      .calendar-page,
+      .archive-form-page,
+      .archive-detail-page,
+      .anniversary-page
+    )
+    .back-glyph {
+    width: 8.8px;
+    height: 15.8px;
+    background: none;
+  }
+  :is(.calendar-page, .anniversary-page) .back-header {
+    background: var(--color-surface-gray);
+  }
+  :is(.archive-form-page, .archive-detail-page) {
+    background: var(--color-surface-white);
+  }
+  :is(.archive-form-page, .archive-detail-page, .anniversary-page)
+    :is(.button-primary, .button-secondary, .sheet-control button) {
+    flex-shrink: 0;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .archive-page .archive-year {
+    margin-top: 12px;
+  }
+  .archive-page .archive-year h2 {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.17px;
+  }
+  .archive-page .shared-banner small {
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.12px;
+  }
+  .archive-page .shared-banner strong {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .archive-page .shared-banner > span:last-child {
+    width: 7px;
+    height: 12px;
+    background: url('/assets/archive/icon-1.svg') center / contain no-repeat;
+    font-size: 0;
+  }
+  :is(.archive-page, .calendar-page) .archive-card-copy {
+    max-width: 174px;
+  }
+  :is(.archive-page, .calendar-page) .archive-card-copy > span,
+  :is(.archive-page, .calendar-page) .archive-card-copy small,
+  :is(.archive-page, .calendar-page) .archive-author {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  :is(.archive-page, .calendar-page) .archive-card-copy strong {
+    margin-top: 4px;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  /* 캘린더: 탭 13px, 요일 12px, 날짜 14px, 기록 제목 16px. */
+  .calendar-page .month-calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  .calendar-page .month-calendar header,
+  .calendar-page .month-calendar .weekday-row,
+  .calendar-page .month-calendar .month-grid {
+    width: 100%;
+  }
+  .calendar-page .month-trigger {
+    letter-spacing: -0.4px;
+  }
+  .calendar-page .month-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .calendar-page .month-calendar header .month-actions button {
+    display: grid;
+    width: 16px;
+    height: 27px;
+    padding: 0;
+    place-items: center;
+  }
+  .calendar-page .month-action-icon {
+    position: relative;
+    display: block;
+    width: 8px;
+    height: 11.6px;
+    overflow: hidden;
+  }
+  .calendar-page .month-action-icon img {
+    position: absolute;
+    max-width: none;
+  }
+  .calendar-page .month-action-icon.previous img {
+    left: 0;
+  }
+  .calendar-page .month-action-icon.next img {
+    right: 0;
+  }
+  .calendar-page .month-calendar .weekday-row {
+    height: 24px;
+    align-items: center;
+    margin: 0;
+    color: var(--color-ink-faint);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.12px;
+  }
+  .calendar-page .month-grid {
+    row-gap: 4px;
+  }
+  .calendar-page .month-grid button {
+    width: 22px;
+    height: 22px;
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .calendar-page .month-grid button.selected {
+    background: var(--color-fab);
+  }
+  .calendar-page .month-grid button.today:not(.selected) {
+    border: 1px solid var(--color-fab);
+    color: var(--color-ink);
+  }
+  .calendar-page .calendar-results > h2 {
+    margin-bottom: 12px;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .calendar-page :is(.calendar-group h3, .search-group h2) {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.12px;
+  }
+  .calendar-page .calendar-card {
+    padding: 15px 20px;
+  }
+  .calendar-page .capsule-calendar-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .calendar-page .calendar-card-copy {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .calendar-page .calendar-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .calendar-page
+    :is(.calendar-card-text strong, .anniversary-card-title strong) {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .calendar-page
+    :is(
+      .calendar-card-text > span,
+      .calendar-card-meta,
+      .calendar-card-summary > span:last-child
+    ) {
+    color: var(--color-ink-muted);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .calendar-page .calendar-card-summary {
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .calendar-page .calendar-card-summary > span:last-child {
+    color: var(--color-ink-faint);
+  }
+  .calendar-page :is(.status, .d-day) {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.12px;
+  }
+  .calendar-page .status.open,
+  .calendar-page .status.opened {
+    color: var(--color-success-text);
+    background: var(--color-success-bg);
+  }
+  .calendar-page .status.writing {
+    color: var(--color-warning-text);
+    background: var(--color-warning-bg);
+  }
+  .calendar-page .status.sealed {
+    color: var(--color-info-text);
+    background: var(--color-info-bg);
+  }
+  .calendar-page .d-day {
+    color: var(--color-primary);
+    background: var(--color-primary-tint-strong);
+  }
+  .calendar-page .d-day.today {
+    color: var(--color-on-primary);
+    background: var(--color-primary);
+  }
+  .calendar-page .d-day.past {
+    color: var(--color-ink-faint);
+    background: var(--color-fill-subtle);
+  }
+  .calendar-page .search-page {
+    gap: 20px;
+  }
+  .calendar-page .search-tools {
+    margin-bottom: -8px;
+  }
+  .calendar-page .search-tools > button {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .calendar-page .sort-selector > button {
+    color: var(--color-ink-muted);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .calendar-page .sort-options {
+    width: max-content;
+    min-width: 128px;
+    max-width: calc(100vw - 40px);
+    padding: 8px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgb(26 23 22 / 7%);
+  }
+  .calendar-page .search-tools > button,
+  .calendar-page .sort-selector > button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  .calendar-page .sort-options {
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 30;
+  }
+  .calendar-page .sort-options button {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 16px;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    white-space: nowrap;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  /* 아카이브 상세와 받은 아카이브. 사진은 서버의 원본을 그대로 사용한다. */
+  .archive-detail-page .detail-copy {
+    display: flex;
+    min-height: max(482px, calc(100dvh - 370px));
+    flex-direction: column;
+    gap: 130px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgb(26 23 22 / 7%);
+  }
+  .archive-detail-page :is(.detail-main, .detail-heading, .detail-photos) {
+    display: flex;
+    flex-direction: column;
+  }
+  .archive-detail-page .detail-main {
+    gap: 12px;
+  }
+  .archive-detail-page .detail-heading {
+    gap: 4px;
+  }
+  .archive-detail-page .detail-photos {
+    gap: 10px;
+  }
+  .archive-detail-page .detail-meta {
+    line-height: 1.4;
+  }
+  .archive-detail-page .detail-meta > span:last-child {
+    color: var(--color-ink-faint);
+  }
+  .archive-detail-page .detail-copy h1 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.9;
+  }
+  .archive-detail-page :is(.detail-main > p, .shared-detail-top > p) {
+    font-size: 16px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .archive-detail-page .detail-cover-counter {
+    bottom: 44px;
+    padding: 4px 10px;
+    background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+    line-height: 1.4;
+  }
+  .archive-detail-page .thumbnail-row {
+    margin: 0 -20px 0 0;
+    padding-right: 20px;
+  }
+  .archive-detail-page .photo-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+  }
+  .archive-detail-page .photo-count img {
+    width: 16px;
+    height: 16px;
+  }
+  .shared-archive-page .shared-detail .detail-copy {
+    height: auto;
+    gap: 32px;
+    padding: 20px;
+  }
+  .shared-archive-page :is(.shared-detail-heading h1, .shared-detail-top > p) {
+    font-family: var(--font-sans);
+  }
+  .shared-archive-page .shared-actions {
+    width: 100%;
+  }
+
+  /* 아카이브 입력 폼: 20px 섹션 간격, 56px 입력, 100px 사진. */
+  .archive-form-page .form-page {
+    gap: 20px;
+  }
+  .archive-form-page .form-intro h1,
+  .anniversary-page .form-intro h1 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.4px;
+  }
+  .archive-form-page .form-intro p {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .archive-form-page .form-page .photo-form {
+    margin-bottom: 0;
+    overflow: visible;
+  }
+  .archive-form-page .form-section-title strong,
+  .archive-form-page .form-section-title strong span {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .archive-form-page .form-section-title button {
+    color: var(--color-ink-faint);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.12px;
+  }
+  .archive-form-page .form-section-title button img {
+    width: 20px;
+    height: 20px;
+  }
+  .archive-form-page .photo-add {
+    display: grid;
+    padding: 0;
+    place-items: center;
+    cursor: pointer;
+  }
+  .archive-form-page .photo-add svg {
+    flex: none;
+  }
+  .archive-form-page .submit-button[aria-disabled='true'] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .archive-form-page .submit-button:disabled {
+    cursor: wait;
+  }
+  .archive-form-page .photo-strip {
+    margin-right: -20px;
+    padding-right: 20px;
+    scrollbar-width: none;
+  }
+  .archive-form-page .photo-strip::-webkit-scrollbar {
+    display: none;
+  }
+  .archive-form-page .photo-thumb .cover-badge {
+    top: 8px;
+    right: auto;
+    bottom: auto;
+    left: 8px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    color: var(--color-info-text);
+    background: var(--color-info-bg);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.12px;
+  }
+  .archive-form-page .photo-add-wide {
+    color: var(--color-neutral-weak);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.26px;
+  }
+  .archive-form-page .form-hint {
+    align-items: center;
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.12px;
+  }
+  .archive-form-page .input-group > span {
+    line-height: 1;
+    letter-spacing: -0.26px;
+  }
+  .archive-form-page
+    :is(.input-group input, .input-group textarea, .input-button) {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: -0.32px;
+  }
+  .archive-form-page .input-group textarea {
+    line-height: 1.6;
+  }
+  .archive-form-page .input-group small {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .archive-form-page .input-button img {
+    width: 19.5px;
+    height: 19.5px;
+  }
+  :is(.archive-form-page, .anniversary-page) .input-button[data-filled='true'] {
+    color: var(--color-ink);
+  }
+
+  /* 기념일 폼. 카드 20px 패딩·12px 간격을 생성/수정에 공통 적용한다. */
+  .anniversary-page .anniversary-form {
+    font-family: var(--font-display);
+  }
+  .anniversary-page .input-group > span,
+  .anniversary-page .notification-card h2 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+  }
+  .anniversary-page .optional-label {
+    color: var(--color-ink-muted);
+  }
+  .anniversary-page .input-group > div,
+  .anniversary-page .input-button {
+    border-color: var(--color-border-default);
+  }
+  .anniversary-page
+    :is(.input-group small, .toggle-row small, .notification-row small) {
+    font-weight: 500;
+    letter-spacing: 0.12px;
+  }
+  .anniversary-page :is(.toggle-row small, .notification-row small) {
+    color: var(--color-ink-faint);
+  }
+  .anniversary-page .input-button img {
+    width: 19.5px;
+    height: 19.5px;
+  }
+  .anniversary-page .toggle {
+    flex-shrink: 0;
+  }
+  .anniversary-page .row-icon {
+    flex: 0 0 18px;
+  }
+  .anniversary-page .row-icon img {
+    max-width: none;
+  }
+  .anniversary-page .row-value {
+    flex-shrink: 0;
+  }
+  .anniversary-page .row-value img {
+    width: 24px;
+    height: 24px;
+  }
+  :is(.calendar-page, .archive-form-page, .anniversary-page)
+    .bottom-sheet
+    > h2 {
+    margin: 6px 0 16px;
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.4px;
+  }
+  :is(.archive-form-page, .anniversary-page) .date-picker h2 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.4px;
+  }
+  :is(.archive-form-page, .anniversary-page) .date-picker .weekday-row {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.12px;
+  }
+  :is(.archive-form-page, .anniversary-page) .date-picker .day-grid button {
+    font-size: 14px;
+  }
+  .anniversary-page .option-list button {
+    min-height: 50px;
+    padding: 4px 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .anniversary-page .time-picker-columns {
+    gap: 20px;
+    padding: 10px 20px;
+    font-family: var(--font-sans);
+  }
+}

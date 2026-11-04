@@ -31,8 +31,15 @@ const getCoverContent = (capsule: CapsuleDetail): CoverContent => {
   const { canWriteLetter, canViewLetters } = capsule.permissions;
 
   if (capsule.status === 'WRITING') {
+    const titleLines: [string, string] =
+      capsule.capsuleType === 'SELF'
+        ? ['오늘의 추억을', '편지로 남겨보세요']
+        : capsule.capsuleType === 'FRIEND'
+          ? ['친구와의 편지가', '차근차근 모이고 있어요']
+          : ['친구들의 편지가', '차근차근 모이고 있어요'];
+
     return {
-      titleLines: ['친구들의 편지가', '차근차근 모이고 있어요'],
+      titleLines,
       actions: [
         { key: 'detail', label: '캡슐 정보보기', variant: 'secondary' },
         ...(canWriteLetter

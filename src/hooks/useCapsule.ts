@@ -17,6 +17,7 @@ import {
   type CapsuleUpdateRequest,
 } from '@/apis/capsule';
 import type { CapsuleInvite, CapsuleInviteRole } from '@/types/capsule';
+import { invalidateCapsuleQueries } from '@/utils/queryInvalidation';
 
 export const capsuleKeys = {
   detail: (capsuleId: string) => ['capsule', 'detail', capsuleId] as const,
@@ -54,10 +55,7 @@ export const useUpdateCapsule = (capsuleId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: CapsuleUpdateRequest) => updateCapsule(capsuleId, body),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: capsuleKeys.detail(capsuleId),
-      }),
+    onSuccess: () => invalidateCapsuleQueries(queryClient),
   });
 };
 
@@ -65,7 +63,7 @@ export const useDeleteCapsule = (capsuleId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => deleteCapsule(capsuleId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['capsule'] }),
+    onSuccess: () => invalidateCapsuleQueries(queryClient),
   });
 };
 
@@ -77,6 +75,7 @@ export const useRemoveCapsuleMember = (
   return useMutation({
     mutationFn: (memberId: number) => removeCapsuleMember(capsuleId, memberId),
     onSuccess: () => {
+      void invalidateCapsuleQueries(queryClient);
       // 내보내면 상세의 인원수·미리보기도 함께 바뀐다.
       queryClient.invalidateQueries({
         queryKey: capsuleKeys.members(capsuleId, role),
@@ -92,10 +91,7 @@ export const useOpenCapsule = (capsuleId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => openCapsule(capsuleId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: capsuleKeys.detail(capsuleId),
-      }),
+    onSuccess: () => invalidateCapsuleQueries(queryClient),
   });
 };
 
@@ -122,6 +118,7 @@ export const useRegenerateInviteLink = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => regenerateInviteLink(capsuleId, role),
+    retry: false,
     onSuccess: (invite: CapsuleInvite) =>
       queryClient.setQueryData(capsuleKeys.invite(capsuleId, role), invite),
   });
@@ -138,9 +135,24 @@ export const useAcceptInvite = (inviteToken: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => acceptInvite(inviteToken),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['capsule'] }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: capsuleKeys.invitePreview(inviteToken),
+      });
+      return invalidateCapsuleQueries(queryClient);
+    },
   });
 };
 
-export const useRejectInvite = (inviteToken: string) =>
-  useMutation({ mutationFn: () => rejectInvite(inviteToken) });
+export const useRejectInvite = (inviteToken: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => rejectInvite(inviteToken),
+    onSuccess: () => {
+      queryClient.removeQueries({
+        queryKey: capsuleKeys.invitePreview(inviteToken),
+      });
+      return invalidateCapsuleQueries(queryClient);
+    },
+  });
+};

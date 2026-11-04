@@ -1,7 +1,6 @@
 import type { ChipTone } from '@/components/common/Chip';
 
-export type CapsuleFilterKey =
-  'all' | 'openable' | 'editable' | 'locked' | 'opened';
+export type CapsuleFilterKey = 'all' | 'editable' | 'locked' | 'opened';
 
 export interface CapsuleChipBadge {
   label: string;
@@ -55,6 +54,46 @@ export interface CapsuleHomeData {
 export interface CapsuleListData {
   filters: CapsuleFilterChipOption[];
   items: CapsuleListItem[];
+  nextCursor: string | null;
+  hasNext: boolean;
+}
+
+export interface CapsuleCardResponse {
+  capsuleId: number;
+  iconType: string;
+  title: string;
+  description: string | null;
+  status: CapsuleStatusType;
+  openedByMe: boolean;
+  openAt: string;
+  dDay: number;
+  deadlineDDay: number | null;
+  memberCount: number;
+  letterCount: number;
+}
+
+export interface CapsuleOverviewResponse {
+  hasPendingInvite: boolean;
+  upcoming: CapsuleCardResponse[];
+  writing: CapsuleCardResponse[];
+  locked: CapsuleCardResponse[];
+  opened: CapsuleCardResponse[];
+}
+
+export interface CapsuleListResponse {
+  counts: { all: number; opened: number; writing: number; locked: number };
+  capsules: CapsuleCardResponse[];
+  nextCursor: string | null;
+  hasNext: boolean;
+}
+
+export interface ReceivedInvite {
+  inviteToken: string;
+  targetRole: CapsuleInviteRole;
+  inviterNickname: string;
+  capsuleId: number;
+  capsuleTitle: string;
+  openAt: string;
 }
 
 export type CapsuleCreateType = 'solo' | 'friend' | 'group';
@@ -70,7 +109,6 @@ export interface CapsuleCreateForm {
   description: string;
   capsuleType: CapsuleCreateType;
   visibility: CapsuleVisibilityType;
-  inviteLink: string;
   editDeadline: string;
   openDate: string;
 }
@@ -193,3 +231,5 @@ export interface CapsuleIconOption {
 /** 캡슐 이름/설명 글자수 제한 (생성·수정 공통) */
 export const CAPSULE_NAME_MAX_LENGTH = 20;
 export const CAPSULE_DESCRIPTION_MAX_LENGTH = 45;
+/** 생성 시 설명은 앞뒤 공백을 제외하고 5자 이상 입력한다. */
+export const CAPSULE_DESCRIPTION_MIN_LENGTH = 5;

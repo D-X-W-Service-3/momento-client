@@ -1,4 +1,5 @@
 import BackHeader from '@/components/layout/BackHeader';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import MobileLayout from '@/components/layout/MobileLayout';
 import ProfileEditAvatar from '@/components/mypage/ProfileEditAvatar';
 import ProfileEditField from '@/components/mypage/ProfileEditField';
@@ -14,6 +15,11 @@ export default function ProfileEditPage() {
     avatarUrl,
     maxNameLength,
     isValid,
+    isSaving,
+    isLoading,
+    error,
+    retry,
+    validation,
     fileInputRef,
     handleNameChange,
     handleBirthdayChange,
@@ -34,54 +40,58 @@ export default function ProfileEditPage() {
       />
 
       <main className="flex flex-1 flex-col gap-3 p-5">
-        <ProfileEditAvatar
-          avatarUrl={avatarUrl}
-          fileInputRef={fileInputRef}
-          onAvatarClick={handleAvatarClick}
-          onAvatarChange={handleAvatarChange}
-        />
-
-        <div className="flex w-full flex-col gap-2">
-          <ProfileEditField
-            id="profile-name"
-            label="이름"
-            value={name}
-            onChange={handleNameChange}
-            maxLength={maxNameLength}
-            helperText="2~20자 이내"
-            wrapperClassName="py-[10px]"
+        <QueryFeedback loading={isLoading} error={error} onRetry={retry} />
+        <fieldset disabled={isSaving || isLoading} className="contents">
+          <ProfileEditAvatar
+            avatarUrl={avatarUrl}
+            fileInputRef={fileInputRef}
+            onAvatarClick={handleAvatarClick}
+            onAvatarChange={handleAvatarChange}
           />
 
-          <ProfileEditField
-            id="profile-birthday"
-            label="생일"
-            value={birthday}
-            onChange={handleBirthdayChange}
-            wrapperClassName="py-[10px]"
-          />
-        </div>
+          <div className="flex w-full flex-col gap-2">
+            <ProfileEditField
+              id="profile-name"
+              label="이름"
+              value={name}
+              onChange={handleNameChange}
+              maxLength={maxNameLength}
+              helperText={validation.message || '2~20자 이내'}
+              wrapperClassName="py-[10px]"
+            />
 
-        <section className="flex w-full flex-col gap-3">
-          <h2 className={`text-text-dark ${textStyles['section-title']}`}>
-            계정 정보
-          </h2>
+            <ProfileEditField
+              id="profile-birthday"
+              label="생일"
+              type="date"
+              value={birthday}
+              onChange={handleBirthdayChange}
+              wrapperClassName="py-[10px]"
+            />
+          </div>
 
-          <ProfileEditField
-            id="profile-email"
-            label="이메일"
-            type="email"
-            value={email}
-            onChange={handleEmailChange}
-          />
+          <section className="flex w-full flex-col gap-3">
+            <h2 className={`text-text-dark ${textStyles['section-title']}`}>
+              계정 정보
+            </h2>
 
-          <ProfileEditField
-            id="profile-phone"
-            label="전화번호"
-            type="tel"
-            value={phone}
-            onChange={handlePhoneChange}
-          />
-        </section>
+            <ProfileEditField
+              id="profile-email"
+              label="이메일"
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+            />
+
+            <ProfileEditField
+              id="profile-phone"
+              label="전화번호"
+              type="tel"
+              value={phone}
+              onChange={handlePhoneChange}
+            />
+          </section>
+        </fieldset>
       </main>
 
       <div className="px-5 pt-[10px] pb-5">
@@ -96,7 +106,7 @@ export default function ProfileEditPage() {
           }`}
         >
           <span className="text-body-lg leading-4 font-semibold tracking-[-0.32px]">
-            저장하기
+            {isSaving ? '저장 중…' : '저장하기'}
           </span>
         </button>
       </div>

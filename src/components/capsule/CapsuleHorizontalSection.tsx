@@ -7,6 +7,7 @@ import type { CapsuleHorizontalItem } from '@/types/capsule';
 
 interface CapsuleHorizontalSectionProps {
   title: string;
+  emptyDescription: string;
   items: CapsuleHorizontalItem[];
   onViewAll: () => void;
   onSelectCapsule: (id: string) => void;
@@ -14,6 +15,7 @@ interface CapsuleHorizontalSectionProps {
 
 export default function CapsuleHorizontalSection({
   title,
+  emptyDescription,
   items,
   onViewAll,
   onSelectCapsule,
@@ -43,13 +45,33 @@ export default function CapsuleHorizontalSection({
       <div
         ref={containerRef}
         {...dragProps}
-        className="-mr-5 flex cursor-grab touch-pan-x gap-3 overflow-x-auto pr-5 select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+        className={`${items.length <= 1 ? 'w-full' : '-mr-5 pr-5'} flex cursor-grab touch-pan-x gap-3 overflow-x-auto select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden`}
       >
+        {items.length === 0 && (
+          <div className="bg-surface-white flex h-[126px] w-full shrink-0 items-center justify-between gap-3 rounded-xl px-5 py-[15px] shadow-[0_2px_8px_rgb(26_23_22/0.05)]">
+            <div className="flex w-[132px] flex-col gap-1">
+              <h3
+                className={`text-text-primary ${textStyles['body-large-semi']}`}
+              >
+                아직 캡슐이 없어요
+              </h3>
+              <p className={`text-text-secondary ${textStyles['body-xs']}`}>
+                {emptyDescription}
+              </p>
+            </div>
+            <img
+              src={capsulePopsicleImg}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none h-[70px] w-[76px] shrink-0 object-contain"
+            />
+          </div>
+        )}
         {items.map((item) => (
           <article
             key={item.id}
             onClick={() => onSelectCapsule(item.id)}
-            className="bg-surface-white flex h-[126px] w-[260px] shrink-0 cursor-pointer items-center justify-between gap-3 rounded-xl px-5 py-[15px] shadow-[0_2px_8px_rgb(26_23_22/0.05)]"
+            className={`bg-surface-white flex h-[126px] ${items.length === 1 ? 'w-full' : 'w-[260px]'} shrink-0 cursor-pointer items-center justify-between gap-3 rounded-xl px-5 py-[15px] shadow-[0_2px_8px_rgb(26_23_22/0.05)]`}
           >
             <div className="flex w-[132px] flex-col gap-3">
               <Chip tone={item.badge.tone}>{item.badge.label}</Chip>

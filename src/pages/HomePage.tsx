@@ -1,4 +1,5 @@
 import AttendanceStreakCard from '@/components/home/AttendanceStreakCard';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import CapsuleCreateBanner from '@/components/home/CapsuleCreateBanner';
 import HeroCapsuleCard from '@/components/home/HeroCapsuleCard';
 import HomeCapsuleSection from '@/components/home/HomeCapsuleSection';
@@ -9,6 +10,9 @@ import { useHomeDashboard } from '@/hooks/useHomeDashboard';
 export default function HomePage() {
   const {
     dashboard,
+    isLoading,
+    error,
+    retry,
     handleNotifications,
     handleProfile,
     handleCreateCapsule,
@@ -21,24 +25,37 @@ export default function HomePage() {
       <HomeHeader
         onClickBell={handleNotifications}
         onClickProfile={handleProfile}
+        hasUnreadNotification={dashboard?.hasUnreadNotification}
       />
 
+      <QueryFeedback loading={isLoading} error={error} onRetry={retry} />
       {dashboard && (
         <div className="bg-surface-gray flex flex-col gap-5 px-5 pt-[10px] pb-5">
           <section className="flex flex-col gap-3">
             <HeroCapsuleCard
               capsule={dashboard.heroCapsule}
-              onClick={() => handleSelectCapsule('sealed')}
+              onClick={() =>
+                dashboard.heroCapsule
+                  ? handleSelectCapsule(String(dashboard.heroCapsule.id))
+                  : handleCreateCapsule()
+              }
             />
             <CapsuleCreateBanner onClick={handleCreateCapsule} />
           </section>
 
-          <HomeCapsuleSection
-            capsule={dashboard.featuredCapsule}
-            onViewAll={handleViewAllCapsules}
-            onSelectCapsule={() => handleSelectCapsule('openable')}
-          />
-
+          {dashboard.featuredCapsules.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {dashboard.featuredCapsules.map((capsule, index) => (
+                <HomeCapsuleSection
+                  key={capsule.id}
+                  capsule={capsule}
+                  showHeading={index === 0}
+                  onViewAll={handleViewAllCapsules}
+                  onSelectCapsule={handleSelectCapsule}
+                />
+              ))}
+            </div>
+          )}
           <AttendanceStreakCard
             days={dashboard.attendanceDays}
             streakCount={dashboard.streakCount}

@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useMomentoStore } from '@/stores/useMomentoStore';
 import type { CalendarItem } from '@/types/momento';
 import { daysUntil } from '@/utils/dates';
+import { capsuleDeadlineBadge } from '@/utils/capsuleCards';
 
 export function useCalendarItems(): CalendarItem[] {
   const archives = useMomentoStore((state) => state.archives);
@@ -13,6 +14,16 @@ export function useCalendarItems(): CalendarItem[] {
       ...capsules.map((item) => ({
         ...item,
         type: 'capsule' as const,
+        badge: capsuleDeadlineBadge({
+          status:
+            item.status === 'writing'
+              ? 'WRITING'
+              : item.status === 'sealed'
+                ? 'LOCKED'
+                : 'OPENED',
+          openedByMe: false,
+          deadlineDDay: null,
+        }),
         dDay: daysUntil(item.date),
       })),
       ...anniversaries.map((item) => ({

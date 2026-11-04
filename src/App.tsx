@@ -53,21 +53,81 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/home" element={<HomePage />} />
+        <Route
+          path="/home"
+          element={
+            <RequireAuth>
+              <HomePage />
+            </RequireAuth>
+          }
+        />
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path="/oauth/kakao" element={<OAuthCallbackPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
-        <Route path="/profile-setup" element={<ProfileSetupPage />} />
-        <Route path="/notifications" element={<NotificationPage />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/mypage/edit" element={<ProfileEditPage />} />
+        <Route
+          path="/profile-setup"
+          element={
+            <RequireAuth>
+              <ProfileSetupPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <RequireAuth>
+              <NotificationPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/mypage"
+          element={
+            <RequireAuth>
+              <MyPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/mypage/edit"
+          element={
+            <RequireAuth>
+              <ProfileEditPage />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/mypage/notifications"
-          element={<NotificationSettingsPage />}
+          element={
+            <RequireAuth>
+              <NotificationSettingsPage />
+            </RequireAuth>
+          }
         />
-        <Route path="/capsules" element={<CapsuleHomePage />} />
-        <Route path="/capsules/list" element={<CapsuleListPage />} />
-        <Route path="/capsules/new" element={<CapsuleCreatePage />} />
+        <Route
+          path="/capsules"
+          element={
+            <RequireAuth>
+              <CapsuleHomePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/capsules/list"
+          element={
+            <RequireAuth>
+              <CapsuleListPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/capsules/new"
+          element={
+            <RequireAuth>
+              <CapsuleCreatePage />
+            </RequireAuth>
+          }
+        />
         <Route path="/archives" element={<ArchivePage />} />
         <Route path="/archives/shared" element={<SharedArchivePage />} />
         <Route path="/archives/new" element={<ArchiveFormPage />} />

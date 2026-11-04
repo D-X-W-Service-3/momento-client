@@ -1,99 +1,73 @@
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
 import { fetchCapsuleListData } from '@/apis/capsules';
 import { capsuleCoverPath } from '@/constants/routes';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import type { CapsuleFilterKey, CapsuleListItem } from '@/types/capsule';
-
-const VALID_FILTERS: CapsuleFilterKey[] = [
-  'all',
-  'openable',
-  'editable',
-  'locked',
-  'opened',
-];
 
 export function useCapsuleList() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const paramFilter = searchParams.get('filter') as CapsuleFilterKey | null;
+  const param = searchParams.get('filter');
+  const selectedFilter: CapsuleFilterKey =
+    param === 'locked'
+      ? 'locked'
+      : param === 'opened' || param === 'openable'
+        ? 'opened'
+        : param === 'editable'
+          ? 'editable'
+          : 'all';
   const shouldFocusSearch = searchParams.get('focus') === 'search';
-  const initialFilter: CapsuleFilterKey =
-    paramFilter && VALID_FILTERS.includes(paramFilter) ? paramFilter : 'all';
-
-  const [selectedFilter, setSelectedFilter] =
-    useState<CapsuleFilterKey>(initialFilter);
   const [searchQuery, setSearchQuery] = useState('');
+  const keyword = useDebouncedValue(searchQuery.trim());
   const searchInputRef = useRef<HTMLInputElement | null>(null);
-
   useEffect(() => {
-    if (shouldFocusSearch) {
-      searchInputRef.current?.focus();
-    }
+    if (shouldFocusSearch) searchInputRef.current?.focus();
   }, [shouldFocusSearch]);
-
-  const query = useQuery({
-    queryKey: ['capsuleList'],
-    queryFn: fetchCapsuleListData,
+  const query = useInfiniteQuery({
+    queryKey: ['capsuleList', selectedFilter, keyword],
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam }) =>
+      fetchCapsuleListData(selectedFilter, keyword, pageParam),
+    getNextPageParam: (last) =>
+      last.hasNext && last.nextCursor ? last.nextCursor : undefined,
   });
-
   const groupedByYear = useMemo(() => {
-    const items = query.data?.items ?? [];
-    const trimmed = searchQuery.trim().toLowerCase();
-
-    const filtered = items.filter((item) => {
-      const matchesFilter =
-        selectedFilter === 'all' || item.filterCategory === selectedFilter;
-      const matchesQuery =
-        !trimmed ||
-        `${item.title} ${item.description}`.toLowerCase().includes(trimmed);
-      return matchesFilter && matchesQuery;
-    });
-
     const groups: { year: number; items: CapsuleListItem[] }[] = [];
-    for (const item of filtered) {
-      const existing = groups.find((g) => g.year === item.year);
-      if (existing) {
-        existing.items.push(item);
-      } else {
-        groups.push({ year: item.year, items: [item] });
-      }
+    const seen = new Set<string>();
+    for (const item of query.data?.pages.flatMap((page) => page.items) ?? []) {
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      const group = groups.find((entry) => entry.year === item.year);
+      if (group) group.items.push(item);
+      else groups.push({ year: item.year, items: [item] });
     }
     return groups;
-  }, [query.data?.items, selectedFilter, searchQuery]);
-
-  const handleFilterChange = (filter: CapsuleFilterKey) => {
-    setSelectedFilter(filter);
-    const nextParams: Record<string, string> = {};
-    if (filter !== 'all') {
-      nextParams.filter = filter;
-    }
-    setSearchParams(nextParams, { replace: true });
-  };
-
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleNotifications = () => {
-    navigate('/notifications');
-  };
-
-  const handleSelectCapsule = (capsuleId: string) => {
-    navigate(capsuleCoverPath(capsuleId));
-  };
-
+  }, [query.data]);
   return {
-    filters: query.data?.filters ?? [],
+    filters: query.data?.pages[0].filters ?? [
+      { key: 'all' as const, label: '전체', count: 0 },
+      { key: 'editable' as const, label: '수정 가능', count: 0 },
+      { key: 'locked' as const, label: '잠긴 캡슐', count: 0 },
+      { key: 'opened' as const, label: '열린 캡슐', count: 0 },
+    ],
     selectedFilter,
     searchQuery,
     searchInputRef,
     shouldFocusSearch,
     groupedByYear,
-    handleFilterChange,
-    handleSearchChange,
-    handleNotifications,
-    handleSelectCapsule,
+    isLoading: query.isLoading,
+    error: query.error,
+    retry: query.refetch,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    loadMore: () => query.fetchNextPage(),
+    handleFilterChange: (filter: CapsuleFilterKey) =>
+      setSearchParams({ filter }, { replace: true }),
+    handleSearchChange: (event: ChangeEvent<HTMLInputElement>) =>
+      setSearchQuery(event.target.value),
+    handleNotifications: () => navigate('/notifications'),
+    handleSelectCapsule: (id: string) => navigate(capsuleCoverPath(id)),
   };
 }

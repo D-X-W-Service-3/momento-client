@@ -1,4 +1,5 @@
 import AvatarUpload from '@/components/common/AvatarUpload';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import Button from '@/components/common/Button';
 import TextField from '@/components/common/TextField';
 import BackHeader from '@/components/layout/BackHeader';
@@ -12,6 +13,9 @@ export default function ProfileSetupPage() {
     avatarUrl,
     validation,
     isSubmitting,
+    isLoading,
+    error,
+    retry,
     handleNicknameChange,
     handleAvatarChange,
     handleSubmit,
@@ -23,7 +27,11 @@ export default function ProfileSetupPage() {
       <BackHeader onBack={handleBack} showMore />
 
       <main className="flex flex-1 flex-col justify-between px-5 pt-[70px] pb-10">
-        <div className="flex w-full flex-col gap-10">
+        <QueryFeedback loading={isLoading} error={error} onRetry={retry} />
+        <fieldset
+          disabled={isSubmitting || isLoading}
+          className="flex w-full flex-col gap-10"
+        >
           <div className="flex w-full flex-col gap-10">
             <div className="flex w-full flex-col gap-2">
               <h1 className={`text-text-primary ${textStyles['heading-h1']}`}>
@@ -51,14 +59,14 @@ export default function ProfileSetupPage() {
             isError={validation.isError}
             variant="outlined"
           />
-        </div>
+        </fieldset>
 
         <Button
           variant="primary"
           onClick={handleSubmit}
           disabled={!validation.isValid || isSubmitting}
         >
-          시작하기
+          {isSubmitting ? '저장 중…' : '시작하기'}
         </Button>
       </main>
     </MobileLayout>

@@ -1,3 +1,5 @@
+import type { CapsuleChipBadge } from '@/types/capsule';
+
 export type Archive = {
   id: number;
   title: string;
@@ -15,9 +17,12 @@ export type CalendarItem = {
   title: string;
   date: string;
   status?: 'open' | 'sealed' | 'writing' | 'opened';
+  badge?: CapsuleChipBadge;
   dDay?: string;
   meta?: string;
   image?: string;
+  imageCount?: number;
+  author?: string;
   yearly?: boolean;
 };
 

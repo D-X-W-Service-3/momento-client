@@ -1,68 +1,30 @@
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-
-import { updateProfile } from '@/apis/auth';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useMyPageStore } from '@/stores/useMyPageStore';
+import { useProfileForm } from '@/hooks/useProfileForm';
 import { takeRedirect } from '@/utils/auth';
-import { validateNickname } from '@/utils/validation';
 
 export function useProfileSetup() {
   const navigate = useNavigate();
-  const storedProfile = useAuthStore((state) => state.profile);
-  const setProfile = useAuthStore((state) => state.setProfile);
-  const updateMyPageProfile = useMyPageStore((state) => state.updateProfile);
-
-  const [nickname, setNickname] = useState(storedProfile.nickname);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(
-    storedProfile.avatarUrl,
-  );
-
-  const validation = validateNickname(nickname);
-
-  const mutation = useMutation({
-    mutationFn: updateProfile,
-    onSuccess: (updated) => {
-      setProfile(updated);
-      updateMyPageProfile({
-        name: updated.nickname,
-        ...(updated.avatarUrl ? { avatarUrl: updated.avatarUrl } : {}),
-      });
-      // 초대 링크로 들어왔다가 가입한 경우 그 링크로 돌려보낸다.
-      navigate(takeRedirect() ?? '/home');
-    },
-  });
-
-  const handleNicknameChange = (value: string) => {
-    setNickname(value);
-  };
-
-  const handleAvatarChange = (file: File) => {
-    const objectUrl = URL.createObjectURL(file);
-    setAvatarUrl(objectUrl);
-  };
-
-  const handleSubmit = () => {
-    if (!validation.isValid) return;
-    mutation.mutate({
-      nickname: nickname.trim(),
-      avatarUrl,
-    });
-  };
-
-  const handleBack = () => {
-    navigate(-1);
-  };
-
+  const form = useProfileForm(() => {
+    const target = takeRedirect();
+    const path = target?.split('?')[0];
+    navigate(
+      path === '/profile-setup' || path === '/onboarding'
+        ? '/home'
+        : (target ?? '/home'),
+      { replace: true },
+    );
+  }, true);
   return {
-    nickname,
-    avatarUrl,
-    validation,
-    isSubmitting: mutation.isPending,
-    handleNicknameChange,
-    handleAvatarChange,
-    handleSubmit,
-    handleBack,
+    nickname: form.values.nickname,
+    avatarUrl: form.avatarUrl,
+    validation: { ...form.validation, isValid: form.isValid },
+    isSubmitting: form.isSaving,
+    isLoading: form.isLoading,
+    error: form.error,
+    retry: form.retry,
+    handleNicknameChange: (value: string) => form.setField('nickname', value),
+    handleAvatarChange: form.selectPhoto,
+    handleSubmit: form.save,
+    handleBack: () => navigate(-1),
   };
 }

@@ -19,10 +19,10 @@ export default function CapsuleRevealPage() {
     });
 
   return (
-    // 배경 이미지는 모바일 폭(max-w-md) 안에만 깔고,
+    // 배경 이미지는 모바일 폭(max-w-app) 안에만 깔고,
     // 그보다 넓은 화면에서는 이미지 가장자리 색 그라데이션으로 메운다.
     <div className="min-h-[100dvh] bg-gradient-to-b from-reveal-bg-from via-reveal-bg-via to-reveal-bg-to">
-      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col justify-between overflow-hidden px-5 pt-[max(37px,env(safe-area-inset-top))] pb-[max(37px,env(safe-area-inset-bottom))]">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between overflow-hidden px-5 pt-[max(37px,env(safe-area-inset-top))] pb-[max(37px,env(safe-area-inset-bottom))]">
         <img
           src={revealBg}
           alt=""

@@ -1,4 +1,5 @@
 import BottomSheet from '@/components/common/BottomSheet';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import DatePicker from '@/components/common/DatePicker';
 import InviteSheet from '@/components/capsule/InviteSheet';
 import CapsuleCompleteStep from '@/components/capsule/create/CapsuleCompleteStep';
@@ -15,7 +16,11 @@ import { textStyles } from '@/styles/tokens';
 export default function CapsuleCreatePage() {
   const {
     step,
+    createdCapsuleId,
+    isCreating,
+    error,
     form,
+    nameError,
     activeSegments,
     totalSegments,
     maxNameLength,
@@ -54,9 +59,8 @@ export default function CapsuleCreatePage() {
         <InviteSheet
           open={inviteSheetOpen}
           onClose={handleCloseInviteSheet}
-          capsuleId=""
+          capsuleId={createdCapsuleId}
           role="PARTICIPANT"
-          inviteUrl={form.inviteLink}
         />
       </MobileLayout>
     );
@@ -81,6 +85,7 @@ export default function CapsuleCreatePage() {
             <CapsuleInfoStep
               iconIndex={form.iconIndex}
               name={form.name}
+              nameError={nameError}
               description={form.description}
               maxNameLength={maxNameLength}
               maxDescriptionLength={maxDescriptionLength}
@@ -113,9 +118,10 @@ export default function CapsuleCreatePage() {
           )}
         </div>
 
+        <QueryFeedback error={error} />
         <button
           type="button"
-          disabled={!isNextEnabled}
+          disabled={!isNextEnabled || isCreating}
           onClick={handleNext}
           className={`flex h-[52px] w-full items-center justify-center rounded-lg px-5 transition-colors ${
             isNextEnabled
@@ -123,7 +129,11 @@ export default function CapsuleCreatePage() {
               : 'bg-border-input text-text-hint cursor-not-allowed'
           } ${textStyles['button-label']}`}
         >
-          다음
+          {isCreating
+            ? '만드는 중…'
+            : step === 'dates'
+              ? '캡슐 만들기'
+              : '다음'}
         </button>
       </main>
 

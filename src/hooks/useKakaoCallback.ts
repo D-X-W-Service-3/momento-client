@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { loginWithKakaoCode } from '@/apis/auth';
@@ -11,6 +11,7 @@ import { takeRedirect } from '@/utils/auth';
 export function useKakaoCallback() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const client = useQueryClient();
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const [error, setError] = useState<string>();
   const { mutateAsync } = useMutation({
@@ -44,6 +45,8 @@ export function useKakaoCallback() {
     void request.current.promise
       .then(({ accessToken, isNewUser }) => {
         if (!active) return;
+        void client.cancelQueries();
+        client.removeQueries();
         setAccessToken(accessToken);
         // 신규 사용자의 복귀 경로는 프로필 설정이 끝난 뒤에 꺼낸다.
         navigate(isNewUser ? '/onboarding' : (takeRedirect() ?? '/home'), {
@@ -56,7 +59,7 @@ export function useKakaoCallback() {
     return () => {
       active = false;
     };
-  }, [code, kakaoError, mutateAsync, navigate, setAccessToken]);
+  }, [code, kakaoError, mutateAsync, navigate, setAccessToken, client]);
 
   return { error };
 }

@@ -3,29 +3,16 @@ export interface NicknameValidationResult {
   isError: boolean;
   message: string;
 }
-
 export function validateNickname(nickname: string): NicknameValidationResult {
-  const trimmed = nickname.trim();
-
-  if (trimmed.length === 0) {
-    return {
-      isValid: false,
-      isError: false,
-      message: '',
-    };
-  }
-
-  if (trimmed.length > 10) {
-    return {
-      isValid: false,
-      isError: true,
-      message: '닉네임은 10자 이하로 입력해주세요',
-    };
-  }
-
+  const length = nickname.trim().length;
   return {
-    isValid: true,
-    isError: false,
-    message: '사용 가능한 닉네임입니다',
+    isValid: length >= 2 && length <= 20,
+    isError: length > 0 && (length < 2 || length > 20),
+    message:
+      length === 0
+        ? ''
+        : length < 2 || length > 20
+          ? '닉네임은 2~20자로 입력해 주세요.'
+          : '',
   };
 }

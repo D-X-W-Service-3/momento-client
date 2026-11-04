@@ -22,9 +22,14 @@ export default function ArchiveImageViewer({
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
-      if (event.key === 'ArrowLeft' && index > 0) onChange(index - 1);
-      if (event.key === 'ArrowRight' && index < images.length - 1)
+      if (event.key === 'ArrowLeft' && index > 0) {
+        event.preventDefault();
+        onChange(index - 1);
+      }
+      if (event.key === 'ArrowRight' && index < images.length - 1) {
+        event.preventDefault();
         onChange(index + 1);
+      }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
@@ -48,7 +53,7 @@ export default function ArchiveImageViewer({
         aria-label="사진 닫기"
         onClick={onClose}
       >
-        ‹
+        <img src="/assets/archive/detail-back.svg" alt="" />
       </button>
       <span className="image-viewer-counter">
         {index + 1}/{images.length}
@@ -60,7 +65,7 @@ export default function ArchiveImageViewer({
           aria-label="더보기"
           onClick={onMore}
         >
-          ···
+          <img src="/assets/archive/detail-more.svg" alt="" />
         </button>
       )}
       {index > 0 && (
@@ -70,7 +75,7 @@ export default function ArchiveImageViewer({
           aria-label="이전 사진"
           onClick={() => onChange(index - 1)}
         >
-          ‹
+          <img src="/assets/archive/detail-back.svg" alt="" />
         </button>
       )}
       {index < images.length - 1 && (
@@ -80,17 +85,19 @@ export default function ArchiveImageViewer({
           aria-label="다음 사진"
           onClick={() => onChange(index + 1)}
         >
-          ›
+          <img src="/assets/archive/detail-back.svg" alt="" />
         </button>
       )}
       {onDelete && (
         <div className="image-viewer-actions">
           <button type="button" onClick={() => onDelete(index)}>
-            <span aria-hidden="true">×</span>이미지 삭제
+            <img src="/assets/archive/viewer-delete.svg" alt="" />
+            <span>이미지 삭제</span>
           </button>
           {index !== 0 && onMakeCover && (
             <button type="button" onClick={() => onMakeCover(index)}>
-              <span aria-hidden="true">★</span>대표사진 변경
+              <img src="/assets/archive/viewer-cover.svg" alt="" />
+              <span>대표사진 변경</span>
             </button>
           )}
         </div>

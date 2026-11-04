@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import capsuleDeleteIcon from '@/assets/icons/capsule-delete-on-dark.svg';
 import capsuleEditIcon from '@/assets/icons/capsule-edit-on-dark.svg';
@@ -27,6 +27,7 @@ import {
   canInviteRole,
   capsuleIconSrc,
   capsuleStatusChip,
+  capsuleTypeLabel,
 } from '@/utils/capsule';
 import { formatDotDate } from '@/utils/date';
 
@@ -38,10 +39,13 @@ const ADMIN_ACTIONS = [
 export default function CapsuleDetailPage() {
   const { capsuleId = '' } = useParams();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const { data: capsule } = useCapsuleDetail(capsuleId);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [lettersOpen, setLettersOpen] = useState(false);
+  const [lettersOpen, setLettersOpen] = useState(
+    () => params.get('view') === 'my-letters',
+  );
   const [deletingLetterId, setDeletingLetterId] = useState<string>();
   const [inviteRole, setInviteRole] = useState<CapsuleInviteRole>();
 
@@ -93,7 +97,7 @@ export default function CapsuleDetailPage() {
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-capsule-bg-from to-capsule-bg-to">
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         <BackHeader tone="dark" />
 
         {capsule && chip && permissions && (
@@ -110,15 +114,13 @@ export default function CapsuleDetailPage() {
             <section className="flex w-full flex-col gap-list">
               <div className="flex w-full items-end justify-between gap-list">
                 <div className="flex min-w-0 flex-col gap-stack">
-                  <div className="flex gap-stack">
+                  <div className="flex flex-wrap items-center gap-stack">
                     <Chip tone={chip.tone} className="font-display">
                       {chip.label}
                     </Chip>
-                    {capsule.capsuleType === 'GROUP' && (
-                      <Chip tone={chip.groupTone} className="font-display">
-                        그룹캡슐
-                      </Chip>
-                    )}
+                    <Chip tone={chip.groupTone} className="font-display">
+                      {capsuleTypeLabel[capsule.capsuleType]}
+                    </Chip>
                   </div>
                   <div className="flex flex-col gap-1">
                     <h1 className="text-title-sm font-semibold text-on-primary">
@@ -172,23 +174,28 @@ export default function CapsuleDetailPage() {
                   )}
               </section>
 
-              <section className="flex flex-col gap-list">
-                <SectionHeader
-                  title="수신자"
-                  count={`${capsule.recipients.count}명`}
-                  onViewAll={() => navigate(capsuleReceiversPath(capsuleId))}
-                />
-                <AvatarGroup
-                  members={capsule.recipients.previews}
-                  totalCount={capsule.recipients.count}
-                />
-                {permissions.canInvite &&
-                  canInviteRole(capsule.capsuleType, 'RECIPIENT') && (
-                    <GhostButton onClick={() => setInviteRole('RECIPIENT')}>
-                      수신자 초대
-                    </GhostButton>
-                  )}
-              </section>
+              {capsule.capsuleType !== 'FRIEND' &&
+                capsule.visibilityType !== 'ALL_MEMBERS' && (
+                  <section className="flex flex-col gap-list">
+                    <SectionHeader
+                      title="수신자"
+                      count={`${capsule.recipients.count}명`}
+                      onViewAll={() =>
+                        navigate(capsuleReceiversPath(capsuleId))
+                      }
+                    />
+                    <AvatarGroup
+                      members={capsule.recipients.previews}
+                      totalCount={capsule.recipients.count}
+                    />
+                    {permissions.canInvite &&
+                      canInviteRole(capsule.capsuleType, 'RECIPIENT') && (
+                        <GhostButton onClick={() => setInviteRole('RECIPIENT')}>
+                          수신자 초대
+                        </GhostButton>
+                      )}
+                  </section>
+                )}
 
               {permissions.canManage && (
                 <section className="flex flex-col gap-list">

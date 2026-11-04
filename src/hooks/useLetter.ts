@@ -9,6 +9,7 @@ import {
 } from '@/apis/letter';
 import { capsuleKeys } from '@/hooks/useCapsule';
 import type { LetterCreateRequest } from '@/types/letter';
+import { invalidateCapsuleQueries } from '@/utils/queryInvalidation';
 
 export const letterKeys = {
   papers: ['letter', 'papers'] as const,
@@ -42,6 +43,7 @@ export const useCreateLetter = (capsuleId: string) => {
   return useMutation({
     mutationFn: (body: LetterCreateRequest) => createLetter(capsuleId, body),
     onSuccess: () => {
+      void invalidateCapsuleQueries(queryClient);
       // 편지 수가 상세 화면에도 찍힌다.
       queryClient.invalidateQueries({ queryKey: letterKeys.mine(capsuleId) });
       queryClient.invalidateQueries({
@@ -56,6 +58,7 @@ export const useDeleteLetter = (capsuleId: string) => {
   return useMutation({
     mutationFn: (letterId: string) => deleteLetter(letterId),
     onSuccess: () => {
+      void invalidateCapsuleQueries(queryClient);
       queryClient.invalidateQueries({ queryKey: letterKeys.mine(capsuleId) });
       queryClient.invalidateQueries({
         queryKey: capsuleKeys.detail(capsuleId),

@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import BottomSheet from '@/components/common/BottomSheet';
-import { SearchIcon } from '@/components/common/Icons';
+import CapsuleSearchBar from '@/components/capsule/CapsuleSearchBar';
+import ContentState from '@/components/common/ContentState';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import CalendarCard from '@/components/calendar/CalendarCards';
 import { BackHeader } from '@/components/layout/Headers';
 import MobileLayout from '@/components/layout/MobileLayout';
@@ -20,7 +22,7 @@ export default function CalendarSearchPage() {
     const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 250);
     return () => window.clearTimeout(timer);
   }, [query]);
-  const { data, error } = useQuery({
+  const { data, error, isPending, refetch } = useQuery({
     queryKey: ['calendar-search', debouncedQuery, period, sort],
     queryFn: () =>
       searchCalendar(
@@ -33,76 +35,112 @@ export default function CalendarSearchPage() {
   });
   const results: CalendarItem[] =
     debouncedQuery && data ? toCalendarItems(data) : [];
+  const hasQuery = Boolean(query.trim());
+  const loading = hasQuery && (query.trim() !== debouncedQuery || isPending);
+  const chevron = (
+    <svg
+      viewBox="0 0 10.75 6.375"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="h-[5px] w-2 shrink-0 rotate-180"
+    >
+      <path d="M1 5.375L5.375 1L9.75 5.375" />
+    </svg>
+  );
   return (
-    <MobileLayout>
+    <MobileLayout className="calendar-page calendar-search-page">
       <BackHeader title="검색" />
       <section className="search-page">
-        {error && (
-          <p className="field-error" role="alert">
-            {error.message}
-          </p>
-        )}
-        <label className="search-field">
-          <input
-            autoFocus
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="캡슐 및 아카이브, 기념일 검색"
-          />
-          <SearchIcon />
-        </label>
+        <CapsuleSearchBar
+          autoFocus
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="캡슐 및 아카이브, 기념일 검색"
+        />
         <div className="search-tools">
           <button type="button" onClick={() => setPeriodOpen(true)}>
-            {period === '전체 기간' ? '전체' : period} {results.length}개⌄
+            <span>
+              {period === '전체 기간' ? '전체' : period}{' '}
+              {loading ? '…' : results.length}개
+            </span>
+            {chevron}
           </button>
           <div className="sort-selector">
             <button
               type="button"
               aria-expanded={sortOpen}
+              aria-controls="calendar-sort-options"
               onClick={() => setSortOpen((open) => !open)}
             >
-              {sort}⌄
+              <span>{sort}</span>
+              {chevron}
             </button>
             {sortOpen && (
-              <div className="sort-options">
+              <div
+                className="sort-options"
+                id="calendar-sort-options"
+                onKeyDown={(event) => {
+                  if (event.key === 'Escape') setSortOpen(false);
+                }}
+              >
                 {(['오래된순', '최신순'] as const).map((option) => (
                   <button
                     type="button"
                     key={option}
+                    aria-pressed={sort === option}
                     onClick={() => {
                       setSort(option);
                       setSortOpen(false);
                     }}
                   >
-                    {option}
-                    {sort === option && <span>✓</span>}
+                    <span>{option}</span>
+                    <span aria-hidden="true">{sort === option ? '✓' : ''}</span>
                   </button>
                 ))}
               </div>
             )}
           </div>
         </div>
-        {(['capsule', 'anniversary', 'archive'] as const).map((type) => {
-          const items = results.filter((item) => item.type === type);
-          if (!items.length) return null;
-          return (
-            <section className="search-group" key={type}>
-              <h2>
-                {type === 'capsule'
-                  ? '타임캡슐'
-                  : type === 'anniversary'
-                    ? '기념일'
-                    : '아카이브'}
-              </h2>
-              {items.map((item) => (
-                <CalendarCard key={item.id} item={item} />
-              ))}
-            </section>
-          );
-        })}
-        {results.length === 0 && (
-          <p className="empty-state">검색 결과가 없어요.</p>
+        {!hasQuery ? (
+          <ContentState
+            title="검색어를 입력해주세요"
+            description="찾고 싶은 캡슐, 아카이브, 기념일을 검색해보세요."
+          />
+        ) : (
+          <QueryFeedback
+            loading={loading}
+            error={error}
+            onRetry={refetch}
+            empty={results.length === 0}
+            emptyMessage="검색 결과가 없어요"
+            emptyDescription="다른 검색어나 기간으로 다시 찾아보세요."
+          />
         )}
+        {!loading &&
+          hasQuery &&
+          !error &&
+          (['capsule', 'anniversary', 'archive'] as const).map((type) => {
+            const items = results.filter((item) => item.type === type);
+            if (!items.length) return null;
+            return (
+              <section className="search-group" key={type}>
+                <h2>
+                  {type === 'capsule'
+                    ? '타임캡슐'
+                    : type === 'anniversary'
+                      ? '기념일'
+                      : '아카이브'}
+                </h2>
+                {items.map((item) => (
+                  <CalendarCard key={item.id} item={item} />
+                ))}
+              </section>
+            );
+          })}
       </section>
       <BottomSheet
         open={periodOpen}

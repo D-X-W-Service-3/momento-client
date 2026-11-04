@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import { ChevronLeft, MoreIcon } from '@/components/common/Icons';
+import { MoreIcon } from '@/components/common/Icons';
 import HomeHeader from '@/components/layout/HomeHeader';
 
 export function BrandHeader() {
@@ -22,7 +22,7 @@ export function BackHeader({ title, onMore, onBack }: BackHeaderProps) {
         aria-label="뒤로 가기"
         onClick={onBack ?? (() => navigate(-1))}
       >
-        <ChevronLeft className="back-glyph" />
+        <img src="/assets/anniversary/back.svg" alt="" className="back-glyph" />
       </button>
       <strong>{title}</strong>
       {onMore ? (
