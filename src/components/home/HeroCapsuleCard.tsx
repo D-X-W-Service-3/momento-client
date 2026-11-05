@@ -37,7 +37,7 @@ export default function HeroCapsuleCard({
       <img
         src={homeHeroCharacter}
         alt="편지를 든 모모 캐릭터"
-        className="pointer-events-none absolute right-0 bottom-0 h-[193px] w-[184px] object-contain"
+        className="pointer-events-none absolute right-3 -bottom-3 h-[193px] w-[184px] object-contain object-bottom"
       />
 
       <div className="relative z-10 flex h-full flex-col justify-between pt-[43px] pb-[31px] pl-[29px] pr-5">
