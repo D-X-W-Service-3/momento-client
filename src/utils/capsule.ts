@@ -1,5 +1,5 @@
-import capsuleHero from '@/assets/images/capsule/capsule-hero.webp';
 import type { ChipTone } from '@/components/common/Chip';
+import { capsuleIconSrc } from '@/constants/capsuleIcons';
 import type {
   CapsuleInviteRole,
   CapsuleKind,
@@ -7,11 +7,7 @@ import type {
   CapsuleSummary,
 } from '@/types/capsule';
 
-/**
- * 서버는 대표 아이콘을 iconType 문자열로만 준다.
- * TODO: 아이콘 세트가 확정되면 iconType ↔ 에셋 매핑으로 교체.
- */
-export const capsuleIconSrc = (_iconType: string) => capsuleHero;
+export { capsuleIconSrc };
 
 export interface CapsuleStatusChip {
   label: string;
