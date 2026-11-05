@@ -10,17 +10,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'autoUpdate',
-  includeAssets: ['icons/favicon-32.png', 'icons/favicon-16.png'],
+  includeAssets: [
+    'icons/favicon-16.png',
+    'icons/favicon-32.png',
+    'icons/apple-touch-icon.png',
+  ],
   manifest: {
+    id: '/',
     name: 'Momento',
     short_name: 'Momento',
+    description: '소중한 순간을 타임캡슐에 담아두는 모멘토',
+    lang: 'ko',
     start_url: '/',
     scope: '/',
     display: 'standalone',
+    orientation: 'portrait',
+    // index.html 의 theme-color 메타와 맞춘다 (앱 기본 배경 surface-white)
     background_color: '#ffffff',
-    theme_color: '#4f46e5',
-    description: 'Momento',
-    // TODO: 디자인 확정 후 public/icons 에 실제 아이콘을 넣고 경로를 맞춰주세요.
+    theme_color: '#ffffff',
+    // 임시 아이콘: 마스코트(login-character.png) 기반. 앱 아이콘 확정 시 교체
     icons: [
       { src: '/icons/192.png', sizes: '192x192', type: 'image/png' },
       { src: '/icons/512.png', sizes: '512x512', type: 'image/png' },
@@ -33,7 +41,13 @@ const pwaOptions: Partial<VitePWAOptions> = {
     ],
   },
   workbox: {
-    globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+    // 앱 셸만 프리캐시. 이미지(수 MB)는 아래 런타임 캐시로 처음 볼 때 저장
+    globPatterns: ['**/*.{js,css,html,ico,woff2}', 'icons/*.png'],
+    // SPA 라우팅: 오프라인/재방문 시 모든 내비게이션을 index.html 로
+    navigateFallback: '/index.html',
+    // 개발 프록시 경로(/api)는 SPA 폴백 대상에서 제외
+    navigateFallbackDenylist: [/^\/api\//],
+    cleanupOutdatedCaches: true,
     runtimeCaching: [
       {
         urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|webp)$/,
