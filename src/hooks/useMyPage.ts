@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { logout as requestLogout } from '@/apis/auth';
 import { deleteMyAccount, fetchMyProfile, toMyPageData } from '@/apis/mypage';
+import { unregisterPushOnLogout } from '@/hooks/usePushNotification';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 export function useMyPage() {
@@ -38,7 +39,9 @@ export function useMyPage() {
     handleBack: () => navigate(-1),
     handleEditProfile: () => navigate('/mypage/edit'),
     handleNotificationSettings: () => navigate('/mypage/notifications'),
-    handleLogout: () => {
+    handleLogout: async () => {
+      // 토큰을 지우기 전에 이 기기의 푸시 구독부터 서버에서 해제한다.
+      await unregisterPushOnLogout().catch(() => undefined);
       void requestLogout().catch(() => undefined);
       clearSession();
     },

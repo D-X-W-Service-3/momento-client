@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import BottomSheet from '@/components/common/BottomSheet';
 import { getReceivedMemories, toKoreanDate } from '@/apis/momento';
+import ArchiveCoverCarousel from '@/components/archive/ArchiveCoverCarousel';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import PhotoCount from '@/components/archive/PhotoCount';
 import MobileLayout from '@/components/layout/MobileLayout';
@@ -103,20 +104,7 @@ export default function SharedArchivePage() {
         </div>
       ) : (
         <article className="archive-detail shared-detail">
-          <div className="detail-cover-wrap">
-            {images[0] && (
-              <button
-                type="button"
-                className="detail-cover-trigger"
-                onClick={() => setSelectedImage(0)}
-              >
-                <img className="detail-cover" src={images[0]} alt="대표 사진" />
-              </button>
-            )}
-            {images.length > 0 && (
-              <span className="detail-cover-counter">1 / {images.length}</span>
-            )}
-          </div>
+          <ArchiveCoverCarousel images={images} onOpen={setSelectedImage} />
           <header className="archive-detail-header">
             <button
               type="button"
