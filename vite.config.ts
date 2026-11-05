@@ -32,7 +32,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
     // index.html 의 theme-color 메타와 맞춘다 (앱 기본 배경 surface-white)
     background_color: '#ffffff',
     theme_color: '#ffffff',
-    // 임시 아이콘: 마스코트(login-character.png) 기반. 앱 아이콘 확정 시 교체
+    // 앱 아이콘 (M 로고). maskable·apple-touch 는 불투명 정사각으로 별도 생성
     icons: [
       { src: '/icons/192.png', sizes: '192x192', type: 'image/png' },
       { src: '/icons/512.png', sizes: '512x512', type: 'image/png' },

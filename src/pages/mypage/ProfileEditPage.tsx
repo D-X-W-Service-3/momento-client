@@ -94,7 +94,8 @@ export default function ProfileEditPage() {
         </fieldset>
       </main>
 
-      <div className="px-5 pt-[10px] pb-5">
+      {/* 하단 고정: 내용이 길어도 저장 버튼이 항상 보이게 */}
+      <div className="bg-surface-white sticky bottom-0 z-20 px-5 pt-[10px] pb-[max(20px,env(safe-area-inset-bottom))]">
         <button
           type="button"
           onClick={handleSave}

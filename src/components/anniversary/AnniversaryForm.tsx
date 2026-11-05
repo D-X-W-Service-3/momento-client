@@ -203,24 +203,26 @@ export default function AnniversaryForm({
             </button>
           </div>
         </section>
-        {mode === 'create' ? (
-          <button type="submit" className="button-primary anniversary-submit">
-            저장하기
-          </button>
-        ) : (
-          <div className="form-controls">
-            <button
-              type="button"
-              className="button-secondary"
-              onClick={() => setDeleteOpen(true)}
-            >
-              삭제
+        <div className="sticky-action">
+          {mode === 'create' ? (
+            <button type="submit" className="button-primary anniversary-submit">
+              저장하기
             </button>
-            <button type="submit" className="button-primary">
-              수정하기
-            </button>
-          </div>
-        )}
+          ) : (
+            <div className="form-controls">
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={() => setDeleteOpen(true)}
+              >
+                삭제
+              </button>
+              <button type="submit" className="button-primary">
+                수정하기
+              </button>
+            </div>
+          )}
+        </div>
       </form>
       <BottomSheet open={sheet === 'date'} onClose={closeDateSheet}>
         <DatePicker

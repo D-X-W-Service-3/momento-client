@@ -19,6 +19,7 @@ import {
   LETTER_TITLE_MAX_LENGTH,
   type LetterType,
 } from '@/types/letter';
+import StickyBottomBar from '@/components/common/StickyBottomBar';
 
 export default function LetterCreatePage() {
   const { capsuleId = '' } = useParams();
@@ -64,11 +65,11 @@ export default function LetterCreatePage() {
 
   return (
     <div className="min-h-[100dvh] bg-surface-gray">
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col pb-[env(safe-area-inset-bottom)]">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col">
         <BackHeader title="편지 추가" onBack={handleBack} />
 
-        <main className="flex flex-1 flex-col justify-between px-5 pb-5">
-          <div className="flex flex-col gap-card">
+        <main className="flex flex-1 flex-col px-5">
+          <div className="flex flex-1 flex-col gap-card">
             <div className="flex flex-col gap-1">
               {/* 화면 제목(h1)은 BackHeader 가 담당한다 */}
               <h2 className="font-display text-title-md font-bold text-ink">
@@ -95,18 +96,21 @@ export default function LetterCreatePage() {
               value={content}
               onChange={setContent}
               maxLength={LETTER_CONTENT_MAX_LENGTH}
-              className="h-[460px]"
+              // 화면 높이에 맞춰 남은 공간을 채운다 (최소 높이만 보장)
+              className="min-h-[180px] flex-1"
             />
           </div>
 
-          <Button
-            disabled={
-              !title.trim() || !content.trim() || createLetter.isPending
-            }
-            onClick={handleSubmit}
-          >
-            캡슐에 담기
-          </Button>
+          <StickyBottomBar className="bg-surface-gray">
+            <Button
+              disabled={
+                !title.trim() || !content.trim() || createLetter.isPending
+              }
+              onClick={handleSubmit}
+            >
+              캡슐에 담기
+            </Button>
+          </StickyBottomBar>
         </main>
       </div>
 
