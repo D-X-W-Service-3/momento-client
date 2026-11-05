@@ -11,6 +11,11 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import { searchCalendar, toCalendarItems } from '@/apis/momento';
 import type { CalendarItem } from '@/types/momento';
 
+const SEARCH_YEARS = Array.from(
+  { length: 4 },
+  (_, index) => new Date().getFullYear() + index,
+);
+
 export default function CalendarSearchPage() {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -148,7 +153,7 @@ export default function CalendarSearchPage() {
         title="언제 저장한 추억을 볼까요"
       >
         <div className="option-list">
-          {['전체 기간', '2026년', '2027년', '2028년', '2029년'].map(
+          {['전체 기간', ...SEARCH_YEARS.map((year) => `${year}년`)].map(
             (option) => (
               <button
                 type="button"

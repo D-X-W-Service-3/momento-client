@@ -47,7 +47,7 @@ const ROLE_CONTENT: Record<CapsuleInviteRole, RoleContent> = {
     headerTitle: '수신자 관리',
     title: '이 타임캡슐의 수신자에요',
     description: [
-      '타임캡슐의 참여자는 편지와 사진을 남길 수 없지만,',
+      '수신자는 편지와 사진을 남길 수 없지만,',
       '개봉일 이후 모든 편지와 사진을 볼 수 있어요',
     ],
     countLabel: '수신자',

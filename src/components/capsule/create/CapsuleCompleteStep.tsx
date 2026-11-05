@@ -26,7 +26,7 @@ export default function CapsuleCompleteStep({
             생성을 완료했어요!
           </h2>
           <p className="text-text-button-sub text-body-lg leading-[25.6px] font-medium tracking-[-0.32px]">
-            시간 속에 맡겨둘 타입캡슐을 만들었어요
+            시간 속에 맡겨둘 타임캡슐을 만들었어요
             <br />
             지금 바로 편지를 작성해보세요
           </p>
