@@ -106,7 +106,7 @@ export default function CapsuleFeaturedSection({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseEnd}
         onMouseLeave={handleMouseEnd}
-        className="flex w-full cursor-grab snap-x snap-mandatory overflow-x-auto rounded-xl select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+        className="-my-3 flex w-[calc(100%+24px)] cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto px-3 py-3 select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
       >
         {capsules.length === 0 && (
           <Link

@@ -45,7 +45,7 @@ export default function CapsuleHorizontalSection({
       <div
         ref={containerRef}
         {...dragProps}
-        className={`${items.length <= 1 ? 'w-full' : '-mr-5 pr-5'} flex cursor-grab touch-pan-x gap-3 overflow-x-auto select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden`}
+        className={`${items.length <= 1 ? '-mx-3 px-3' : '-ml-3 -mr-5 pl-3 pr-5'} -my-3 flex cursor-grab touch-pan-x gap-3 overflow-x-auto py-3 select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden`}
       >
         {items.length === 0 && (
           <div className="bg-surface-white flex h-[126px] w-full shrink-0 items-center justify-between gap-3 rounded-xl px-5 py-[15px] shadow-[0_2px_8px_rgb(26_23_22/0.05)]">
