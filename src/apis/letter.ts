@@ -19,14 +19,14 @@ import type {
 const LETTER_PAPERS: LetterPaper[] = [
   {
     id: 'watercolor',
-    name: '수채화',
+    name: 'water',
     imageUrl: watercolor,
     themeType: 'WATERCOLOR',
   },
-  { id: 'pastel', name: '파스텔', imageUrl: pastel, themeType: 'PASTEL' },
-  { id: 'anime', name: '애니메이션', imageUrl: anime, themeType: 'ANIME' },
-  { id: 'joseon', name: '조선시대', imageUrl: joseon, themeType: 'JOSEON' },
-  { id: 'vintage', name: '빈티지', imageUrl: vintage, themeType: 'VINTAGE' },
+  { id: 'pastel', name: 'pstl', imageUrl: pastel, themeType: 'PASTEL' },
+  { id: 'anime', name: 'anime', imageUrl: anime, themeType: 'ANIME' },
+  { id: 'joseon', name: 'josen', imageUrl: joseon, themeType: 'JOSEON' },
+  { id: 'vintage', name: 'vintage', imageUrl: vintage, themeType: 'VINTAGE' },
 ];
 
 // 편지지 이미지는 프론트 에셋이라 서버 호출이 없다. 훅 인터페이스만 맞춘다.
