@@ -6,6 +6,10 @@ import { invalidateCapsuleQueries } from '@/utils/queryInvalidation';
 
 import { capsuleCoverPath } from '@/constants/routes';
 import {
+  CAPSULE_ICONS,
+  DEFAULT_CAPSULE_ICON_TYPE,
+} from '@/constants/capsuleIcons';
+import {
   CAPSULE_DESCRIPTION_MAX_LENGTH,
   CAPSULE_DESCRIPTION_MIN_LENGTH,
   CAPSULE_NAME_MAX_LENGTH,
@@ -16,7 +20,7 @@ import {
 } from '@/types/capsule';
 import { parseKoreanDate } from '@/utils/dates';
 
-const TOTAL_ICONS = 5;
+const TOTAL_ICONS = CAPSULE_ICONS.length;
 
 const VALID_STEPS: readonly CapsuleCreateStep[] = [
   'info',
@@ -286,7 +290,8 @@ export function useCapsuleCreate() {
       submitting.current = true;
       creation.mutate(
         {
-          iconType: 'ICE_CREAM',
+          iconType:
+            CAPSULE_ICONS[form.iconIndex]?.id ?? DEFAULT_CAPSULE_ICON_TYPE,
           title: form.name.trim(),
           description: form.description.trim(),
           capsuleType:

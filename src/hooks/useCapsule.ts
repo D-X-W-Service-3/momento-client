@@ -8,7 +8,6 @@ import {
   getCapsuleIcons,
   getCapsuleMembers,
   getInvitePreview,
-  MOCK_CAPSULE_ICONS,
   openCapsule,
   regenerateInviteLink,
   rejectInvite,
@@ -16,6 +15,7 @@ import {
   updateCapsule,
   type CapsuleUpdateRequest,
 } from '@/apis/capsule';
+import { CAPSULE_ICONS } from '@/constants/capsuleIcons';
 import type { CapsuleInvite, CapsuleInviteRole } from '@/types/capsule';
 import { invalidateCapsuleQueries } from '@/utils/queryInvalidation';
 
@@ -47,7 +47,7 @@ export const useCapsuleIcons = () =>
   useQuery({
     queryKey: ['capsule', 'icons'],
     queryFn: getCapsuleIcons,
-    initialData: MOCK_CAPSULE_ICONS,
+    initialData: CAPSULE_ICONS,
     staleTime: Infinity,
   });
 

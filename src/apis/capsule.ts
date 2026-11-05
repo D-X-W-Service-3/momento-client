@@ -1,5 +1,5 @@
-import capsuleHero from '@/assets/images/capsule/capsule-hero.webp';
 import { api } from '@/apis/client';
+import { CAPSULE_ICONS } from '@/constants/capsuleIcons';
 import type {
   CapsuleDetail,
   CapsuleIconOption,
@@ -70,18 +70,5 @@ export const acceptInvite = (inviteToken: string) =>
 export const rejectInvite = (inviteToken: string) =>
   api.post<void>(`/v1/invites/${inviteToken}/reject`);
 
-/* ------------------------------------------------------------------
- * 아이콘 목록은 아직 서버 엔드포인트가 없다. iconType 은 문자열로 받는다.
- * ---------------------------------------------------------------- */
-
-// TODO: 아이콘 세트가 나오면 교체. 지금은 같은 이미지를 Figma 의 점 개수(5개)만큼 둔다.
-export const MOCK_CAPSULE_ICONS: CapsuleIconOption[] = Array.from(
-  { length: 5 },
-  (_, index) => ({
-    id: `icon-${index + 1}`,
-    imageUrl: capsuleHero,
-  }),
-);
-
 export const getCapsuleIcons = async (): Promise<CapsuleIconOption[]> =>
-  MOCK_CAPSULE_ICONS;
+  CAPSULE_ICONS;
