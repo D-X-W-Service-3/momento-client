@@ -34,7 +34,7 @@ export default function CapsuleListPage() {
     <MobileLayout withNav>
       <HomeHeader onClickBell={handleNotifications} />
 
-      <div className="flex min-h-[calc(100dvh-126px)] flex-col gap-5 px-5 pb-8">
+      <div className="flex min-h-[calc(100dvh-126px-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col gap-5 px-5 pb-8">
         <PageIntro
           title="타임캡슐 목록"
           description={

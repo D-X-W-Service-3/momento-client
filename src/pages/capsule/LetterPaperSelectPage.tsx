@@ -19,6 +19,7 @@ export default function LetterPaperSelectPage() {
   const location = useLocation();
   const { data: papers } = useLetterPapers();
   const [selectedId, setSelectedId] = useState<string>();
+  const rowCount = Math.ceil((papers?.length ?? 0) / 2);
 
   // 1단계에서 고른 편지 유형. 없으면 처음부터 다시 받는다.
   const letterType = (location.state as { letterType?: LetterType } | null)
@@ -29,8 +30,9 @@ export default function LetterPaperSelectPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-surface-gray">
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col items-center gap-[9px] pb-[max(22px,env(safe-area-inset-bottom))]">
+    <div className="h-[100dvh] overflow-hidden bg-surface-gray">
+      {/* 한 화면에 맞춘다: 카드 영역이 남은 높이에 맞춰 줄어들고 페이지는 스크롤되지 않는다 */}
+      <div className="mx-auto flex h-full w-full max-w-app flex-col items-center gap-[9px] pb-[max(22px,env(safe-area-inset-bottom))]">
         <BackHeader title="편지 작성" />
 
         <div className="flex w-full flex-col gap-1 px-5">
@@ -45,16 +47,27 @@ export default function LetterPaperSelectPage() {
           </p>
         </div>
 
-        {/* flex-1 로 남은 높이를 차지하되, content-start 로 행이 늘어나지 않게 한다 */}
-        <ul className="grid w-full flex-1 grid-cols-2 content-start gap-x-[17px] gap-y-4 px-5 pt-[19px]">
+        {/* 남은 높이를 행 수로 나누되 한 행은 최대 178px(Figma). content-start 로 행이 늘어나지 않게 한다 */}
+        <ul
+          className="grid min-h-0 w-full flex-1 grid-cols-2 content-start gap-x-[17px] gap-y-4 px-5 pt-[19px]"
+          style={{
+            gridTemplateRows: `repeat(${rowCount}, minmax(0, 178px))`,
+          }}
+        >
           {papers?.map((paper) => (
             // Figma 카드 프레임은 168x178 — 우표(168) 아래 10px 여백이 있다.
-            <li key={paper.id} className="h-[178px]">
-              <LetterPaperCard
-                paper={paper}
-                selected={paper.id === selectedId}
-                onSelect={() => setSelectedId(paper.id)}
-              />
+            // 셀 크기(cq 단위) 안에 들어가는 정사각형으로 우표 크기를 정한다.
+            <li
+              key={paper.id}
+              className="flex min-h-0 justify-center [container-type:size]"
+            >
+              <div className="w-[min(100cqw,calc(100cqh-10px))]">
+                <LetterPaperCard
+                  paper={paper}
+                  selected={paper.id === selectedId}
+                  onSelect={() => setSelectedId(paper.id)}
+                />
+              </div>
             </li>
           ))}
         </ul>

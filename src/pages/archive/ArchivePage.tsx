@@ -43,7 +43,7 @@ export default function ArchivePage() {
 
   return (
     <MobileLayout withNav className="archive-page">
-      <div className="flex min-h-[calc(100dvh-70px)] flex-col">
+      <div className="flex min-h-[calc(100dvh-70px-env(safe-area-inset-bottom))] flex-col">
         <BrandHeader />
         <section className="page-body archive-body flex-1">
           <PageIntro

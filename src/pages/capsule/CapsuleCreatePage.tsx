@@ -12,6 +12,7 @@ import BackHeader from '@/components/layout/BackHeader';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { useCapsuleCreate } from '@/hooks/useCapsuleCreate';
 import { textStyles } from '@/styles/tokens';
+import StickyBottomBar from '@/components/common/StickyBottomBar';
 
 export default function CapsuleCreatePage() {
   const {
@@ -74,7 +75,7 @@ export default function CapsuleCreatePage() {
         className="bg-surface-gray"
       />
 
-      <main className="flex flex-1 flex-col justify-between gap-5 px-5 pt-2 pb-5">
+      <main className="flex flex-1 flex-col justify-between gap-5 px-5 pt-2">
         <div className="flex w-full flex-col gap-5">
           <CapsuleStepProgress
             activeSegments={activeSegments}
@@ -119,22 +120,24 @@ export default function CapsuleCreatePage() {
         </div>
 
         <QueryFeedback error={error} />
-        <button
-          type="button"
-          disabled={!isNextEnabled || isCreating}
-          onClick={handleNext}
-          className={`flex h-[52px] w-full items-center justify-center rounded-lg px-5 transition-colors ${
-            isNextEnabled
-              ? 'bg-primary text-text-on-primary cursor-pointer'
-              : 'bg-border-input text-text-hint cursor-not-allowed'
-          } ${textStyles['button-label']}`}
-        >
-          {isCreating
-            ? '만드는 중…'
-            : step === 'dates'
-              ? '캡슐 만들기'
-              : '다음'}
-        </button>
+        <StickyBottomBar className="bg-surface-gray">
+          <button
+            type="button"
+            disabled={!isNextEnabled || isCreating}
+            onClick={handleNext}
+            className={`flex h-[52px] w-full items-center justify-center rounded-lg px-5 transition-colors ${
+              isNextEnabled
+                ? 'bg-primary text-text-on-primary cursor-pointer'
+                : 'bg-border-input text-text-hint cursor-not-allowed'
+            } ${textStyles['button-label']}`}
+          >
+            {isCreating
+              ? '만드는 중…'
+              : step === 'dates'
+                ? '캡슐 만들기'
+                : '다음'}
+          </button>
+        </StickyBottomBar>
       </main>
 
       <BottomSheet open={dateSheet !== null} onClose={handleCloseDateSheet}>

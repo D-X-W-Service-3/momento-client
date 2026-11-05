@@ -17,6 +17,7 @@ import {
   CAPSULE_DESCRIPTION_MIN_LENGTH,
   CAPSULE_NAME_MAX_LENGTH,
 } from '@/types/capsule';
+import StickyBottomBar from '@/components/common/StickyBottomBar';
 
 export default function CapsuleEditPage() {
   const { capsuleId = '' } = useParams();
@@ -73,10 +74,10 @@ export default function CapsuleEditPage() {
 
   return (
     <div className="min-h-[100dvh] bg-surface-gray">
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col pb-[env(safe-area-inset-bottom)]">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col">
         <BackHeader title="캡슐 수정하기" />
 
-        <main className="flex flex-1 flex-col justify-between px-5 pb-5">
+        <main className="flex flex-1 flex-col justify-between px-5">
           <div className="flex flex-col gap-card">
             {icons && (
               <CapsuleIconPicker
@@ -117,12 +118,14 @@ export default function CapsuleEditPage() {
             </InfoNote>
           </div>
 
-          <Button
-            disabled={!hasValidInfo || updateCapsule.isPending}
-            onClick={handleSubmit}
-          >
-            수정하기
-          </Button>
+          <StickyBottomBar className="bg-surface-gray">
+            <Button
+              disabled={!hasValidInfo || updateCapsule.isPending}
+              onClick={handleSubmit}
+            >
+              수정하기
+            </Button>
+          </StickyBottomBar>
         </main>
       </div>
     </div>

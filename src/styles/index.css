@@ -1044,8 +1044,8 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    min-height: calc(100dvh - 56px);
-    padding: 0 20px 20px;
+    min-height: calc(100dvh - 56px - env(safe-area-inset-top));
+    padding: 0 20px;
     background: white;
   }
   .anniversary-page .back-header {
@@ -1232,6 +1232,26 @@
   }
   .submit-button {
     margin-top: auto;
+  }
+  /*
+   * 폼 하단 고정 버튼 영역. 내용이 길면 내용만 스크롤되고 버튼은 화면 아래에 붙어 있다.
+   * 부모의 좌우 패딩(20px)을 상쇄해 가로로 꽉 채우고, 배경색은 --sticky-action-bg 로 맞춘다.
+   */
+  .sticky-action {
+    position: sticky;
+    z-index: 20;
+    bottom: 0;
+    margin: auto -20px 0;
+    padding: 12px 20px max(20px, env(safe-area-inset-bottom));
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--sticky-action-bg, var(--color-surface-white)) 12px
+    );
+  }
+  .sticky-action > .button-primary,
+  .sticky-action > .form-controls {
+    width: 100%;
   }
   .date-picker h2 {
     display: flex;
@@ -1569,7 +1589,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
-    min-height: calc(100dvh - 56px);
+    min-height: calc(100dvh - 56px - env(safe-area-inset-top));
     padding: 10px 20px 24px;
   }
   .search-tools {
@@ -1612,6 +1632,7 @@
     font-weight: 400;
   }
   .anniversary-form {
+    --sticky-action-bg: var(--color-surface-gray);
     padding-top: 0;
     background: var(--color-surface-gray);
   }

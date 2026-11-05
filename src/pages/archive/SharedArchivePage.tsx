@@ -72,7 +72,7 @@ export default function SharedArchivePage() {
         </p>
       )}
       {!item ? (
-        <div className="flex min-h-[calc(100dvh-56px)] flex-col items-center justify-center gap-5 px-5 pb-8">
+        <div className="flex min-h-[calc(100dvh-56px-env(safe-area-inset-top))] flex-col items-center justify-center gap-5 px-5 pb-8">
           <ContentState
             title={
               receiveError || (!token && receivedQuery.error)

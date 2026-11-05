@@ -193,20 +193,22 @@ export default function ArchiveFormPage() {
             {error}
           </p>
         )}
-        <button
-          className="button-primary submit-button"
-          type="submit"
-          disabled={busy}
-          aria-disabled={!canSave}
-          onKeyDown={(event) => {
-            if (!canSave && (event.key === 'Enter' || event.key === ' ')) {
-              event.preventDefault();
-              void save();
-            }
-          }}
-        >
-          {editing ? '수정하기' : '저장하기'}
-        </button>
+        <div className="sticky-action">
+          <button
+            className="button-primary"
+            type="submit"
+            disabled={busy}
+            aria-disabled={!canSave}
+            onKeyDown={(event) => {
+              if (!canSave && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault();
+                void save();
+              }
+            }}
+          >
+            {editing ? '수정하기' : '저장하기'}
+          </button>
+        </div>
       </form>
       <BottomSheet open={calendarOpen} onClose={closeCalendar}>
         <DatePicker

@@ -16,6 +16,7 @@ import {
 } from '@/hooks/useCapsule';
 import type { CapsuleInviteRole } from '@/types/capsule';
 import { capsuleIconSrc, capsuleStatusChip } from '@/utils/capsule';
+import StickyBottomBar from '@/components/common/StickyBottomBar';
 
 const ROLE_CHIP: Record<CapsuleInviteRole, string> = {
   PARTICIPANT: '참여자로 초대됐어요',
@@ -56,10 +57,10 @@ export default function CapsuleInviteDetailPage() {
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-capsule-bg-from to-capsule-bg-to">
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col pb-[env(safe-area-inset-bottom)]">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col">
         <BackHeader tone="dark" />
 
-        <main className="flex flex-1 flex-col justify-between px-5 pb-5">
+        <main className="flex flex-1 flex-col justify-between px-5">
           <div className="flex flex-col items-center gap-section pt-[45px]">
             <CapsuleHero src={capsuleIconSrc(capsule.iconType)} size="lg" />
 
@@ -96,7 +97,8 @@ export default function CapsuleInviteDetailPage() {
             </div>
           </div>
 
-          <div className="flex w-full gap-[9px] pt-section">
+          {/* 그라데이션 끝 색으로 깔아 스크롤되는 내용이 비치지 않게 */}
+          <StickyBottomBar className="bg-capsule-bg-to mt-section flex gap-[9px]">
             <Button
               variant="plain"
               className="border border-border-default bg-surface text-capsule-accent"
@@ -112,7 +114,7 @@ export default function CapsuleInviteDetailPage() {
             >
               수락하기
             </Button>
-          </div>
+          </StickyBottomBar>
         </main>
       </div>
 

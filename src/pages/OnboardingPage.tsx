@@ -28,12 +28,12 @@ export default function OnboardingPage() {
             className="flex w-full flex-col items-center"
           >
             <div
-              className={`flex h-[424px] w-full flex-col items-center ${currentStep.containerPaddingTop}`}
+              className={`flex h-[min(424px,calc(100dvh-340px))] w-full flex-col items-center ${currentStep.containerPaddingTop}`}
             >
               <img
                 src={currentStep.image}
                 alt={currentStep.imageAlt}
-                className={`object-contain ${currentStep.imageClassName}`}
+                className={`max-h-full object-contain ${currentStep.imageClassName}`}
               />
             </div>
 
