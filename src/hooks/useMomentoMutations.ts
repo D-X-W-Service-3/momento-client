@@ -45,6 +45,10 @@ export function useDeleteMemory(archiveId: string) {
   return useMutation({
     mutationFn: () => deleteMemory(Number(archiveId)),
     onSuccess: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ['memory', archiveId],
+        exact: true,
+      });
       queryClient.removeQueries({
         queryKey: ['memory', archiveId],
         exact: true,
@@ -85,6 +89,10 @@ export function useDeleteAnniversary(anniversaryId: string) {
   return useMutation({
     mutationFn: () => deleteAnniversary(Number(anniversaryId)),
     onSuccess: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ['anniversary', anniversaryId],
+        exact: true,
+      });
       queryClient.removeQueries({
         queryKey: ['anniversary', anniversaryId],
         exact: true,

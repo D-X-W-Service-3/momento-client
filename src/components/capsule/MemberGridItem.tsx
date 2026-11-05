@@ -14,7 +14,7 @@ export default function MemberGridItem({
   onRemove,
 }: MemberGridItemProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-stack">
+    <div className="flex min-w-0 flex-col items-center justify-center gap-stack">
       <div className="relative size-16">
         <img
           src={toSecureImageUrl(member.profileImageUrl) ?? defaultAvatar}
@@ -37,10 +37,10 @@ export default function MemberGridItem({
           </button>
         )}
       </div>
-      <p className="font-display text-meta whitespace-nowrap text-ink">
-        {member.nickname}
+      <p className="flex w-full min-w-0 items-center justify-center font-display text-meta text-ink">
+        <span className="min-w-0 truncate">{member.nickname}</span>
         {member.isOwner && (
-          <span className="text-label font-medium text-ink-muted">
+          <span className="shrink-0 text-label font-medium text-ink-muted">
             (관리자)
           </span>
         )}

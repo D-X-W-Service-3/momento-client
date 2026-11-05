@@ -63,7 +63,17 @@ export const useDeleteCapsule = (capsuleId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => deleteCapsule(capsuleId),
-    onSuccess: () => invalidateCapsuleQueries(queryClient),
+    onSuccess: async () => {
+      await queryClient.cancelQueries({
+        queryKey: capsuleKeys.detail(capsuleId),
+        exact: true,
+      });
+      queryClient.removeQueries({
+        queryKey: capsuleKeys.detail(capsuleId),
+        exact: true,
+      });
+      await invalidateCapsuleQueries(queryClient);
+    },
   });
 };
 
