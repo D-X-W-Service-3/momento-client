@@ -8,7 +8,7 @@ interface LetterPaperCardProps {
   onSelect: () => void;
 }
 
-/** 우표 모양 화풍 선택 카드. 선택 표시는 체크 동그라미와 뱃지로만 한다. */
+/** 우표 모양 화풍 선택 카드. 선택 표시는 체크 동그라미와 화풍명 뱃지로 한다. */
 export default function LetterPaperCard({
   paper,
   selected,
@@ -42,8 +42,8 @@ export default function LetterPaperCard({
       </span>
 
       {selected && (
-        <span className="absolute right-[9px] bottom-[10px] flex h-[21px] w-[52px] items-center justify-center rounded-full bg-badge-bg text-[11px] font-bold text-badge-text">
-          선택됨
+        <span className="absolute right-[9px] bottom-[10px] flex h-[21px] min-w-[52px] items-center justify-center whitespace-nowrap rounded-full bg-badge-bg px-[10px] text-[11px] font-bold text-badge-text">
+          {paper.name}
         </span>
       )}
     </button>
