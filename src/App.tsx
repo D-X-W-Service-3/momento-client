@@ -128,17 +128,70 @@ export default function App() {
             </RequireAuth>
           }
         />
-        <Route path="/archives" element={<ArchivePage />} />
+        <Route
+          path="/archives"
+          element={
+            <RequireAuth>
+              <ArchivePage />
+            </RequireAuth>
+          }
+        />
         <Route path="/archives/shared" element={<SharedArchivePage />} />
-        <Route path="/archives/new" element={<ArchiveFormPage />} />
-        <Route path="/archives/:archiveId" element={<ArchiveDetailPage />} />
-        <Route path="/archives/:archiveId/edit" element={<ArchiveFormPage />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/calendar/search" element={<CalendarSearchPage />} />
-        <Route path="/anniversaries/new" element={<AnniversaryFormPage />} />
+        <Route
+          path="/archives/new"
+          element={
+            <RequireAuth>
+              <ArchiveFormPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/archives/:archiveId"
+          element={
+            <RequireAuth>
+              <ArchiveDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/archives/:archiveId/edit"
+          element={
+            <RequireAuth>
+              <ArchiveFormPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/calendar"
+          element={
+            <RequireAuth>
+              <CalendarPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/calendar/search"
+          element={
+            <RequireAuth>
+              <CalendarSearchPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/anniversaries/new"
+          element={
+            <RequireAuth>
+              <AnniversaryFormPage />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/anniversaries/:anniversaryId/edit"
-          element={<AnniversaryFormPage />}
+          element={
+            <RequireAuth>
+              <AnniversaryFormPage />
+            </RequireAuth>
+          }
         />
 
         {/* 캡슐은 몰입 화면이라 하단 네비게이션 없이 단독으로 띄운다. */}
