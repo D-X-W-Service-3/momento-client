@@ -648,8 +648,23 @@
   .detail-cover-trigger {
     display: block;
     width: 100%;
+    flex: 0 0 100%;
     padding: 0;
     cursor: zoom-in;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+  /* 대표 사진 좌우 스와이프 */
+  .detail-cover-track {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .detail-cover-track::-webkit-scrollbar {
+    display: none;
   }
   .detail-cover-wrap {
     position: relative;

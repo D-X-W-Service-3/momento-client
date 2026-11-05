@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import BottomSheet from '@/components/common/BottomSheet';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import ArchiveCoverCarousel from '@/components/archive/ArchiveCoverCarousel';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import PhotoCount from '@/components/archive/PhotoCount';
 import { BackHeader } from '@/components/layout/Headers';
@@ -79,21 +80,10 @@ export default function ArchiveDetailPage() {
   return (
     <MobileLayout className="archive-detail-page">
       <article className="archive-detail">
-        <div className="detail-cover-wrap">
-          {archive.images[0] && (
-            <button
-              type="button"
-              className="detail-cover-trigger"
-              aria-label="대표 사진 확대"
-              onClick={() => setSelectedImage(0)}
-            >
-              <img className="detail-cover" src={archive.images[0]} alt="" />
-            </button>
-          )}
-          <span className="detail-cover-counter">
-            1 / {archive.images.length}
-          </span>
-        </div>
+        <ArchiveCoverCarousel
+          images={archive.images}
+          onOpen={setSelectedImage}
+        />
         <header className="archive-detail-header">
           <button
             type="button"

@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import { ApiError } from '@/apis/client';
 import { ROUTES } from '@/constants/routes';
+import { usePushBridge } from '@/hooks/usePushBridge';
 import RequireAuth from '@/routes/RequireAuth';
 import RequireLetterWriting from '@/routes/RequireLetterWriting';
 import CapsuleCoverPage from '@/pages/capsule/CapsuleCoverPage';
@@ -49,6 +50,8 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  usePushBridge();
+
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>

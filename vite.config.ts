@@ -10,6 +10,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'autoUpdate',
+  // 웹 푸시 처리를 위해 서비스워커를 직접 작성한다 (src/sw.ts)
+  strategies: 'injectManifest',
+  srcDir: 'src',
+  filename: 'sw.ts',
   includeAssets: [
     'icons/favicon-16.png',
     'icons/favicon-32.png',
@@ -40,24 +44,10 @@ const pwaOptions: Partial<VitePWAOptions> = {
       },
     ],
   },
-  workbox: {
-    // 앱 셸만 프리캐시. 이미지(수 MB)는 아래 런타임 캐시로 처음 볼 때 저장
+  // 런타임 캐시·내비게이션 폴백은 src/sw.ts 에서 설정
+  injectManifest: {
+    // 앱 셸만 프리캐시. 이미지(수 MB)는 sw.ts 의 런타임 캐시로 처음 볼 때 저장
     globPatterns: ['**/*.{js,css,html,ico,woff2}', 'icons/*.png'],
-    // SPA 라우팅: 오프라인/재방문 시 모든 내비게이션을 index.html 로
-    navigateFallback: '/index.html',
-    // 개발 프록시 경로(/api)는 SPA 폴백 대상에서 제외
-    navigateFallbackDenylist: [/^\/api\//],
-    cleanupOutdatedCaches: true,
-    runtimeCaching: [
-      {
-        urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|webp)$/,
-        handler: 'StaleWhileRevalidate',
-        options: {
-          cacheName: 'images',
-          expiration: { maxEntries: 100 },
-        },
-      },
-    ],
     maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
   },
   // 개발 중에는 SW 비활성화 (캐시로 인한 혼란 방지)

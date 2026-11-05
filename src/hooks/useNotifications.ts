@@ -6,34 +6,12 @@ import {
 } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { fetchNotifications, markNotificationRead } from '@/apis/notifications';
-import { capsuleCoverPath, capsuleDetailPath } from '@/constants/routes';
+import { notificationDestination } from '@/utils/notificationDestination';
 import type {
   NotificationItem,
   NotificationPageResponse,
 } from '@/types/notification';
 
-export function notificationDestination(
-  item: Pick<NotificationItem, 'type' | 'referenceId'>,
-) {
-  if (item.referenceId == null) return null;
-  if (item.type === 'LETTER_DEADLINE')
-    return `${capsuleDetailPath(String(item.referenceId))}?view=my-letters`;
-  if (item.type === 'MEMORY_REMINDER') return `/archives/${item.referenceId}`;
-  if (item.type === 'ANNIVERSARY_REMINDER')
-    return `/anniversaries/${item.referenceId}/edit`;
-  if (
-    [
-      'CAPSULE_OPENED',
-      'CAPSULE_D_DAY',
-      'LETTER_DEADLINE',
-      'NEW_MEMBER',
-      'LETTER_MILESTONE',
-      'IMAGE_GENERATED',
-    ].includes(item.type)
-  )
-    return capsuleCoverPath(String(item.referenceId));
-  return null;
-}
 export function useNotifications() {
   const navigate = useNavigate();
   const client = useQueryClient();
