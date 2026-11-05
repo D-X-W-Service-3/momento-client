@@ -56,7 +56,7 @@ export default function CapsuleInviteDetailPage() {
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-capsule-bg-from to-capsule-bg-to">
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col pb-[env(safe-area-inset-bottom)]">
         <BackHeader tone="dark" />
 
         <main className="flex flex-1 flex-col justify-between px-5 pb-5">

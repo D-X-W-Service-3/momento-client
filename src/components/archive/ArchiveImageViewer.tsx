@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 type Props = {
   images: string[];
@@ -19,6 +19,32 @@ export default function ArchiveImageViewer({
   onMakeCover,
   onMore,
 }: Props) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const hasMountedRef = useRef(false);
+
+  // 화살표·키보드로 index 가 바뀌면 해당 슬라이드로 스크롤한다.
+  // 처음 열릴 때는 애니메이션 없이 바로 이동, 스와이프로 이미 도착했으면 생략.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const left = index * track.clientWidth;
+    if (Math.abs(track.scrollLeft - left) > 1) {
+      track.scrollTo({
+        left,
+        behavior: hasMountedRef.current ? 'smooth' : 'instant',
+      });
+    }
+    hasMountedRef.current = true;
+  }, [index]);
+
+  // 스와이프 위치에 맞춰 현재 index 를 동기화
+  const handleScroll = () => {
+    const track = trackRef.current;
+    if (!track || track.clientWidth === 0) return;
+    const next = Math.round(track.scrollLeft / track.clientWidth);
+    if (next !== index && next >= 0 && next < images.length) onChange(next);
+  };
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
@@ -42,11 +68,22 @@ export default function ArchiveImageViewer({
       aria-modal="true"
       aria-label="아카이브 사진 확대"
     >
-      <img
-        className="image-viewer-photo"
-        src={images[index]}
-        alt={`${index + 1}번째 아카이브 사진`}
-      />
+      <div
+        ref={trackRef}
+        className="image-viewer-track"
+        onScroll={handleScroll}
+      >
+        {images.map((image, imageIndex) => (
+          <div className="image-viewer-slide" key={`${image}-${imageIndex}`}>
+            <img
+              className="image-viewer-photo"
+              src={image}
+              alt={`${imageIndex + 1}번째 아카이브 사진`}
+              draggable={false}
+            />
+          </div>
+        ))}
+      </div>
       <button
         type="button"
         className="image-viewer-close"

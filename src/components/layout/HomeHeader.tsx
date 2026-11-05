@@ -21,7 +21,7 @@ export default function HomeHeader({
   const handleProfile = onClickProfile ?? (() => navigate('/mypage'));
 
   return (
-    <header className="bg-surface-gray sticky top-0 z-30 flex h-14 w-full items-center justify-between px-5">
+    <header className="bg-surface-gray sticky top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] w-full pt-[env(safe-area-inset-top)] items-center justify-between px-5">
       <Link
         to="/home"
         aria-label="Momento 홈으로"
