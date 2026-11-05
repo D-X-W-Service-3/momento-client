@@ -4,8 +4,8 @@ import CapsuleIcon from '@/components/capsule/CapsuleIcon';
 import PaginationDots from '@/components/common/PaginationDots';
 import type { CapsuleIconOption } from '@/types/capsule';
 
-const ICON_WIDTH = 101;
-const ICON_HEIGHT = 92;
+const ICON_WIDTH = 152;
+const ICON_HEIGHT = 138;
 
 interface CapsuleIconPickerProps {
   icons: CapsuleIconOption[];
