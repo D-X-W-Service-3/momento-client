@@ -322,7 +322,7 @@
     min-height: 100dvh;
   }
   .app-content.with-nav {
-    padding-bottom: 70px;
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
   }
   .page-body {
     padding: 0 20px 32px;
@@ -335,8 +335,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 56px;
-    padding: 0 20px;
+    /* iOS standalone(black-translucent)에서 상태바 아래로 내려오도록 상단 안전영역만큼 확장 */
+    height: calc(56px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 20px 0;
     background: var(--color-surface-gray);
   }
   .brand-header strong {
@@ -352,7 +353,7 @@
     cursor: pointer;
   }
   .back-header {
-    padding: 0 16px;
+    padding: env(safe-area-inset-top) 16px 0;
     background: white;
   }
   .back-header strong {
@@ -376,7 +377,8 @@
     display: flex;
     width: 100%;
     max-width: var(--container-app);
-    height: 70px;
+    /* 홈 인디케이터 영역은 높이에 더해 탭 영역(70px)이 줄어들지 않게 */
+    height: calc(70px + env(safe-area-inset-bottom));
     margin: auto;
     align-items: center;
     justify-content: space-between;
@@ -593,7 +595,7 @@
     position: fixed;
     z-index: 25;
     right: max(20px, calc((100vw - var(--container-app)) / 2 + 20px));
-    bottom: 88px;
+    bottom: calc(88px + env(safe-area-inset-bottom));
     display: grid;
     width: 56px;
     height: 56px;
@@ -617,7 +619,7 @@
   .archive-detail-header {
     position: absolute;
     z-index: 30;
-    top: 12px;
+    top: calc(12px + env(safe-area-inset-top));
     right: 12px;
     left: 12px;
     display: grid;
@@ -763,7 +765,7 @@
   }
   .bottom-sheet {
     width: min(var(--container-app), 100%);
-    padding: 10px 20px 20px;
+    padding: 10px 20px max(20px, env(safe-area-inset-bottom));
     border-radius: 24px 24px 0 0;
     background: white;
     box-shadow: 0 -8px 30px rgb(0 0 0 / 0.08);
@@ -882,17 +884,51 @@
     margin: auto;
     background: #111;
     color: white;
+    animation: image-viewer-fade-in 0.2s ease-out;
+  }
+  @keyframes image-viewer-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  /* 가로 스와이프: 스크롤 스냅으로 한 장씩 넘김 */
+  .image-viewer-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .image-viewer-track::-webkit-scrollbar {
+    display: none;
+  }
+  .image-viewer-slide {
+    display: grid;
+    flex: 0 0 100%;
+    height: 100%;
+    place-items: center;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
   }
   .image-viewer-photo {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* 화면에 맞춰 잘림 없이 전체를 보여준다 */
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
   }
   .image-viewer-close,
   .image-viewer-more {
     position: absolute;
     z-index: 1;
-    top: 12px;
+    top: calc(12px + env(safe-area-inset-top));
     display: grid;
     width: 36px;
     height: 36px;
@@ -917,7 +953,7 @@
   .image-viewer-counter {
     position: absolute;
     z-index: 1;
-    top: 14px;
+    top: calc(14px + env(safe-area-inset-top));
     left: 50%;
     transform: translateX(-50%);
     padding: 4px 10px;

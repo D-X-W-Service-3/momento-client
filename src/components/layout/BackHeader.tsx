@@ -30,7 +30,7 @@ export default function BackHeader({
 
   return (
     <header
-      className={`sticky top-0 z-30 flex h-14 w-full items-center justify-between pl-[25px] ${
+      className={`sticky top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] w-full pt-[env(safe-area-inset-top)] items-center justify-between pl-[25px] ${
         showMore ? 'pr-[25px]' : 'pr-5'
       } ${isDark ? 'text-text-on-primary' : 'text-text-primary'} ${className}`}
     >
