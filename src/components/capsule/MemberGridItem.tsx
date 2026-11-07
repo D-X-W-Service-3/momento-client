@@ -37,10 +37,16 @@ export default function MemberGridItem({
           </button>
         )}
       </div>
-      <p className="flex w-full min-w-0 items-center justify-center font-display text-meta text-ink">
-        <span className="min-w-0 truncate">{member.nickname}</span>
+      {/*
+        기본 닉네임이 "모멘토친구506357" 처럼 길게 내려온다. 한 칸(64px)에
+        한 줄로 자르면 전부 "모멘토친..." 이 되어 서로 구분이 안 되므로,
+        두 줄까지 흘려서 뒷자리가 보이게 한다. 그보다 길면 말줄임한다.
+        관리자 표시는 아랫줄로 내려 이름을 먹지 않게 한다.
+      */}
+      <p className="w-full min-w-0 text-center font-display text-meta text-ink">
+        <span className="line-clamp-2 break-all">{member.nickname}</span>
         {member.isOwner && (
-          <span className="shrink-0 text-label font-medium text-ink-muted">
+          <span className="block text-label font-medium text-ink-muted">
             (관리자)
           </span>
         )}
