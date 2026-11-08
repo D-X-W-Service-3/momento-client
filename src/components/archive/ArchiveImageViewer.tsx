@@ -79,6 +79,8 @@ export default function ArchiveImageViewer({
               className="image-viewer-photo"
               src={image}
               alt={`${imageIndex + 1}번째 아카이브 사진`}
+              loading="lazy"
+              decoding="async"
               draggable={false}
             />
           </div>

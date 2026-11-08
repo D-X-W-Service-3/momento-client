@@ -25,6 +25,12 @@ export interface LetterCreateRequest {
  * 서버 응답
  * ---------------------------------------------------------------- */
 
+/**
+ * 편지 AI 이미지 생성 상태. 제출하면 PENDING 이 되고 한 장에 약 2분 30초 걸린다.
+ * COMPLETED 일 때만 imageUrl 이 있고, FAILED·null(예전 편지)은 이미지 없이 보여 준다.
+ */
+export type LetterImageStatus = 'PENDING' | 'COMPLETED' | 'FAILED';
+
 /** GET /v1/time-capsules/{id}/letters/me */
 export interface MyLetterResponse {
   letterId: number;
@@ -35,6 +41,9 @@ export interface MyLetterResponse {
   createdAt: string;
   /** 작성 마감·공개 시각 전이면 true. 삭제 버튼 노출 조건이다. */
   canDelete: boolean;
+  /** COMPLETED 일 때만 조회용 presigned URL (1시간 유효) */
+  imageUrl: string | null;
+  imageStatus: LetterImageStatus | null;
 }
 
 /** GET /v1/time-capsules/{id}/letters 의 letters 항목 */
@@ -46,8 +55,9 @@ export interface CapsuleLetterResponse {
   content: string;
   authorNickname: string;
   createdAt: string;
-  /** AI 연계 보류로 현재 항상 null */
+  /** COMPLETED 일 때만 조회용 presigned URL (1시간 유효) */
   imageUrl: string | null;
+  imageStatus: LetterImageStatus | null;
 }
 
 /* ------------------------------------------------------------------
@@ -61,8 +71,10 @@ export interface Letter {
   authorName: string;
   /** 작성일 (YYYY-MM-DD) */
   date: string;
-  /** 캡슐이 열린 뒤에만 생기는 AI 이미지 */
+  /** 편지를 제출하면 만들기 시작하는 AI 이미지 */
   imageUrl?: string;
+  /** PENDING 이면 '이미지 생성 중' 을 보여 준다 */
+  imageStatus?: LetterImageStatus | null;
   /** 삭제 가능 여부. 내가 쓴 편지에만 들어온다. */
   canDelete?: boolean;
 }

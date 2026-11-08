@@ -77,8 +77,9 @@ export interface CreateCapsuleRequest {
   description: string;
   capsuleType: 'SELF' | 'FRIEND' | 'GROUP';
   visibilityType: 'RECIPIENT_AND_AUTHOR' | 'ALL_MEMBERS';
-  letterDeadlineDate: string;
-  openDate: string;
+  /** 한국 시간 LocalDateTime, 분 단위 ('2026-11-20T15:00') */
+  letterDeadlineAt: string;
+  openAt: string;
 }
 export const createCapsule = (body: CreateCapsuleRequest) =>
   api.post<{ capsuleId: number }>('/v1/time-capsules', body);

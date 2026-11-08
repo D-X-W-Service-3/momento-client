@@ -18,7 +18,11 @@ import {
   type CapsuleCreateType,
   type CapsuleVisibilityType,
 } from '@/types/capsule';
-import { parseKoreanDate } from '@/utils/dates';
+import {
+  combineKoreanDateTime,
+  formatKoreanTime,
+  toLocalDateTime,
+} from '@/utils/dates';
 
 const TOTAL_ICONS = CAPSULE_ICONS.length;
 
@@ -61,24 +65,33 @@ const CAPSULE_HOME_PATH = '/capsules';
  */
 type CreatePhase = 'editing' | 'finishing' | 'completed';
 
-function getStartOfToday(): Date {
+/** 한국 시간 기준 현재 시각을 로컬 Date 로 (서버가 KST LocalDateTime 으로 받는다) */
+function getNowInSeoul(): Date {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Seoul',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
   }).formatToParts(new Date());
   const part = (type: string) =>
     Number(parts.find((entry) => entry.type === type)?.value);
-  return new Date(part('year'), part('month') - 1, part('day'));
+  return new Date(
+    part('year'),
+    part('month') - 1,
+    part('day'),
+    part('hour'),
+    part('minute'),
+  );
 }
 
-const dateOnly = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+/** 서버 규칙: 개봉은 마감보다 1시간 이상 뒤 (정확히 1시간 허용) */
+const MIN_OPEN_GAP_MS = 60 * 60 * 1000;
 
-function addDays(base: Date, days: number): Date {
-  return new Date(base.getFullYear(), base.getMonth(), base.getDate() + days);
-}
+type ScheduleTarget = 'editDeadline' | 'openDate';
+type ScheduleSheet = { target: ScheduleTarget; stage: 'date' | 'time' };
 
 export function useCapsuleCreate() {
   const navigate = useNavigate();
@@ -101,9 +114,11 @@ export function useCapsuleCreate() {
   // 되감기·앞으로가기 차단 중에도 생성 단계가 깜빡이지 않도록 완료 화면을 유지한다.
   const step: CapsuleCreateStep = phase === 'editing' ? urlStep : 'complete';
 
-  const [dateSheet, setDateSheet] = useState<
-    'editDeadline' | 'openDate' | null
-  >(null);
+  // 마감·개봉 각각 날짜 → 시간 순서로 고른다. 시간을 고르는 동안 날짜는 pendingDate 에 둔다.
+  const [scheduleSheet, setScheduleSheet] = useState<ScheduleSheet | null>(
+    null,
+  );
+  const [pendingDate, setPendingDate] = useState('');
   const [inviteSheetOpen, setInviteSheetOpen] = useState(false);
   const [hasEditedName, setHasEditedName] = useState(false);
   const [form, setForm] = useState<CapsuleCreateForm>({
@@ -113,28 +128,72 @@ export function useCapsuleCreate() {
     capsuleType: 'solo',
     visibility: 'all_participants',
     editDeadline: '',
+    editDeadlineTime: '',
     openDate: '',
+    openTime: '',
   });
 
   const activeSegments =
     step === 'info' ? 1 : step === 'type' ? 2 : step === 'visibility' ? 3 : 4;
 
-  const today = getStartOfToday();
-  const parsedEditDeadline = parseKoreanDate(form.editDeadline);
-  const parsedOpenDate = parseKoreanDate(form.openDate);
+  const now = getNowInSeoul();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const deadlineAt = combineKoreanDateTime(
+    form.editDeadline,
+    form.editDeadlineTime,
+  );
+  const openAt = combineKoreanDateTime(form.openDate, form.openTime);
 
-  const minOpenDate = parsedEditDeadline
-    ? addDays(parsedEditDeadline, 2)
-    : addDays(today, 2);
+  // 개봉 날짜는 마감 날짜부터 고를 수 있다 (같은 날 1시간 뒤 개봉 가능)
+  const datePickerMinDate =
+    scheduleSheet?.target === 'openDate' && deadlineAt
+      ? new Date(
+          deadlineAt.getFullYear(),
+          deadlineAt.getMonth(),
+          deadlineAt.getDate(),
+        )
+      : today;
 
-  const datePickerMinDate = dateSheet === 'openDate' ? minOpenDate : today;
+  const isOpenAfterDeadline = (open: Date, deadline: Date) =>
+    open.getTime() - deadline.getTime() >= MIN_OPEN_GAP_MS;
 
   const hasValidDates = Boolean(
-    parsedEditDeadline &&
-    parsedOpenDate &&
-    parsedEditDeadline >= today &&
-    parsedOpenDate >= addDays(parsedEditDeadline, 2),
+    deadlineAt &&
+    openAt &&
+    deadlineAt > now &&
+    isOpenAfterDeadline(openAt, deadlineAt),
   );
+
+  /** 시간 휠에서 고른 값이 규칙에 맞지 않으면 안내 문구를 돌려준다 */
+  const validateTime = (time: string) => {
+    if (!scheduleSheet) return undefined;
+    const selected = combineKoreanDateTime(pendingDate, time);
+    if (!selected) return undefined;
+    const current = getNowInSeoul();
+    if (selected <= current) return '지금보다 이후 시간으로 골라주세요';
+    if (
+      scheduleSheet.target === 'openDate' &&
+      deadlineAt &&
+      !isOpenAfterDeadline(selected, deadlineAt)
+    ) {
+      return '개봉은 편지 수정 마감 1시간 뒤부터 가능해요';
+    }
+    return undefined;
+  };
+
+  /** 시간 휠의 처음 값: 고른 적 있으면 그 값, 개봉은 마감 1시간 뒤, 그 외 오후 12:00 */
+  const timePickerInitial = (() => {
+    if (!scheduleSheet) return '';
+    if (scheduleSheet.target === 'editDeadline') {
+      return form.editDeadlineTime || '오후 12:00';
+    }
+    if (form.openTime) return form.openTime;
+    if (deadlineAt) {
+      const next = new Date(deadlineAt.getTime() + MIN_OPEN_GAP_MS);
+      return formatKoreanTime(next.getHours(), next.getMinutes());
+    }
+    return '오후 12:00';
+  })();
 
   const hasValidInfo =
     form.name.trim().length > 0 &&
@@ -179,7 +238,7 @@ export function useCapsuleCreate() {
   }, [phase, urlStep, hasValidInfo, navigate, setSearchParams]);
 
   const finishCreate = () => {
-    setDateSheet(null);
+    setScheduleSheet(null);
     if (flowDepth > 0) {
       setPhase('finishing');
       navigate(-flowDepth);
@@ -215,38 +274,52 @@ export function useCapsuleCreate() {
     setForm((prev) => ({ ...prev, visibility }));
   };
 
-  const handleOpenDateSheet = (target: 'editDeadline' | 'openDate') => {
-    setDateSheet(target);
+  const handleOpenDateSheet = (target: ScheduleTarget) => {
+    setPendingDate('');
+    setScheduleSheet({ target, stage: 'date' });
   };
 
   const handleCloseDateSheet = () => {
-    setDateSheet(null);
+    setScheduleSheet(null);
   };
 
+  /** 날짜를 고르면 같은 시트에서 시간 선택으로 넘어간다 */
   const handleSelectDate = (selectedDate: string) => {
-    if (!dateSheet) return;
+    if (!scheduleSheet) return;
+    setPendingDate(selectedDate);
+    setScheduleSheet({ target: scheduleSheet.target, stage: 'time' });
+  };
 
-    if (dateSheet === 'editDeadline') {
-      const nextDeadline = parseKoreanDate(selectedDate);
+  const handleSelectTime = (selectedTime: string) => {
+    if (!scheduleSheet || !pendingDate) return;
+
+    if (scheduleSheet.target === 'editDeadline') {
+      const nextDeadline = combineKoreanDateTime(pendingDate, selectedTime);
       setForm((prev) => {
-        const currentOpen = parseKoreanDate(prev.openDate);
-        const shouldResetOpenDate = Boolean(
-          nextDeadline && currentOpen && currentOpen < addDays(nextDeadline, 2),
+        const currentOpen = combineKoreanDateTime(prev.openDate, prev.openTime);
+        // 마감이 바뀌어 개봉이 규칙을 어기게 되면 개봉을 다시 고르게 한다
+        const shouldResetOpen = Boolean(
+          nextDeadline &&
+          currentOpen &&
+          !isOpenAfterDeadline(currentOpen, nextDeadline),
         );
         return {
           ...prev,
-          editDeadline: selectedDate,
-          openDate: shouldResetOpenDate ? '' : prev.openDate,
+          editDeadline: pendingDate,
+          editDeadlineTime: selectedTime,
+          openDate: shouldResetOpen ? '' : prev.openDate,
+          openTime: shouldResetOpen ? '' : prev.openTime,
         };
       });
     } else {
       setForm((prev) => ({
         ...prev,
-        openDate: selectedDate,
+        openDate: pendingDate,
+        openTime: selectedTime,
       }));
     }
 
-    setDateSheet(null);
+    setScheduleSheet(null);
   };
 
   const handleOpenInviteSheet = () => {
@@ -286,7 +359,7 @@ export function useCapsuleCreate() {
     }
 
     if (step === 'dates') {
-      if (!parsedEditDeadline || !parsedOpenDate) return;
+      if (!deadlineAt || !openAt) return;
       submitting.current = true;
       creation.mutate(
         {
@@ -305,8 +378,8 @@ export function useCapsuleCreate() {
             form.visibility === 'all_participants'
               ? 'ALL_MEMBERS'
               : 'RECIPIENT_AND_AUTHOR',
-          letterDeadlineDate: dateOnly(parsedEditDeadline),
-          openDate: dateOnly(parsedOpenDate),
+          letterDeadlineAt: toLocalDateTime(deadlineAt),
+          openAt: toLocalDateTime(openAt),
         },
         {
           onSuccess: (result) => {
@@ -321,7 +394,7 @@ export function useCapsuleCreate() {
 
   const handleBack = () => {
     if (creation.isPending) return;
-    setDateSheet(null);
+    setScheduleSheet(null);
     setInviteSheetOpen(false);
     // 완료 화면에서도 진입 전 페이지로 돌아간다 (생성 단계는 이미 되감겨 있음).
     // 앱 첫 화면으로 직접 들어와 돌아갈 곳이 없으면 캡슐 홈으로 보낸다.
@@ -359,8 +432,11 @@ export function useCapsuleCreate() {
     maxNameLength: CAPSULE_NAME_MAX_LENGTH,
     maxDescriptionLength: CAPSULE_DESCRIPTION_MAX_LENGTH,
     isNextEnabled,
-    dateSheet,
+    scheduleSheet,
+    pendingDate,
     datePickerMinDate,
+    timePickerInitial,
+    validateTime,
     inviteSheetOpen,
     handleSelectIcon,
     handleNameChange,
@@ -370,6 +446,7 @@ export function useCapsuleCreate() {
     handleOpenDateSheet,
     handleCloseDateSheet,
     handleSelectDate,
+    handleSelectTime,
     handleOpenInviteSheet,
     handleCloseInviteSheet,
     handleNext,

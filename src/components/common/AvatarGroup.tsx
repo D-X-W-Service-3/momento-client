@@ -27,6 +27,8 @@ export default function AvatarGroup({
           <img
             src={toSecureImageUrl(member.profileImageUrl) ?? defaultAvatar}
             alt={member.nickname}
+            loading="lazy"
+            decoding="async"
             className="size-10 rounded-full object-cover"
           />
         </li>

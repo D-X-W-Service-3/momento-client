@@ -5,6 +5,7 @@ import type {
   NotificationSettingKey,
 } from '@/types/mypage';
 import { validateMemoryImages } from '@/utils/archivePhotos';
+import { compressImage } from '@/utils/compressImage';
 
 export interface MyProfileResponse {
   userId: number;
@@ -124,8 +125,12 @@ export const updateNotificationSetting = ({
     [notificationSettingFields[key]]: enabled,
   });
 
-export async function uploadProfileImage(file: File) {
-  validateMemoryImages([file]);
+/** 프로필 사진은 작은 원으로만 보이므로 긴 변 800px 로 줄인다 */
+const PROFILE_MAX_EDGE = 800;
+
+export async function uploadProfileImage(original: File) {
+  validateMemoryImages([original]);
+  const file = await compressImage(original, PROFILE_MAX_EDGE);
   const data = await api.post<{
     uploads: { imageKey: string; uploadUrl: string }[];
   }>('/v1/images/presigned-urls', {

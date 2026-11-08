@@ -59,6 +59,8 @@ export async function getMyLetters(capsuleId: string): Promise<Letter[]> {
       authorName: '나',
       date: toDateOnly(letter.createdAt),
       canDelete: letter.canDelete,
+      imageUrl: letter.imageUrl ?? undefined,
+      imageStatus: letter.imageStatus ?? null,
     },
   ];
 }
@@ -77,6 +79,7 @@ export async function getCapsuleLetters(capsuleId: string): Promise<Letter[]> {
     authorName: letter.authorNickname,
     date: toDateOnly(letter.createdAt),
     imageUrl: letter.imageUrl ?? undefined,
+    imageStatus: letter.imageStatus ?? null,
   }));
 }
 

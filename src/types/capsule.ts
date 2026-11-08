@@ -109,8 +109,12 @@ export interface CapsuleCreateForm {
   description: string;
   capsuleType: CapsuleCreateType;
   visibility: CapsuleVisibilityType;
+  /** '2026년 11월 20일' */
   editDeadline: string;
+  /** '오후 3:15' */
+  editDeadlineTime: string;
   openDate: string;
+  openTime: string;
 }
 
 /* ------------------------------------------------------------------
