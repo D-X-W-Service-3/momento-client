@@ -16,6 +16,7 @@ import {
   resolveArchiveImageKeys,
   type ArchivePhoto,
 } from '@/utils/archivePhotos';
+import { showToast, useToastStore } from '@/stores/useToastStore';
 
 type Field = 'name' | 'date' | 'content';
 
@@ -37,10 +38,6 @@ export function useArchiveForm() {
     date: false,
     content: false,
   });
-  const [showPhotoToast, setShowPhotoToast] = useState(false);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined,
-  );
   const submitting = useRef(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const saveMemory = useSaveMemory(archiveId);
@@ -65,7 +62,6 @@ export function useArchiveForm() {
       })),
     );
   }, [memoryQuery.data]);
-  useEffect(() => () => clearTimeout(toastTimer.current), []);
 
   const errors = {
     name: !name.trim() ? '아카이브 이름을 입력해 주세요.' : '',
@@ -80,11 +76,7 @@ export function useArchiveForm() {
     (!editing || memoryQuery.isSuccess);
   const touch = (field: Field) =>
     setTouched((current) => ({ ...current, [field]: true }));
-  const notifyMissingPhotos = () => {
-    clearTimeout(toastTimer.current);
-    setShowPhotoToast(true);
-    toastTimer.current = setTimeout(() => setShowPhotoToast(false), 3000);
-  };
+  const notifyMissingPhotos = () => showToast('사진을 등록해주세요', 3000);
 
   const save = async () => {
     if (busy || submitting.current) return;
@@ -126,8 +118,7 @@ export function useArchiveForm() {
       setPhotos((current) =>
         [...current, ...prepared].slice(0, MAX_MEMORY_PHOTOS),
       );
-      clearTimeout(toastTimer.current);
-      setShowPhotoToast(false);
+      useToastStore.getState().hide();
     } catch (reason) {
       setError((reason as Error).message);
     } finally {
@@ -157,7 +148,6 @@ export function useArchiveForm() {
       date: touched.date ? errors.date : '',
       content: touched.content ? errors.content : '',
     },
-    toast: showPhotoToast ? '사진을 등록해주세요' : '',
     save,
     addPhotos,
     touch,

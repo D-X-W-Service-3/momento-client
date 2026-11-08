@@ -13,6 +13,7 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import { getMemory, shareMemory, toKoreanDate } from '@/apis/momento';
 import { useDeleteMemory } from '@/hooks/useMomentoMutations';
 import type { Archive } from '@/types/momento';
+import { showToast } from '@/stores/useToastStore';
 
 export default function ArchiveDetailPage() {
   const { archiveId } = useParams();
@@ -38,27 +39,23 @@ export default function ArchiveDetailPage() {
     images: data.images.map((image) => image.imageUrl),
   };
   const isMine = data?.isMine ?? false;
-  const [error, setError] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [sharing, setSharing] = useState(false);
-  const [shareMessage, setShareMessage] = useState('');
 
   const share = async () => {
     if (!data?.isMine || sharing) return;
     setSharing(true);
-    setError('');
-    setShareMessage('');
     try {
       const { shareToken } = await shareMemory(data.memoryId);
       await navigator.clipboard.writeText(
         `${window.location.origin}/archives/shared?token=${shareToken}`,
       );
-      setShareMessage('공유 링크를 복사했어요.');
+      showToast('공유 링크를 복사했어요');
       setMenuOpen(false);
     } catch (reason) {
-      setError((reason as Error).message);
+      showToast((reason as Error).message);
       setMenuOpen(false);
     } finally {
       setSharing(false);
@@ -163,12 +160,6 @@ export default function ArchiveDetailPage() {
           )}
         </div>
       </BottomSheet>
-      {shareMessage && <p role="status">{shareMessage}</p>}
-      {error && (
-        <p className="field-error" role="alert">
-          {error}
-        </p>
-      )}
       <ConfirmDialog
         open={deleteOpen}
         title="아카이브를 삭제할까요?"
@@ -180,7 +171,7 @@ export default function ArchiveDetailPage() {
           void deleteMemory
             .mutateAsync()
             .then(() => navigate('/archives'))
-            .catch((reason: Error) => setError(reason.message));
+            .catch((reason: Error) => showToast(reason.message));
         }}
       />
       {selectedImage !== null && (
