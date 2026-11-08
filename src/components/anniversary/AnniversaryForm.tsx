@@ -3,7 +3,7 @@ import { useState } from 'react';
 import BottomSheet from '@/components/common/BottomSheet';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import DatePicker from '@/components/common/DatePicker';
-import TimePicker from '@/components/anniversary/TimePicker';
+import TimePicker from '@/components/common/TimePicker';
 import type { AnniversaryForm as AnniversaryFormType } from '@/types/momento';
 
 type AnniversaryFormProps = {

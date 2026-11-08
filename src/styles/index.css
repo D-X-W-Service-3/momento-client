@@ -880,6 +880,11 @@
     background: var(--color-primary);
     color: white;
   }
+  .button-primary:disabled {
+    background: var(--color-border-input);
+    color: var(--color-text-hint);
+    cursor: not-allowed;
+  }
   .button-secondary {
     border: 1px solid #e1e3e8;
     background: white;
@@ -1854,6 +1859,15 @@
   }
   .time-picker {
     padding-bottom: 28px;
+  }
+  /* 캡슐 일시 선택: 가운데 선택 줄을 회색으로 강조 */
+  .time-picker.neutral .time-wheel-selection {
+    background: var(--color-surface-gray);
+  }
+  .time-picker-error {
+    color: var(--color-status-error);
+    font-size: 13px;
+    text-align: center;
   }
   .time-wheel-column {
     position: relative;

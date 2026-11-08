@@ -1,26 +1,44 @@
 import { useState } from 'react';
 
 import WheelPicker from '@/components/common/WheelPicker';
+import { formatKoreanTime, parseKoreanTime } from '@/utils/dates';
 
 type Props = {
+  /** '오후 3:15' 형식 */
   value: string;
   onCancel: () => void;
   onSelect: (value: string) => void;
+  /** 고를 수 없는 시간이면 안내 문구를 돌려준다. 문구가 있으면 선택 버튼을 막는다. */
+  validate?: (value: string) => string | undefined;
+  /** 가운데 선택 줄을 회색으로 강조한다 (기본은 브랜드 틴트) */
+  neutral?: boolean;
 };
 
-function parseTime(value: string) {
-  const match = /^(오전|오후)\s+(\d{1,2}):(\d{2})$/.exec(value);
+function toWheel(value: string) {
+  const parsed = parseKoreanTime(value) ?? { hours: 9, minutes: 0 };
   return {
-    period: match?.[1] === '오후' ? 1 : 0,
-    hour: Math.max(1, Math.min(12, Number(match?.[2] ?? 9))),
-    minute: Math.max(0, Math.min(59, Number(match?.[3] ?? 0))),
+    period: parsed.hours >= 12 ? 1 : 0,
+    hour: parsed.hours % 12 || 12,
+    minute: parsed.minutes,
   };
 }
 
-export default function TimePicker({ value, onCancel, onSelect }: Props) {
-  const [time, setTime] = useState(() => parseTime(value));
+export default function TimePicker({
+  value,
+  onCancel,
+  onSelect,
+  validate,
+  neutral = false,
+}: Props) {
+  const [time, setTime] = useState(() => toWheel(value));
+  const selected = formatKoreanTime(
+    (time.hour % 12) + (time.period ? 12 : 0),
+    time.minute,
+  );
+  const error = validate?.(selected);
+
   return (
-    <div className="time-picker">
+    <div className={`time-picker${neutral ? ' neutral' : ''}`}>
       <div className="time-picker-columns">
         <WheelPicker
           label="오전/오후"
@@ -47,6 +65,11 @@ export default function TimePicker({ value, onCancel, onSelect }: Props) {
           onSelect={(minute) => setTime((current) => ({ ...current, minute }))}
         />
       </div>
+      {error && (
+        <p role="alert" className="time-picker-error">
+          {error}
+        </p>
+      )}
       <div className="sheet-control">
         <button type="button" className="button-secondary" onClick={onCancel}>
           취소
@@ -54,11 +77,8 @@ export default function TimePicker({ value, onCancel, onSelect }: Props) {
         <button
           type="button"
           className="button-primary"
-          onClick={() =>
-            onSelect(
-              `${time.period ? '오후' : '오전'} ${time.hour}:${String(time.minute).padStart(2, '0')}`,
-            )
-          }
+          disabled={Boolean(error)}
+          onClick={() => onSelect(selected)}
         >
           선택
         </button>

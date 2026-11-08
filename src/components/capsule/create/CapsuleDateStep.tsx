@@ -8,15 +8,24 @@ import { textStyles } from '@/styles/tokens';
 
 interface CapsuleDateStepProps {
   editDeadline: string;
+  editDeadlineTime: string;
   openDate: string;
+  openTime: string;
   onOpenDatePicker: (target: 'editDeadline' | 'openDate') => void;
 }
 
+const scheduleLabel = (date: string, time: string) =>
+  date && time ? `${date} ${time}` : '';
+
 export default function CapsuleDateStep({
   editDeadline,
+  editDeadlineTime,
   openDate,
+  openTime,
   onOpenDatePicker,
 }: CapsuleDateStepProps) {
+  const deadlineLabel = scheduleLabel(editDeadline, editDeadlineTime);
+  const openLabel = scheduleLabel(openDate, openTime);
   return (
     <div className="flex w-full flex-col gap-5">
       <div className="flex flex-col gap-1">
@@ -24,7 +33,7 @@ export default function CapsuleDateStep({
           언제 추억을 열어볼까요?
         </h2>
         <p className={`text-text-secondary ${textStyles['body-xs']}`}>
-          개봉일은 편지 수정 마감일에서 최소 2일 뒤로 정해주세요
+          개봉은 편지 수정 마감에서 최소 1시간 뒤로 정해주세요
         </p>
       </div>
 
@@ -38,10 +47,10 @@ export default function CapsuleDateStep({
               <strong
                 className={`text-text-primary ${textStyles['body-large-semi']}`}
               >
-                편지 수정 마감일
+                편지 수정 마감
               </strong>
               <span className={`text-text-secondary ${textStyles['body-xs']}`}>
-                편지를 작성할 수 있는 마지막 날
+                편지를 작성할 수 있는 마지막 시간
               </span>
             </div>
           </div>
@@ -53,10 +62,10 @@ export default function CapsuleDateStep({
           >
             <span
               className={`${
-                editDeadline ? 'text-text-primary' : 'text-text-placeholder'
+                deadlineLabel ? 'text-text-primary' : 'text-text-placeholder'
               } ${textStyles['body-medium']}`}
             >
-              {editDeadline || '날짜를 선택해주세요'}
+              {deadlineLabel || '날짜와 시간을 선택해주세요'}
             </span>
             <CapsuleCalendarIcon className="h-[18px] w-[18px] shrink-0" />
           </button>
@@ -75,7 +84,7 @@ export default function CapsuleDateStep({
               캡슐 잠금
             </strong>
             <span className={`text-text-secondary ${textStyles['body-xs']}`}>
-              편지 수정 마감일 다음 날부터 개봉일까지
+              편지 수정 마감부터 개봉 시간까지
               <br />
               캡슐을 열어볼 수 없어요
             </span>
@@ -93,10 +102,10 @@ export default function CapsuleDateStep({
               <strong
                 className={`text-text-primary ${textStyles['body-large-semi']}`}
               >
-                개봉일
+                개봉
               </strong>
               <span className={`text-text-secondary ${textStyles['body-xs']}`}>
-                추억을 다시 열어볼 날
+                추억을 다시 열어볼 시간
               </span>
             </div>
           </div>
@@ -108,10 +117,10 @@ export default function CapsuleDateStep({
           >
             <span
               className={`${
-                openDate ? 'text-text-primary' : 'text-text-placeholder'
+                openLabel ? 'text-text-primary' : 'text-text-placeholder'
               } ${textStyles['body-medium']}`}
             >
-              {openDate || '날짜를 선택해주세요'}
+              {openLabel || '날짜와 시간을 선택해주세요'}
             </span>
             <CapsuleCalendarIcon className="h-[18px] w-[18px] shrink-0" />
           </button>

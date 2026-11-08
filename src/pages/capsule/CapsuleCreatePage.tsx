@@ -1,6 +1,7 @@
 import BottomSheet from '@/components/common/BottomSheet';
 import QueryFeedback from '@/components/common/QueryFeedback';
 import DatePicker from '@/components/common/DatePicker';
+import TimePicker from '@/components/common/TimePicker';
 import InviteSheet from '@/components/capsule/InviteSheet';
 import CapsuleCompleteStep from '@/components/capsule/create/CapsuleCompleteStep';
 import CapsuleDateStep from '@/components/capsule/create/CapsuleDateStep';
@@ -27,8 +28,11 @@ export default function CapsuleCreatePage() {
     maxNameLength,
     maxDescriptionLength,
     isNextEnabled,
-    dateSheet,
+    scheduleSheet,
+    pendingDate,
     datePickerMinDate,
+    timePickerInitial,
+    validateTime,
     inviteSheetOpen,
     handleSelectIcon,
     handleNameChange,
@@ -38,6 +42,7 @@ export default function CapsuleCreatePage() {
     handleOpenDateSheet,
     handleCloseDateSheet,
     handleSelectDate,
+    handleSelectTime,
     handleOpenInviteSheet,
     handleCloseInviteSheet,
     handleNext,
@@ -113,7 +118,9 @@ export default function CapsuleCreatePage() {
           {step === 'dates' && (
             <CapsuleDateStep
               editDeadline={form.editDeadline}
+              editDeadlineTime={form.editDeadlineTime}
               openDate={form.openDate}
+              openTime={form.openTime}
               onOpenDatePicker={handleOpenDateSheet}
             />
           )}
@@ -140,15 +147,37 @@ export default function CapsuleCreatePage() {
         </StickyBottomBar>
       </main>
 
-      <BottomSheet open={dateSheet !== null} onClose={handleCloseDateSheet}>
-        <DatePicker
-          value={
-            dateSheet === 'editDeadline' ? form.editDeadline : form.openDate
-          }
-          minDate={datePickerMinDate}
-          onCancel={handleCloseDateSheet}
-          onSelect={handleSelectDate}
-        />
+      <BottomSheet
+        open={scheduleSheet !== null}
+        onClose={handleCloseDateSheet}
+        title={
+          scheduleSheet?.stage === 'time'
+            ? `${pendingDate} ${scheduleSheet.target === 'editDeadline' ? '마감' : '개봉'} 시간`
+            : undefined
+        }
+      >
+        {scheduleSheet?.stage === 'time' ? (
+          <TimePicker
+            key={`${scheduleSheet.target}-${pendingDate}`}
+            neutral
+            value={timePickerInitial}
+            validate={validateTime}
+            onCancel={handleCloseDateSheet}
+            onSelect={handleSelectTime}
+          />
+        ) : (
+          <DatePicker
+            key={scheduleSheet?.target}
+            value={
+              scheduleSheet?.target === 'editDeadline'
+                ? form.editDeadline
+                : form.openDate
+            }
+            minDate={datePickerMinDate}
+            onCancel={handleCloseDateSheet}
+            onSelect={handleSelectDate}
+          />
+        )}
       </BottomSheet>
     </MobileLayout>
   );
