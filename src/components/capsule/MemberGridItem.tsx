@@ -19,6 +19,8 @@ export default function MemberGridItem({
         <img
           src={toSecureImageUrl(member.profileImageUrl) ?? defaultAvatar}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="size-full rounded-full border border-surface object-cover"
         />
         {onRemove && (

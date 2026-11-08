@@ -3,6 +3,7 @@ import type { CapsuleCardResponse } from '@/types/capsule';
 import { request } from '@/apis/client';
 import { capsuleDeadlineBadge } from '@/utils/capsuleCards';
 import { validateMemoryImages } from '@/utils/archivePhotos';
+import { compressImage } from '@/utils/compressImage';
 
 export { request } from '@/apis/client';
 
@@ -68,9 +69,10 @@ export const getMemory = (id: number) =>
   request<MemoryDetail>(`/v1/memories/${id}`);
 export const deleteMemory = (id: number) =>
   request<void>(`/v1/memories/${id}`, { method: 'DELETE' });
-export async function uploadMemoryImages(files: File[]): Promise<string[]> {
-  if (!files.length) return [];
-  validateMemoryImages(files);
+export async function uploadMemoryImages(originals: File[]): Promise<string[]> {
+  if (!originals.length) return [];
+  validateMemoryImages(originals);
+  const files = await Promise.all(originals.map((file) => compressImage(file)));
   const data = await request<{
     uploads: { imageKey: string; uploadUrl: string }[];
   }>('/v1/images/presigned-urls', {

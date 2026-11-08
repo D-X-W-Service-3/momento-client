@@ -36,6 +36,9 @@ export default function ArchiveCoverCarousel({
               className="detail-cover"
               src={image}
               alt=""
+              // 첫 장만 바로 받고 나머지는 넘길 때 받는다
+              loading={index === 0 ? 'eager' : 'lazy'}
+              decoding="async"
               draggable={false}
             />
           </button>

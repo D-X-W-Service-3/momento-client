@@ -93,6 +93,7 @@ export default function LetterViewer({
           <img
             src={letter.imageUrl}
             alt=""
+            decoding="async"
             className="size-[280px] shrink-0 object-cover"
           />
         )}
