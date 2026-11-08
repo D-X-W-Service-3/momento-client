@@ -89,13 +89,27 @@ export default function LetterViewer({
         onClick={(event) => event.stopPropagation()}
         className="flex w-full max-w-[353px] flex-col items-center gap-list overflow-hidden rounded-xl bg-surface px-5 py-6 shadow-level-2"
       >
-        {letter.imageUrl && (
+        {letter.imageUrl ? (
           <img
             src={letter.imageUrl}
             alt=""
             decoding="async"
             className="size-[280px] shrink-0 object-cover"
           />
+        ) : (
+          letter.imageStatus === 'PENDING' && (
+            <div
+              role="status"
+              className="flex size-[280px] shrink-0 animate-pulse flex-col items-center justify-center gap-1 bg-surface-gray text-center"
+            >
+              <p className="font-display text-body-md font-semibold text-ink">
+                AI 이미지를 만들고 있어요
+              </p>
+              <p className="font-display text-meta text-ink-muted">
+                완성되면 이 자리에 나타나요
+              </p>
+            </div>
+          )
         )}
 
         <div className="flex w-full flex-col gap-1">
