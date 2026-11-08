@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Button from '@/components/common/Button';
@@ -8,6 +8,7 @@ import { capsuleDetailPath, letterTypePath } from '@/constants/routes';
 import { useCapsuleDetail } from '@/hooks/useCapsule';
 import { useCapsuleLetters } from '@/hooks/useLetter';
 import type { CapsuleDetail } from '@/types/capsule';
+import { openCountdownLabel, serverDate } from '@/utils/capsuleCards';
 
 type CoverActionKey = 'detail' | 'write' | 'letters';
 
@@ -27,7 +28,7 @@ interface CoverContent {
  * 서버 status 3가지가 Figma 의 수정가능 / 잠긴캡슐 / 열린캡슐 커버와 1:1 이다.
  * 버튼 노출은 서버가 준 permissions 를 그대로 따른다.
  */
-const getCoverContent = (capsule: CapsuleDetail): CoverContent => {
+const getCoverContent = (capsule: CapsuleDetail, now: number): CoverContent => {
   const { canWriteLetter, canViewLetters } = capsule.permissions;
 
   if (capsule.status === 'WRITING') {
@@ -55,10 +56,13 @@ const getCoverContent = (capsule: CapsuleDetail): CoverContent => {
     };
   }
 
-  // 잠긴 캡슐 — 개봉까지 남은 날을 센다
+  // 잠긴 캡슐 — 개봉까지 남은 시간을 센다 (하루 미만이면 시간·분 단위)
   if (capsule.status === 'LOCKED') {
     return {
-      titleLines: [`${capsule.dDay}일 후에`, '타임캡슐이 열려요'],
+      titleLines: [
+        openCountdownLabel(capsule.openAt, capsule.dDay, now),
+        '타임캡슐이 열려요',
+      ],
       actions: [{ key: 'detail', label: '캡슐 정보보기', variant: 'primary' }],
     };
   }
@@ -86,11 +90,25 @@ const ACTION_STYLES: Record<CoverAction['variant'], string> = {
 export default function CapsuleCoverPage() {
   const { capsuleId = '' } = useParams();
   const navigate = useNavigate();
-  const { data: capsule } = useCapsuleDetail(capsuleId);
+  const { data: capsule, refetch } = useCapsuleDetail(capsuleId);
   const [lettersOpen, setLettersOpen] = useState(false);
   const { data: letters } = useCapsuleLetters(capsuleId, lettersOpen);
+  const [now, setNow] = useState(() => Date.now());
 
-  const content = capsule ? getCoverContent(capsule) : null;
+  // 잠긴 캡슐은 30초마다 남은 시간을 갱신하고, 개봉 시각이 지나면 다시 조회해 열린 화면으로 바꾼다
+  const lockedOpenAt =
+    capsule?.status === 'LOCKED' ? capsule.openAt : undefined;
+  useEffect(() => {
+    if (!lockedOpenAt) return;
+    const timer = setInterval(() => {
+      const current = Date.now();
+      setNow(current);
+      if (current >= serverDate(lockedOpenAt).getTime()) void refetch();
+    }, 30_000);
+    return () => clearInterval(timer);
+  }, [lockedOpenAt, refetch]);
+
+  const content = capsule ? getCoverContent(capsule, now) : null;
 
   const handleAction = (key: CoverActionKey) => {
     if (key === 'detail') navigate(capsuleDetailPath(capsuleId));
