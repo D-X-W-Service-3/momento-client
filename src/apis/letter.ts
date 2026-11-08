@@ -59,8 +59,7 @@ export async function getMyLetters(capsuleId: string): Promise<Letter[]> {
       authorName: '나',
       date: toDateOnly(letter.createdAt),
       canDelete: letter.canDelete,
-      imageUrl: letter.imageUrl ?? undefined,
-      imageStatus: letter.imageStatus ?? null,
+      // AI 이미지는 캡슐이 열린 뒤 공개 편지에서만 보여 준다 (작성 중에는 숨김)
     },
   ];
 }
