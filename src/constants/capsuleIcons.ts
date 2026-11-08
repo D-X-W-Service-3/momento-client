@@ -1,10 +1,10 @@
-import airplaneIcon from '@/assets/images/capsule-icons/airplane.png';
-import cameraIcon from '@/assets/images/capsule-icons/camera.png';
-import giftIcon from '@/assets/images/capsule-icons/gift.png';
-import heartIcon from '@/assets/images/capsule-icons/heart.png';
-import hourglassIcon from '@/assets/images/capsule-icons/hourglass.png';
-import letterIcon from '@/assets/images/capsule-icons/letter.png';
-import starIcon from '@/assets/images/capsule-icons/star.png';
+import airplaneIcon from '@/assets/images/capsule-icons/airplane.webp';
+import cameraIcon from '@/assets/images/capsule-icons/camera.webp';
+import giftIcon from '@/assets/images/capsule-icons/gift.webp';
+import heartIcon from '@/assets/images/capsule-icons/heart.webp';
+import hourglassIcon from '@/assets/images/capsule-icons/hourglass.webp';
+import letterIcon from '@/assets/images/capsule-icons/letter.webp';
+import starIcon from '@/assets/images/capsule-icons/star.webp';
 import capsuleHero from '@/assets/images/capsule/capsule-hero.webp';
 import type { CapsuleIconOption } from '@/types/capsule';
 
