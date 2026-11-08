@@ -6,11 +6,9 @@
 export type LetterThemeType =
   'PASTEL' | 'WATERCOLOR' | 'VINTAGE' | 'ANIME' | 'JOSEON';
 
-/** 편지 용도. 디자인에 선택 UI 가 없어 지금은 GENERAL 로 고정한다. */
+/** 편지 용도. 기존 편지는 조회 시 null 일 수 있다. */
 export type LetterType =
   'BIRTHDAY' | 'COUPLE_ANNIVERSARY' | 'CHRISTMAS' | 'GENERAL';
-
-export const DEFAULT_LETTER_TYPE: LetterType = 'GENERAL';
 
 /** 서버 제한값. Figma 와 다르면 서버를 따른다 (초과 시 400). */
 export const LETTER_TITLE_MAX_LENGTH = 50;

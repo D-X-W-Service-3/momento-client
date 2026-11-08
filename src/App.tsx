@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import { ApiError } from '@/apis/client';
+import ToastHost from '@/components/common/ToastHost';
 import { ROUTES } from '@/constants/routes';
 import { usePushBridge } from '@/hooks/usePushBridge';
 import RequireAuth from '@/routes/RequireAuth';
@@ -260,6 +261,7 @@ export default function App() {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      <ToastHost />
     </QueryClientProvider>
   );
 }

@@ -1,6 +1,5 @@
 import BottomSheet from '@/components/common/BottomSheet';
 import DatePicker from '@/components/common/DatePicker';
-import Toast from '@/components/common/Toast';
 import { PlusIcon } from '@/components/common/Icons';
 import ArchiveImageViewer from '@/components/archive/ArchiveImageViewer';
 import { BackHeader } from '@/components/layout/Headers';
@@ -22,7 +21,6 @@ export default function ArchiveFormPage() {
     fileInput,
     error,
     helpers,
-    toast,
     save,
     addPhotos,
     touch,
@@ -227,7 +225,6 @@ export default function ArchiveFormPage() {
           onMakeCover={makeCover}
         />
       )}
-      <Toast message={toast} />
     </MobileLayout>
   );
 }
