@@ -16,18 +16,11 @@ export default function NotificationCard({
       onClick={onClick}
       className="bg-surface-white flex min-h-[75px] w-full items-center gap-3 rounded-xl px-5 py-[15px] text-left"
     >
-      {/* 읽은 알림도 점 자리를 비워 둬서 아이콘 위치가 줄마다 같게 한다 */}
+      {/* 읽지 않은 알림만 점으로 표시한다 */}
       <span
         className={`h-1.5 w-1.5 shrink-0 rounded-full ${item.isRead ? '' : 'bg-primary'}`}
         aria-label={item.isRead ? undefined : '읽지 않음'}
         aria-hidden={item.isRead || undefined}
-      />
-      {/* 푸시 알림과 같은 앱 아이콘 */}
-      <img
-        src="/icons/192.png"
-        alt=""
-        className="rounded-icon h-[45px] w-[45px] shrink-0 object-cover"
-        decoding="async"
       />
       <div className="flex min-h-[45px] min-w-0 flex-1 flex-col justify-center">
         <h2

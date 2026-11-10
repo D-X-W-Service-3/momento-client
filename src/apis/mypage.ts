@@ -85,7 +85,7 @@ const settingLabels: {
   {
     key: 'dDayAlert',
     title: 'D-Day 알림',
-    description: '개봉 7일 전부터 남은 날짜를 알려드려요',
+    description: '개봉 7일 전, 5일 전, 1일 전과 당일에 알려드려요',
   },
   {
     key: 'editDeadlineAlert',
