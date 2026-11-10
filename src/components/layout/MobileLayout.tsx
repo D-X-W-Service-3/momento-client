@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
+import TimeCapsuleIcon from '@/assets/icons/nav-time-capsule.svg?react';
 
 type MobileLayoutProps = {
   children: ReactNode;
@@ -23,8 +24,7 @@ const navItems = [
   },
   {
     to: '/capsules',
-    icon: '/assets/archive/icon-capsule-active.svg',
-    inactiveIcon: '/assets/archive/icon-7.svg',
+    Icon: TimeCapsuleIcon,
     label: '타임캡슐',
   },
   {
@@ -68,11 +68,15 @@ export default function MobileLayout({
             >
               {({ isActive }) => (
                 <>
-                  <img
-                    className="nav-icon"
-                    src={isActive ? item.icon : item.inactiveIcon}
-                    alt=""
-                  />
+                  {item.Icon ? (
+                    <item.Icon className="nav-icon" aria-hidden="true" />
+                  ) : (
+                    <img
+                      className="nav-icon"
+                      src={isActive ? item.icon : item.inactiveIcon}
+                      alt=""
+                    />
+                  )}
                   <span>{item.label}</span>
                 </>
               )}

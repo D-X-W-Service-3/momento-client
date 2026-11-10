@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import chevronLeftIcon from '@/assets/icons/chevron-left-16.svg';
 import chevronRightIcon from '@/assets/icons/chevron-right-16.svg';
@@ -23,6 +23,10 @@ export default function LetterViewer({
   onDelete,
 }: LetterViewerProps) {
   const [index, setIndex] = useState(0);
+  const letterRef = useRef<HTMLElement>(null);
+  const safeIndex = Math.min(index, Math.max(0, letters.length - 1));
+  const letter = letters[safeIndex];
+  const isVisible = open && Boolean(letter);
 
   // 다시 열었을 때는 첫 장부터 본다.
   useEffect(() => {
@@ -30,7 +34,7 @@ export default function LetterViewer({
   }, [open]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!isVisible) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
@@ -47,7 +51,7 @@ export default function LetterViewer({
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = overflow;
     };
-  }, [open, onClose, letters.length]);
+  }, [isVisible, onClose, letters.length]);
 
   // 편지가 삭제되어 마지막 인덱스를 벗어나면 이전 장으로 맞춘다.
   useEffect(() => {
@@ -56,17 +60,22 @@ export default function LetterViewer({
     }
   }, [index, letters.length]);
 
-  const safeIndex = Math.min(index, Math.max(0, letters.length - 1));
-  const letter = letters[safeIndex];
+  useEffect(() => {
+    if (letterRef.current) letterRef.current.scrollTop = 0;
+  }, [open, letter?.id]);
+
   if (!open || !letter) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-list bg-black/50 p-5"
+      role="dialog"
+      aria-modal="true"
+      aria-label="편지 보기"
+      className="modal-enter fixed inset-0 z-50 flex flex-col items-center justify-center gap-list bg-black/50 p-5"
       onClick={onClose}
     >
       <div
-        className="flex w-full max-w-[353px] items-center justify-between"
+        className="flex w-full max-w-[353px] shrink-0 items-center justify-between"
         onClick={(event) => event.stopPropagation()}
       >
         {onDelete && letter.canDelete ? (
@@ -86,21 +95,24 @@ export default function LetterViewer({
       </div>
 
       <article
+        ref={letterRef}
+        tabIndex={0}
+        aria-label="편지 내용"
         onClick={(event) => event.stopPropagation()}
-        className="flex w-full max-w-[353px] flex-col items-center gap-list overflow-hidden rounded-xl bg-surface px-5 py-6 shadow-level-2"
+        className="modal-panel-enter flex min-h-0 w-full max-w-[353px] touch-pan-y flex-col items-center gap-list overflow-y-auto overscroll-contain rounded-xl bg-surface px-5 py-6 shadow-level-2"
       >
         {letter.imageUrl ? (
           <img
             src={letter.imageUrl}
             alt=""
             decoding="async"
-            className="size-[280px] shrink-0 object-cover"
+            className="aspect-square w-full max-w-[280px] shrink-0 object-cover"
           />
         ) : (
           letter.imageStatus === 'PENDING' && (
             <div
               role="status"
-              className="flex size-[280px] shrink-0 animate-pulse flex-col items-center justify-center gap-1 bg-surface-gray text-center"
+              className="flex aspect-square w-full max-w-[280px] shrink-0 animate-pulse flex-col items-center justify-center gap-1 bg-surface-gray text-center"
             >
               <p className="font-display text-body-md font-semibold text-ink">
                 AI 이미지를 만들고 있어요
@@ -112,26 +124,26 @@ export default function LetterViewer({
           )
         )}
 
-        <div className="flex w-full flex-col gap-1">
+        <div className="flex w-full shrink-0 flex-col gap-1">
           <div className="flex w-full items-center justify-between font-display text-meta whitespace-nowrap">
             <span className="text-ink-muted">
               {formatKoreanDate(letter.date)}
             </span>
             <span className="text-ink-faint">{letter.authorName}</span>
           </div>
-          <h2 className="w-full font-serif text-letter text-black">
+          <h2 className="w-full font-serif text-letter wrap-anywhere text-black">
             {letter.title}
           </h2>
         </div>
 
-        <p className="w-full font-serif text-quote whitespace-pre-line text-ink">
+        <p className="w-full shrink-0 font-serif text-quote wrap-anywhere whitespace-pre-line text-ink">
           {letter.content}
         </p>
       </article>
 
       <div
         onClick={(event) => event.stopPropagation()}
-        className="flex items-center justify-center gap-2.5 rounded-full bg-surface p-2"
+        className="flex shrink-0 items-center justify-center gap-2.5 rounded-full bg-surface p-2"
       >
         <button
           type="button"

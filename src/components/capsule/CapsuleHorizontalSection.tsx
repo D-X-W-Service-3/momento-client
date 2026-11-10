@@ -1,6 +1,6 @@
 import ChevronRightSmIcon from '@/assets/icons/chevron-right-sm.svg?react';
-import capsulePopsicleImg from '@/assets/images/home-capsule-popsicle.png';
 import Chip from '@/components/common/Chip';
+import { capsuleIconSrc } from '@/constants/capsuleIcons';
 import { useHorizontalDragScroll } from '@/hooks/useHorizontalDragScroll';
 import { textStyles } from '@/styles/tokens';
 import type { CapsuleHorizontalItem } from '@/types/capsule';
@@ -48,8 +48,8 @@ export default function CapsuleHorizontalSection({
         className={`${items.length <= 1 ? '-mx-3 px-3' : '-ml-3 -mr-5 pl-3 pr-5'} -my-3 flex cursor-grab touch-pan-x gap-3 overflow-x-auto py-3 select-none [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden`}
       >
         {items.length === 0 && (
-          <div className="bg-surface-white flex h-[126px] w-full shrink-0 items-center justify-between gap-3 rounded-xl px-5 py-[15px] shadow-[0_2px_8px_rgb(26_23_22/0.05)]">
-            <div className="flex w-[132px] flex-col gap-1">
+          <div className="bg-surface-white flex h-[126px] w-full shrink-0 items-center rounded-xl px-5 py-[15px] shadow-[0_2px_8px_rgb(26_23_22/0.05)]">
+            <div className="flex flex-col gap-1">
               <h3
                 className={`text-text-primary ${textStyles['body-large-semi']}`}
               >
@@ -59,12 +59,6 @@ export default function CapsuleHorizontalSection({
                 {emptyDescription}
               </p>
             </div>
-            <img
-              src={capsulePopsicleImg}
-              alt=""
-              aria-hidden="true"
-              className="pointer-events-none h-[70px] w-[76px] shrink-0 object-contain"
-            />
           </div>
         )}
         {items.map((item) => (
@@ -88,7 +82,7 @@ export default function CapsuleHorizontalSection({
             </div>
 
             <img
-              src={capsulePopsicleImg}
+              src={capsuleIconSrc(item.iconType)}
               alt=""
               draggable={false}
               className="pointer-events-none h-[70px] w-[76px] shrink-0 object-contain"

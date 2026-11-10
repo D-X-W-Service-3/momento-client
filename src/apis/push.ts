@@ -17,8 +17,11 @@ export const registerPushSubscription = (subscription: PushSubscriptionBody) =>
   api.post<void>('/v1/push/subscriptions', subscription);
 
 /** 이미 없는 구독이어도 서버는 성공으로 응답한다. */
-export const deletePushSubscription = (endpoint: string) =>
+export const deletePushSubscription = (
+  endpoint: string,
+  signal?: AbortSignal,
+) =>
   api.delete<void>(
     `/v1/push/subscriptions?endpoint=${encodeURIComponent(endpoint)}`,
-    { redirectOnUnauthorized: false },
+    { redirectOnUnauthorized: false, signal },
   );

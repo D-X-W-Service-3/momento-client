@@ -63,7 +63,7 @@ export default function ArchiveImageViewer({
 
   return (
     <div
-      className="image-viewer"
+      className="image-viewer modal-enter"
       role="dialog"
       aria-modal="true"
       aria-label="아카이브 사진 확대"

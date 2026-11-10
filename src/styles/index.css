@@ -419,6 +419,12 @@
     flex-shrink: 0;
     object-fit: contain;
   }
+  .bottom-nav a.active .nav-clock-face {
+    fill: currentColor;
+  }
+  .bottom-nav a.active .nav-clock-hands {
+    stroke: var(--color-surface-white);
+  }
   .archive-hero,
   .calendar-hero {
     position: relative;
@@ -748,6 +754,22 @@
     }
     to {
       opacity: 0;
+    }
+  }
+  @keyframes modal-panel-in {
+    from {
+      transform: translateY(8px) scale(0.98);
+    }
+    to {
+      transform: translateY(0) scale(1);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .modal-enter {
+      animation: sheet-backdrop-fade-in 0.2s ease-out;
+    }
+    .modal-panel-enter {
+      animation: modal-panel-in 0.2s ease-out;
     }
   }
   @keyframes sheet-slide-up {

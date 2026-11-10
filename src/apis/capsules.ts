@@ -23,6 +23,7 @@ export async function fetchCapsuleHomeData(): Promise<CapsuleHomeData> {
   const horizontal = (cards: CapsuleOverviewResponse['writing']) =>
     cards.map((card) => ({
       id: String(card.capsuleId),
+      iconType: card.iconType,
       badge: capsuleDeadlineBadge(card),
       title: card.title,
       openDateText: capsuleDateLabel(card.openAt),
