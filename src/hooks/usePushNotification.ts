@@ -26,9 +26,11 @@ export async function syncPushSubscription() {
  * 로그아웃 직전(토큰이 남아 있을 때) 서버에서 이 기기 구독을 지운다.
  * 브라우저 구독은 남겨 두어 다시 로그인하면 sync 로 이어서 받는다.
  */
-export async function unregisterPushOnLogout() {
+export async function unregisterPushOnLogout(signal: AbortSignal) {
   const subscription = await getCurrentPushSubscription().catch(() => null);
-  if (subscription) await deletePushSubscription(subscription.endpoint);
+  if (subscription && !signal.aborted) {
+    await deletePushSubscription(subscription.endpoint, signal);
+  }
 }
 
 async function readStatus(): Promise<PushStatus> {
