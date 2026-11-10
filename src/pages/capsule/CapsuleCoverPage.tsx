@@ -1,13 +1,27 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
 import Button from '@/components/common/Button';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import CapsuleCoverLayout from '@/components/capsule/CapsuleCoverLayout';
 import LetterViewer from '@/components/capsule/LetterViewer';
-import { capsuleDetailPath, letterTypePath } from '@/constants/routes';
+import OpeningFlash from '@/components/capsule/OpeningFlash';
+import {
+  capsuleDetailPath,
+  capsuleRevealPath,
+  letterTypePath,
+} from '@/constants/routes';
 import { useCapsuleDetail } from '@/hooks/useCapsule';
 import { useCapsuleLetters } from '@/hooks/useLetter';
-import type { CapsuleDetail } from '@/types/capsule';
+import type {
+  CapsuleCoverNavigationState,
+  CapsuleDetail,
+} from '@/types/capsule';
 import { openCountdownLabel, serverDate } from '@/utils/capsuleCards';
 
 type CoverActionKey = 'detail' | 'write' | 'letters';
@@ -90,7 +104,18 @@ const ACTION_STYLES: Record<CoverAction['variant'], string> = {
 export default function CapsuleCoverPage() {
   const { capsuleId = '' } = useParams();
   const navigate = useNavigate();
-  const { data: capsule, refetch } = useCapsuleDetail(capsuleId);
+  const location = useLocation();
+  const {
+    data: capsule,
+    error,
+    isFetching,
+    refetch,
+  } = useCapsuleDetail(capsuleId);
+  const openingState = location.state as CapsuleCoverNavigationState | null;
+  const showOpeningFlash = openingState?.showOpeningFlash;
+  const [flashCapsuleId, setFlashCapsuleId] = useState(() =>
+    showOpeningFlash ? capsuleId : null,
+  );
   const [lettersOpen, setLettersOpen] = useState(false);
   const { data: letters } = useCapsuleLetters(capsuleId, lettersOpen);
   const [now, setNow] = useState(() => Date.now());
@@ -107,6 +132,27 @@ export default function CapsuleCoverPage() {
     }, 30_000);
     return () => clearInterval(timer);
   }, [lockedOpenAt, refetch]);
+
+  // 새로고침 시 플래시는 반복하지 않는다. 이 방문의 개봉 시도 표시는 유지한다.
+  useEffect(() => {
+    if (!showOpeningFlash) return;
+    navigate('.', {
+      replace: true,
+      state: { openingFinished: true } satisfies CapsuleCoverNavigationState,
+    });
+  }, [showOpeningFlash, navigate]);
+
+  // 개봉 요청이 실패해도 연출 직후에는 커버를 보여 준다. 새로 진입하면 다시 확인한다.
+  if (
+    capsule?.status === 'OPENED' &&
+    !capsule.openedByMe &&
+    !openingState?.openingFinished &&
+    !error
+  ) {
+    return isFetching ? null : (
+      <Navigate to={capsuleRevealPath(capsuleId)} replace />
+    );
+  }
 
   const content = capsule ? getCoverContent(capsule, now) : null;
 
@@ -132,12 +178,21 @@ export default function CapsuleCoverPage() {
           ))}
         </CapsuleCoverLayout>
       )}
+      {!content && error && <QueryFeedback error={error} onRetry={refetch} />}
 
       <LetterViewer
         open={lettersOpen}
         letters={letters ?? []}
         onClose={() => setLettersOpen(false)}
       />
+
+      {/* 연출 영상을 끝까지 본 직후에만 흰빛을 이어받는다 */}
+      {flashCapsuleId === capsuleId && openingState?.openingFinished && (
+        <OpeningFlash
+          ready={Boolean(content || error)}
+          onFinished={() => setFlashCapsuleId(null)}
+        />
+      )}
     </>
   );
 }

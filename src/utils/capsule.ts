@@ -23,7 +23,7 @@ export const capsuleTypeLabel: Record<CapsuleKind, string> = {
 };
 
 /**
- * 상태 칩. 목록 카드와 문구가 달라 상세 전용이다.
+ * 상세 화면 상태 칩. 목록에서도 개봉을 확인한 카드에 같은 칩을 쓴다.
  * 서버 status 3가지가 Figma 의 수정가능 / 잠긴캡슐 / 열린캡슐 과 1:1 이다.
  * 톤은 Figma 에서 칩 배경색을 찍어 맞췄다 (#fffbeb / #f2f1f9 / #f4f4f4).
  */

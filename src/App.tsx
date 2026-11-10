@@ -13,6 +13,7 @@ import CapsuleEditPage from '@/pages/capsule/CapsuleEditPage';
 import CapsuleInviteDetailPage from '@/pages/capsule/CapsuleInviteDetailPage';
 import CapsuleInvitePage from '@/pages/capsule/CapsuleInvitePage';
 import CapsuleMembersPage from '@/pages/capsule/CapsuleMembersPage';
+import CapsuleOpeningPage from '@/pages/capsule/CapsuleOpeningPage';
 import CapsuleRevealPage from '@/pages/capsule/CapsuleRevealPage';
 import HomePage from '@/pages/HomePage';
 import LetterCreatePage from '@/pages/capsule/LetterCreatePage';
@@ -211,6 +212,7 @@ export default function App() {
           element={<CapsuleMembersPage role="RECIPIENT" />}
         />
         <Route path={ROUTES.CAPSULE_REVEAL} element={<CapsuleRevealPage />} />
+        <Route path={ROUTES.CAPSULE_OPENING} element={<CapsuleOpeningPage />} />
         {/* 초대 링크는 비로그인 상태로 열리는 게 정상이라 가드를 둔다. */}
         <Route
           path={ROUTES.INVITE}

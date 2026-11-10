@@ -163,6 +163,9 @@
   --color-warning-text: #8a5a16;
 
   /* === 타임캡슐 몰입 화면 === */
+  /* letter-galaxy 연출 영상이 끝에서 흰빛으로 플래시된다. 그 마지막
+     프레임 색이라, 커버가 이 색에서 떠오르듯 이어진다. */
+  --color-capsule-flash: #e6dfff;
   --color-capsule-bg-from: #190041;
   --color-capsule-bg-to: #6d30d4;
   --color-capsule-accent: #7b5dfa;
