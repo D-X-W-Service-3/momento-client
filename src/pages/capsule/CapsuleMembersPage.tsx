@@ -128,9 +128,11 @@ export default function CapsuleMembersPage({ role }: CapsuleMembersPageProps) {
               </h3>
 
               {members.length > 0 && (
-                <ul className="grid w-full grid-cols-4 justify-items-center gap-x-[19px] gap-y-list">
+                <ul className="grid w-full grid-cols-4 gap-x-[19px] gap-y-list">
                   {members.map((member) => (
-                    <li key={member.memberId}>
+                    // min-w-0 이 없으면 칸이 이름 길이만큼 부풀어 이름이
+                    // 줄바꿈될 기준 너비가 사라지고, 옆 칸 이름과 겹친다.
+                    <li key={member.memberId} className="min-w-0">
                       <MemberGridItem
                         member={member}
                         onRemove={
