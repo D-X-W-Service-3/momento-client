@@ -13,20 +13,20 @@ import type {
 } from '@/types/letter';
 
 /**
- * 편지지 화풍. Figma 레이어 이름(water / pstl / anime / josen / vintage)이
- * 서버 themeType 과 1:1 로 대응한다. 배열 순서가 화면에 보이는 순서다.
+ * 편지지 화풍. 각 이미지는 서버 themeType 화풍의 예시이고, 배열 순서가
+ * 화면에 보이는 순서다.
  */
 const LETTER_PAPERS: LetterPaper[] = [
+  { id: 'vintage', name: '빈티지', imageUrl: vintage, themeType: 'VINTAGE' },
+  { id: 'pastel', name: '파스텔', imageUrl: pastel, themeType: 'PASTEL' },
+  { id: 'anime', name: '애니메이션', imageUrl: anime, themeType: 'ANIME' },
   {
     id: 'watercolor',
-    name: 'water',
+    name: '수채화',
     imageUrl: watercolor,
     themeType: 'WATERCOLOR',
   },
-  { id: 'pastel', name: 'pstl', imageUrl: pastel, themeType: 'PASTEL' },
-  { id: 'anime', name: 'anime', imageUrl: anime, themeType: 'ANIME' },
-  { id: 'joseon', name: 'josen', imageUrl: joseon, themeType: 'JOSEON' },
-  { id: 'vintage', name: 'vintage', imageUrl: vintage, themeType: 'VINTAGE' },
+  { id: 'joseon', name: '민화', imageUrl: joseon, themeType: 'JOSEON' },
 ];
 
 // 편지지 이미지는 프론트 에셋이라 서버 호출이 없다. 훅 인터페이스만 맞춘다.
