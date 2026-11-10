@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import revealBg from '@/assets/images/capsule/reveal-bg.webp';
 import Button from '@/components/common/Button';
-import { ROUTES, capsuleCoverPath } from '@/constants/routes';
+import { ROUTES, capsuleOpeningPath } from '@/constants/routes';
 import { useOpenCapsule } from '@/hooks/useCapsule';
 
 /** 개봉일이 된 캡슐을 열기 전에 보여주는 인트로 화면 */
@@ -11,11 +11,11 @@ export default function CapsuleRevealPage() {
   const navigate = useNavigate();
   const openCapsule = useOpenCapsule(capsuleId);
 
-  // 개봉을 확인했다고 서버에 알린 뒤 캡슐로 들어간다.
+  // 개봉을 확인했다고 서버에 알린 뒤 연출 화면으로 넘어간다.
   // 실패해도 화면은 막지 않는다 (다음 진입에서 다시 시도된다).
   const goCapsule = () =>
     openCapsule.mutate(undefined, {
-      onSettled: () => navigate(capsuleCoverPath(capsuleId)),
+      onSettled: () => navigate(capsuleOpeningPath(capsuleId)),
     });
 
   return (

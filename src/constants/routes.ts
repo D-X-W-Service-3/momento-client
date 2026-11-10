@@ -16,6 +16,8 @@ export const ROUTES = {
   CAPSULE_EDIT: '/capsules/:capsuleId/edit',
   /** 개봉일 인트로 */
   CAPSULE_REVEAL: '/capsules/:capsuleId/reveal',
+  /** 개봉 확인 직후 연출 화면 */
+  CAPSULE_OPENING: '/capsules/:capsuleId/opening',
   /** 초대 링크로 들어온 캡슐 커버. 서버가 발급한 inviteToken 으로 식별한다. */
   INVITE: '/invites/:inviteToken',
   /** 초대 수락 전 캡슐 상세 */
@@ -41,6 +43,8 @@ export const capsuleEditPath = (capsuleId: string) =>
   `/capsules/${capsuleId}/edit`;
 export const capsuleRevealPath = (capsuleId: string) =>
   `/capsules/${capsuleId}/reveal`;
+export const capsuleOpeningPath = (capsuleId: string) =>
+  `/capsules/${capsuleId}/opening`;
 export const invitePath = (inviteToken: string) => `/invites/${inviteToken}`;
 export const inviteDetailPath = (inviteToken: string) =>
   `/invites/${inviteToken}/detail`;
