@@ -11,6 +11,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog';
 import GhostButton from '@/components/common/GhostButton';
 import InviteSheet from '@/components/capsule/InviteSheet';
 import LetterViewer from '@/components/capsule/LetterViewer';
+import QueryFeedback from '@/components/common/QueryFeedback';
 import SectionHeader from '@/components/common/SectionHeader';
 import BackHeader from '@/components/layout/BackHeader';
 import {
@@ -55,7 +56,11 @@ export default function CapsuleDetailPage() {
   const permissions = capsule?.permissions;
   const chip = capsule && capsuleStatusChip(capsule.status);
 
-  const { data: myLetters } = useMyLetters(capsuleId, isEditable);
+  const {
+    data: myLetters,
+    error: myLettersError,
+    refetch: refetchMyLetters,
+  } = useMyLetters(capsuleId, isEditable);
   const deleteLetter = useDeleteLetter(capsuleId);
   const deleteCapsule = useDeleteCapsule(capsuleId);
 
@@ -154,6 +159,14 @@ export default function CapsuleDetailPage() {
                     <GhostButton onClick={() => setLettersOpen(true)}>
                       내가 쓴 편지 확인/삭제 하기
                     </GhostButton>
+                  )}
+                  {!hasMyLetters && myLettersError && (
+                    <div className="rounded-xl bg-surface">
+                      <QueryFeedback
+                        error={myLettersError}
+                        onRetry={refetchMyLetters}
+                      />
+                    </div>
                   )}
                 </section>
               )}

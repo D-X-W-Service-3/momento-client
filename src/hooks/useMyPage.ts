@@ -1,5 +1,10 @@
 import { useRef, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  onlineManager,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { logout as requestLogout } from '@/apis/auth';
 import { deleteMyAccount, fetchMyProfile, toMyPageData } from '@/apis/mypage';
@@ -20,7 +25,10 @@ export function useMyPage() {
     navigate('/login', { replace: true });
   };
   const logout = useMutation({
+    networkMode: 'always',
     mutationFn: async () => {
+      // 오프라인에서도 onSuccess에서 로컬 세션을 바로 정리한다.
+      if (!onlineManager.isOnline()) return;
       // 토큰을 지우기 전에 이 기기의 푸시 구독부터 서버에서 해제한다.
       await unregisterPushOnLogout().catch(() => undefined);
       void requestLogout().catch(() => undefined);

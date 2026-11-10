@@ -133,7 +133,11 @@ export default function CapsuleCoverPage() {
     capsule?.status === 'OPENED' &&
     capsule.permissions.canViewLetters &&
     !needsReveal;
-  const { data: letters } = useCapsuleLetters(capsuleId, canViewLetters);
+  const {
+    data: letters,
+    error: lettersError,
+    refetch: refetchLetters,
+  } = useCapsuleLetters(capsuleId, canViewLetters);
   const hasViewableLetters = canViewLetters && Boolean(letters?.length);
   const [now, setNow] = useState(() => Date.now());
 
@@ -180,6 +184,11 @@ export default function CapsuleCoverPage() {
     <>
       {content && (
         <CapsuleCoverLayout titleLines={content.titleLines}>
+          {canViewLetters && !hasViewableLetters && lettersError && (
+            <div className="rounded-xl bg-surface">
+              <QueryFeedback error={lettersError} onRetry={refetchLetters} />
+            </div>
+          )}
           {content.actions.map((action) => (
             <Button
               key={action.key}
