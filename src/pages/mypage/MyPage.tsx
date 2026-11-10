@@ -14,6 +14,10 @@ export default function MyPage() {
     isLoading,
     error,
     retry,
+    logoutOpen,
+    isLoggingOut,
+    cancelLogout,
+    confirmLogout,
     withdrawOpen,
     isWithdrawing,
     withdrawError,
@@ -31,7 +35,6 @@ export default function MyPage() {
       <BackHeader
         title="마이페이지"
         onBack={handleBack}
-        showMore
         className="bg-surface-gray"
       />
 
@@ -52,6 +55,14 @@ export default function MyPage() {
           onWithdraw={handleWithdraw}
         />
       </main>
+      <ConfirmDialog
+        open={logoutOpen}
+        title="로그아웃할까요?"
+        confirmLabel={isLoggingOut ? '처리 중…' : '로그아웃'}
+        confirmTone="primary"
+        onConfirm={confirmLogout}
+        onCancel={cancelLogout}
+      />
       <ConfirmDialog
         open={withdrawOpen}
         title="회원 탈퇴할까요?"

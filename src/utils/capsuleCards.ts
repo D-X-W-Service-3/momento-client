@@ -88,6 +88,7 @@ export function toCapsuleListItem(card: CapsuleCardResponse): CapsuleListItem {
 
   return {
     id: String(card.capsuleId),
+    iconType: card.iconType,
     year: Number(card.openAt.slice(0, 4)),
     filterCategory:
       card.status === 'WRITING'

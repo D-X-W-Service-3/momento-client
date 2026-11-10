@@ -150,9 +150,11 @@ export default function CapsuleDetailPage() {
                     title="편지"
                     count={`${capsule.letterCount}통`}
                   />
-                  <GhostButton onClick={() => setLettersOpen(true)}>
-                    내가 쓴 편지 확인/삭제 하기
-                  </GhostButton>
+                  {hasMyLetters && (
+                    <GhostButton onClick={() => setLettersOpen(true)}>
+                      내가 쓴 편지 확인/삭제 하기
+                    </GhostButton>
+                  )}
                 </section>
               )}
 

@@ -54,7 +54,7 @@ export default function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5"
+      className="modal-enter fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5"
       onClick={onCancel}
     >
       <div
@@ -62,7 +62,7 @@ export default function ConfirmDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         onClick={(event) => event.stopPropagation()}
-        className="flex w-[300px] flex-col items-center gap-6 rounded-2xl bg-surface px-5 pt-8 pb-5"
+        className="modal-panel-enter flex w-[300px] flex-col items-center gap-6 rounded-2xl bg-surface px-5 pt-8 pb-5"
       >
         <div className="flex w-full flex-col gap-stack text-center">
           <h2

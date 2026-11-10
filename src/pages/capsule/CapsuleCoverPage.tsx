@@ -40,10 +40,14 @@ interface CoverContent {
 
 /**
  * 서버 status 3가지가 Figma 의 수정가능 / 잠긴캡슐 / 열린캡슐 커버와 1:1 이다.
- * 버튼 노출은 서버가 준 permissions 를 그대로 따른다.
+ * 편지 열람 버튼은 권한과 실제 열람 가능한 편지 목록을 확인해 노출한다.
  */
-const getCoverContent = (capsule: CapsuleDetail, now: number): CoverContent => {
-  const { canWriteLetter, canViewLetters } = capsule.permissions;
+const getCoverContent = (
+  capsule: CapsuleDetail,
+  now: number,
+  hasViewableLetters: boolean,
+): CoverContent => {
+  const { canWriteLetter } = capsule.permissions;
 
   if (capsule.status === 'WRITING') {
     const titleLines: [string, string] =
@@ -82,10 +86,13 @@ const getCoverContent = (capsule: CapsuleDetail, now: number): CoverContent => {
   }
 
   return {
-    titleLines: ['편지를 눌러', '캡슐에 담긴 추억을 확인해보세요'],
+    titleLines: [
+      hasViewableLetters ? '편지를 눌러' : '타임캡슐이 열렸어요',
+      '캡슐에 담긴 추억을 확인해보세요',
+    ],
     actions: [
       { key: 'detail', label: '캡슐 정보보기', variant: 'secondary' },
-      ...(canViewLetters
+      ...(hasViewableLetters
         ? ([
             { key: 'letters', label: '편지보기', variant: 'primary' },
           ] as CoverAction[])
@@ -117,7 +124,17 @@ export default function CapsuleCoverPage() {
     showOpeningFlash ? capsuleId : null,
   );
   const [lettersOpen, setLettersOpen] = useState(false);
-  const { data: letters } = useCapsuleLetters(capsuleId, lettersOpen);
+  const needsReveal =
+    capsule?.status === 'OPENED' &&
+    !capsule.openedByMe &&
+    !openingState?.openingFinished &&
+    !error;
+  const canViewLetters =
+    capsule?.status === 'OPENED' &&
+    capsule.permissions.canViewLetters &&
+    !needsReveal;
+  const { data: letters } = useCapsuleLetters(capsuleId, canViewLetters);
+  const hasViewableLetters = canViewLetters && Boolean(letters?.length);
   const [now, setNow] = useState(() => Date.now());
 
   // 잠긴 캡슐은 30초마다 남은 시간을 갱신하고, 개봉 시각이 지나면 다시 조회해 열린 화면으로 바꾼다
@@ -143,18 +160,15 @@ export default function CapsuleCoverPage() {
   }, [showOpeningFlash, navigate]);
 
   // 개봉 요청이 실패해도 연출 직후에는 커버를 보여 준다. 새로 진입하면 다시 확인한다.
-  if (
-    capsule?.status === 'OPENED' &&
-    !capsule.openedByMe &&
-    !openingState?.openingFinished &&
-    !error
-  ) {
+  if (needsReveal) {
     return isFetching ? null : (
       <Navigate to={capsuleRevealPath(capsuleId)} replace />
     );
   }
 
-  const content = capsule ? getCoverContent(capsule, now) : null;
+  const content = capsule
+    ? getCoverContent(capsule, now, hasViewableLetters)
+    : null;
 
   const handleAction = (key: CoverActionKey) => {
     if (key === 'detail') navigate(capsuleDetailPath(capsuleId));
@@ -181,7 +195,7 @@ export default function CapsuleCoverPage() {
       {!content && error && <QueryFeedback error={error} onRetry={refetch} />}
 
       <LetterViewer
-        open={lettersOpen}
+        open={lettersOpen && hasViewableLetters}
         letters={letters ?? []}
         onClose={() => setLettersOpen(false)}
       />

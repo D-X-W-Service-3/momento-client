@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 export function useMyPage() {
   const navigate = useNavigate();
   const client = useQueryClient();
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const withdrawing = useRef(false);
   const query = useQuery({ queryKey: ['myProfile'], queryFn: fetchMyProfile });
@@ -18,6 +19,14 @@ export function useMyPage() {
     client.clear();
     navigate('/login', { replace: true });
   };
+  const logout = useMutation({
+    mutationFn: async () => {
+      // 토큰을 지우기 전에 이 기기의 푸시 구독부터 서버에서 해제한다.
+      await unregisterPushOnLogout().catch(() => undefined);
+      void requestLogout().catch(() => undefined);
+    },
+    onSuccess: clearSession,
+  });
   const withdrawal = useMutation({
     mutationFn: deleteMyAccount,
     retry: false,
@@ -33,17 +42,20 @@ export function useMyPage() {
     isLoading: query.isLoading,
     error: query.error,
     retry: query.refetch,
+    logoutOpen,
+    isLoggingOut: logout.isPending,
     withdrawOpen,
     isWithdrawing: withdrawal.isPending,
     withdrawError: withdrawal.error,
     handleBack: () => navigate(-1),
     handleEditProfile: () => navigate('/mypage/edit'),
     handleNotificationSettings: () => navigate('/mypage/notifications'),
-    handleLogout: async () => {
-      // 토큰을 지우기 전에 이 기기의 푸시 구독부터 서버에서 해제한다.
-      await unregisterPushOnLogout().catch(() => undefined);
-      void requestLogout().catch(() => undefined);
-      clearSession();
+    handleLogout: () => setLogoutOpen(true),
+    cancelLogout: () => {
+      if (!logout.isPending) setLogoutOpen(false);
+    },
+    confirmLogout: () => {
+      if (!logout.isPending) logout.mutate();
     },
     handleWithdraw: () => {
       withdrawal.reset();

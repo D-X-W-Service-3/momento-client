@@ -25,7 +25,7 @@ export default function CapsuleCreateBanner({
           <span className={`text-text-secondary ${textStyles['body-xs']}`}>
             요즘 가장 자주 떠오르는 사람이 있나요
           </span>
-          <strong className={`text-text-primary ${textStyles['heading-h2']}`}>
+          <strong className={`text-text-primary ${textStyles['heading-h3']}`}>
             캡슐 만들기
           </strong>
         </div>
