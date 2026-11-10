@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Button from '@/components/common/Button';
 import CapsuleCoverLayout from '@/components/capsule/CapsuleCoverLayout';
 import LetterViewer from '@/components/capsule/LetterViewer';
+import OpeningFlash from '@/components/capsule/OpeningFlash';
 import { capsuleDetailPath, letterTypePath } from '@/constants/routes';
 import { useCapsuleDetail } from '@/hooks/useCapsule';
 import { useCapsuleLetters } from '@/hooks/useLetter';
@@ -90,7 +91,12 @@ const ACTION_STYLES: Record<CoverAction['variant'], string> = {
 export default function CapsuleCoverPage() {
   const { capsuleId = '' } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: capsule, refetch } = useCapsuleDetail(capsuleId);
+  // 연출 영상을 끝까지 본 직후인지. 첫 렌더 값으로 고정한다.
+  const [showFlash] = useState(() =>
+    Boolean((location.state as { fromOpening?: boolean } | null)?.fromOpening),
+  );
   const [lettersOpen, setLettersOpen] = useState(false);
   const { data: letters } = useCapsuleLetters(capsuleId, lettersOpen);
   const [now, setNow] = useState(() => Date.now());
@@ -107,6 +113,12 @@ export default function CapsuleCoverPage() {
     }, 30_000);
     return () => clearInterval(timer);
   }, [lockedOpenAt, refetch]);
+
+  // 표시를 남겨두면 새로고침할 때마다 다시 번쩍인다. 한 번 읽고 지운다.
+  useEffect(() => {
+    if (!showFlash) return;
+    navigate('.', { replace: true, state: null });
+  }, [showFlash, navigate]);
 
   const content = capsule ? getCoverContent(capsule, now) : null;
 
@@ -138,6 +150,9 @@ export default function CapsuleCoverPage() {
         letters={letters ?? []}
         onClose={() => setLettersOpen(false)}
       />
+
+      {/* 연출 영상을 끝까지 본 직후에만 흰빛을 이어받는다 */}
+      {showFlash && <OpeningFlash />}
     </>
   );
 }
