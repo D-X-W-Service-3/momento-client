@@ -19,7 +19,11 @@ export default function NotificationPage() {
 
   return (
     <MobileLayout variant="gray">
-      <BackHeader title="알림" onBack={handleBack} />
+      <BackHeader
+        title="알림"
+        onBack={handleBack}
+        className="bg-surface-gray"
+      />
 
       <main className="flex flex-1 flex-col gap-2 px-5 pb-10">
         <QueryFeedback

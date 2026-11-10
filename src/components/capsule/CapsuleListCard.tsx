@@ -1,5 +1,5 @@
-import capsulePopsicleImg from '@/assets/images/home-capsule-popsicle.png';
 import Chip from '@/components/common/Chip';
+import { capsuleIconSrc } from '@/constants/capsuleIcons';
 import { textStyles } from '@/styles/tokens';
 import type { CapsuleListItem } from '@/types/capsule';
 
@@ -54,7 +54,7 @@ export default function CapsuleListCard({
 
         <div className="flex h-[99px] w-[104px] shrink-0 items-end justify-end">
           <img
-            src={capsulePopsicleImg}
+            src={capsuleIconSrc(item.iconType)}
             alt=""
             className="h-[95px] w-[104px] object-contain"
           />

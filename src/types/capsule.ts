@@ -24,6 +24,7 @@ export interface CapsuleFeaturedItem {
 
 export interface CapsuleHorizontalItem {
   id: string;
+  iconType: string;
   badge: CapsuleChipBadge;
   title: string;
   openDateText: string;
@@ -31,6 +32,7 @@ export interface CapsuleHorizontalItem {
 
 export interface CapsuleListItem {
   id: string;
+  iconType: string;
   year: number;
   filterCategory: Exclude<CapsuleFilterKey, 'all'>;
   variant: 'gradient' | 'white' | 'translucent';

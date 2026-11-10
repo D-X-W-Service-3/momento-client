@@ -1,4 +1,10 @@
-import { type ReactNode, useEffect, useId } from 'react';
+import {
+  type KeyboardEvent,
+  type ReactNode,
+  useId,
+  useLayoutEffect,
+  useRef,
+} from 'react';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -31,38 +37,70 @@ export default function ConfirmDialog({
   children,
 }: ConfirmDialogProps) {
   const titleId = useId();
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onCancel();
-    };
-    document.addEventListener('keydown', handleKeyDown);
+    const previousFocus = document.activeElement;
+    cancelButtonRef.current?.focus({ preventScroll: true });
 
     // 모달 뒤 화면이 스크롤되지 않게 막는다.
     const { overflow } = document.body.style;
     document.body.style.overflow = 'hidden';
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = overflow;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+        previousFocus.focus({ preventScroll: true });
+      }
     };
-  }, [open, onCancel]);
+  }, [open]);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.stopPropagation();
+      onCancel();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+
+    const focusable = Array.from(
+      event.currentTarget.querySelectorAll<HTMLElement>(
+        'a[href], button, input, select, textarea, [tabindex]',
+      ),
+    ).filter(
+      (element) =>
+        element.tabIndex >= 0 &&
+        !element.matches(':disabled') &&
+        element.getClientRects().length > 0,
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const edge = event.shiftKey ? first : last;
+    if (document.activeElement !== edge) return;
+
+    event.preventDefault();
+    (event.shiftKey ? last : first)?.focus();
+  };
 
   if (!open) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5"
+      className="modal-enter fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) event.preventDefault();
+      }}
       onClick={onCancel}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        onKeyDown={handleKeyDown}
         onClick={(event) => event.stopPropagation()}
-        className="flex w-[300px] flex-col items-center gap-6 rounded-2xl bg-surface px-5 pt-8 pb-5"
+        className="modal-panel-enter flex w-[300px] flex-col items-center gap-6 rounded-2xl bg-surface px-5 pt-8 pb-5"
       >
         <div className="flex w-full flex-col gap-stack text-center">
           <h2
@@ -82,6 +120,7 @@ export default function ConfirmDialog({
 
         <div className="flex w-full gap-2.5">
           <button
+            ref={cancelButtonRef}
             type="button"
             onClick={onCancel}
             className="h-11 flex-1 cursor-pointer rounded-button border border-stroke-muted text-button-xs font-semibold text-neutral-weak"
