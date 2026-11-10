@@ -8,22 +8,27 @@ const FADE_MS = 700;
  * 흰 화면에서 짙은 보라로 뚝 끊긴다. 영상의 마지막 프레임 색을 그대로 덮고
  * 서서히 걷어내 두 화면이 이어지게 한다.
  */
-export default function OpeningFlash() {
+interface OpeningFlashProps {
+  ready: boolean;
+  onFinished: () => void;
+}
+
+export default function OpeningFlash({ ready, onFinished }: OpeningFlashProps) {
   const [faded, setFaded] = useState(false);
-  const [done, setDone] = useState(false);
 
   useEffect(() => {
-    // 마운트와 같은 프레임에 값을 바꾸면 transition 이 돌지 않는다.
-    const id = requestAnimationFrame(() => setFaded(true));
+    if (!ready) return;
+    // 캐시된 커버에서도 흰빛이 한 프레임 표시된 뒤 페이드한다.
+    let id = requestAnimationFrame(() => {
+      id = requestAnimationFrame(() => setFaded(true));
+    });
     return () => cancelAnimationFrame(id);
-  }, []);
-
-  if (done) return null;
+  }, [ready]);
 
   return (
     <div
       aria-hidden
-      onTransitionEnd={() => setDone(true)}
+      onTransitionEnd={onFinished}
       style={{ transitionDuration: `${FADE_MS}ms` }}
       className={`pointer-events-none fixed inset-0 z-50 bg-capsule-flash transition-opacity ease-out ${
         faded ? 'opacity-0' : 'opacity-100'

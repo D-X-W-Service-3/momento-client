@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import letterGalaxy from '@/assets/videos/letter-galaxy.mp4';
 import { capsuleCoverPath } from '@/constants/routes';
+import type { CapsuleCoverNavigationState } from '@/types/capsule';
 
 /** 영상 길이(5초)에 버퍼를 둔 값. 재생이 멎어도 여기서 넘긴다. */
 const FALLBACK_MS = 7500;
@@ -33,7 +34,10 @@ export default function CapsuleOpeningPage() {
       if (cancelled) return;
       navigate(capsuleCoverPath(capsuleId), {
         replace: true,
-        state: { fromOpening: flashed },
+        state: {
+          openingFinished: true,
+          showOpeningFlash: flashed,
+        } satisfies CapsuleCoverNavigationState,
       });
     };
 

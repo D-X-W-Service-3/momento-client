@@ -15,7 +15,8 @@ export default function CapsuleRevealPage() {
   // 실패해도 화면은 막지 않는다 (다음 진입에서 다시 시도된다).
   const goCapsule = () =>
     openCapsule.mutate(undefined, {
-      onSettled: () => navigate(capsuleOpeningPath(capsuleId)),
+      onSettled: () =>
+        navigate(capsuleOpeningPath(capsuleId), { replace: true }),
     });
 
   return (

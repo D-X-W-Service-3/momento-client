@@ -2,6 +2,11 @@ import type { ChipTone } from '@/components/common/Chip';
 
 export type CapsuleFilterKey = 'all' | 'editable' | 'locked' | 'opened';
 
+export interface CapsuleCoverNavigationState {
+  openingFinished: boolean;
+  showOpeningFlash?: boolean;
+}
+
 export interface CapsuleChipBadge {
   label: string;
   tone: ChipTone;

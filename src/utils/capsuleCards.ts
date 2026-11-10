@@ -4,6 +4,7 @@ import type {
   CapsuleListItem,
   CapsuleChipBadge,
 } from '@/types/capsule';
+import { capsuleStatusChip } from '@/utils/capsule';
 
 export const capsuleStatusParam: Record<
   Exclude<CapsuleFilterKey, 'all'>,
@@ -80,6 +81,11 @@ export const capsuleDeadlineBadge = (
 export const capsuleCountLabel = (card: CapsuleCardResponse) =>
   `${card.memberCount}명 | 편지 ${card.letterCount}`;
 export function toCapsuleListItem(card: CapsuleCardResponse): CapsuleListItem {
+  const { label, tone } =
+    card.status === 'OPENED' && card.openedByMe
+      ? capsuleStatusChip(card.status)
+      : capsuleDeadlineBadge(card);
+
   return {
     id: String(card.capsuleId),
     year: Number(card.openAt.slice(0, 4)),
@@ -95,7 +101,7 @@ export function toCapsuleListItem(card: CapsuleCardResponse): CapsuleListItem {
         : card.status === 'LOCKED'
           ? 'translucent'
           : 'white',
-    badges: [capsuleDeadlineBadge(card)],
+    badges: [{ label, tone }],
     title: card.title,
     description: card.description ?? '',
     dDayText: dDayLabel(card.dDay),
