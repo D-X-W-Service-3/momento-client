@@ -13,20 +13,22 @@ import type {
 } from '@/types/letter';
 
 /**
- * 편지지 화풍. 각 이미지는 서버 themeType 화풍의 예시이고, 배열 순서가
- * 화면에 보이는 순서다.
+ * 편지지 화풍. 이미지는 AI 서버 화풍(LoRA)별 예시 결과물이고, 서버가
+ * themeType 을 LoRA 로 바꿔 보낸다 (WATERCOLOR→water, JOSEON→josen 등).
+ * enum 이름과 실제 그림체가 달라서, 화면 이름은 그림체 기준으로 붙인다.
+ * 배열 순서가 화면에 보이는 순서다.
  */
 const LETTER_PAPERS: LetterPaper[] = [
-  { id: 'vintage', name: '빈티지', imageUrl: vintage, themeType: 'VINTAGE' },
+  { id: 'joseon', name: '수채화', imageUrl: joseon, themeType: 'JOSEON' },
   { id: 'pastel', name: '파스텔', imageUrl: pastel, themeType: 'PASTEL' },
   { id: 'anime', name: '애니메이션', imageUrl: anime, themeType: 'ANIME' },
+  { id: 'vintage', name: '민화풍', imageUrl: vintage, themeType: 'VINTAGE' },
   {
     id: 'watercolor',
-    name: '수채화',
+    name: '빈티지',
     imageUrl: watercolor,
     themeType: 'WATERCOLOR',
   },
-  { id: 'joseon', name: '민화', imageUrl: joseon, themeType: 'JOSEON' },
 ];
 
 // 편지지 이미지는 프론트 에셋이라 서버 호출이 없다. 훅 인터페이스만 맞춘다.
