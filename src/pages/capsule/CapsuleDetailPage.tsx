@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 
 import capsuleDeleteIcon from '@/assets/icons/capsule-delete-on-dark.svg';
 import capsuleEditIcon from '@/assets/icons/capsule-edit-on-dark.svg';
@@ -39,8 +44,13 @@ const ADMIN_ACTIONS = [
 
 export default function CapsuleDetailPage() {
   const { capsuleId = '' } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  const openedFromInviteAcceptance = Boolean(
+    (location.state as { openedFromInviteAcceptance?: boolean } | null)
+      ?.openedFromInviteAcceptance,
+  );
   const { data: capsule } = useCapsuleDetail(capsuleId);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -103,7 +113,14 @@ export default function CapsuleDetailPage() {
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-capsule-bg-from to-capsule-bg-to">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col pb-[env(safe-area-inset-bottom)]">
-        <BackHeader tone="dark" />
+        <BackHeader
+          tone="dark"
+          onBack={
+            openedFromInviteAcceptance
+              ? () => navigate(ROUTES.CAPSULE, { replace: true })
+              : undefined
+          }
+        />
 
         {capsule && chip && permissions && (
           <main
