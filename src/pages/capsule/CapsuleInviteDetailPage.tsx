@@ -44,7 +44,10 @@ export default function CapsuleInviteDetailPage() {
   const accept = () =>
     acceptInvite.mutate(undefined, {
       onSuccess: () =>
-        navigate(capsuleDetailPath(capsuleId), { replace: true }),
+        navigate(capsuleDetailPath(capsuleId), {
+          replace: true,
+          state: { openedFromInviteAcceptance: true },
+        }),
     });
 
   const reject = () =>
